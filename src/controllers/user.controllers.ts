@@ -1,0 +1,123 @@
+import type { Request, Response, NextFunction } from "express";
+import UserModels from "../models/user/user.models";
+import { cloudinary } from "../third-party/upload-images/multer";
+import fs from "fs";
+import jwt from "jsonwebtoken";
+export class UserController {
+    private _userModel: UserModels;
+    private _hashToken: (id: string) => string
+    constructor() {
+        this._userModel = new UserModels();
+        this._hashToken = (id: string) => {
+            return jwt.sign(
+                { id }, // payload nên là object
+                process.env.SECRET_KEY as string,
+                { expiresIn: "7d" }
+            );
+        };
+    }
+    create = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const { email, password, username } = req.body;
+            const created = await this._userModel.create(email, password, username);
+            return created.valid
+                ? res.status(201).json({ valid: true, user: created.user })
+                : res.status(400).json({ valid: false, message: created.message });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                valid: false,
+                message: (error as Error).message
+            });
+        }
+    }
+    login = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const { email, password } = req.body;
+            const logged = await this._userModel.login(email, password);
+            return logged.valid
+                ? res.status(200).cookie("token", this._hashToken(logged.user._id), {
+                    httpOnly: process.env.EVIRONMENT === "dev" ? false : true,
+                    secure: process.env.EVIRONMENT === "dev" ? false : true,
+                    sameSite: process.env.EVIRONMENT === "dev" ? "lax" : "none",
+                    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+                }).json({ valid: true, message: "Thành Công" })
+                : res.status(400).json({ valid: false, message: logged.message });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                valid: false,
+                message: (error as Error).message
+            });
+        }
+    }
+    autoLogin = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const id = req.userID;
+            const user = await this._userModel.findUserById(id as string);
+            res.status(200).json({ valid: true, user: user.user });
+        } catch (error) {
+
+        }
+    }
+    sendVerifyEmail = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const id = req.userID;
+            const getVerifyEmail = await this._userModel.getVerifyEmail(id as string);            
+            if (!getVerifyEmail.valid) {
+                const sent = await this._userModel.setVerifyEmail(id as string);
+                return sent.valid
+                    ? res.status(200).json({ valid: true, message: "Thành Công" })
+                    : res.status(400).json({ valid: false, message: sent.message });
+            }
+            return res.status(400).json({ valid: false, message: getVerifyEmail.message });
+        } catch (error) {
+            res.status(500).json({ valid: false, message: (error as Error).message });
+        }
+    }
+    checkVerifyEmail = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const id = req.userID;
+            console.log(3);
+            
+            const checkVerifyEmail = await this._userModel.hasVerifyEmail(id as string);
+            return checkVerifyEmail.valid
+                ? res.status(200).json({ valid: true, message: "Thành Công" })
+                : res.status(400).json({ valid: false, message: checkVerifyEmail.message });
+        } catch (error) {
+            res.status(500).json({ valid: false, message: (error as Error).message });
+        }
+    }
+    // updateAvatar = async (req: Request, res: Response, _next: NextFunction) => {
+    //     try {
+    //         const { userId } = req.body;
+    //         const avatarPath = req.file?.path; // path file tạm multer lưu
+    //         if (!userId || !avatarPath) {
+    //             return res.status(400).json({ valid: false, message: "Thiếu userId hoặc file ảnh" });
+    //         }
+    //         // Upload ảnh từ path tạm lên Cloudinary
+    //         const result = await cloudinary.uploader.upload(avatarPath, {
+    //             folder: "avatars" // muốn gom vào folder riêng trong Cloudinary
+    //         });
+
+    //         // Xoá file tạm sau khi upload
+    //         fs.unlinkSync(avatarPath);
+
+    //         // Update DB với link secure_url
+    //         const userModel = new UserModels();
+    //         const updated = await userModel.updateAvatar(userId, result.secure_url);
+
+    //         return updated.valid
+    //             ? res.status(200).json({ valid: true, user: updated.user })
+    //             : res.status(400).json({ valid: false, message: updated.message });
+
+    //     } catch (error) {
+    //         console.error(error);
+    //         return res.status(500).json({
+    //             valid: false,
+    //             message: (error as Error).message
+    //         });
+    //     }
+    // }
+
+}
