@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import type { PropsSubTitleHomePage, PropsTitleHomePage } from "../../components/title-homepage/props-title-homepage";
-import TitlePage from "../../components/title-homepage/title-page";
+import type { PropsSubTitleHomePage, PropsTitleHomePage } from "./components/title-homepage/props-title-homepage";
+import TitlePage from "./components/title-homepage/title-page";
 import LayoutApp from "../../layout";
 import { ArrowRightOutlined } from "@ant-design/icons";
 

@@ -1,11 +1,11 @@
 
-import TitlePage from "../../components/title-homepage/title-page";
+import TitlePage from "./components/title-homepage/title-page";
 import Achieve from "./achieve";
 
 import { Header } from "./header";
 import IntroductionFeature from "./feature";
 import Slogan from "./slogan";
-import type { PropsSubTitleHomePage, PropsTitleHomePage } from "../../components/title-homepage/props-title-homepage";
+import type { PropsSubTitleHomePage, PropsTitleHomePage } from "./components/title-homepage/props-title-homepage";
 import LayoutApp from "../../layout";
 import CustomerTalk from "./customer-talk";
 import Performent from "./performent";

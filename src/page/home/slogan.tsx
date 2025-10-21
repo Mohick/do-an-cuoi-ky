@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 import { ArrowRightOutlined } from "@ant-design/icons";
 import LayoutApp from "../../layout";
-import TitlePage from "../../components/title-homepage/title-page";
+import TitlePage from "./components/title-homepage/title-page";
 
 
 const textSlogan = {

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import LayoutApp from "../../layout";
+import { useAccount } from "../../hooks/account";
 
 
 
@@ -37,13 +38,8 @@ export function Header() {
                                 </Link>
                             </li>
                             <li>
-                                <Link className="py-1 block text-gray-200 font-bold hover:text-white" to={'/signin'}>
-                                    Đăng Nhập
-                                </Link>
-                            </li>
-                            <li>
-                                <Link className="py-1 block text-gray-200 font-bold hover:text-white" to={'/sign-up'}>
-                                    Đăng Ký
+                                <Link className="py-1 block text-gray-200 font-bold hover:text-white" to={'/auth'}>
+                                    Bắt đầu ngay
                                 </Link>
                             </li>
                         </ul>

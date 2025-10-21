@@ -15,9 +15,13 @@
 
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import InputAuth from "../component/input";
-import type { PropsSubTitleHomePage } from "../../../components/title-homepage/props-title-homepage";
+import type { PropsSubTitleHomePage } from "../../home/components/title-homepage/props-title-homepage";
 import { useForm } from "react-hook-form";
 import ButtonAuth from "../component/button";
+import { memo } from "react";
+import { useNavigate } from "react-router-dom";
+import { handleSubmitSignIn } from "./handle-submit";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 
@@ -32,11 +36,13 @@ const textPassword: PropsSubTitleHomePage = {
     className: 'font-bold'
 };
 
-export default function SignIn() {
-    const { register, handleSubmit, formState: { errors } } = useForm();
-
+ function SignIn() {
+    const { register, handleSubmit, setError,formState: { errors } } = useForm();
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    
     return (
-        <form className="flex flex-col space-y-2" onSubmit={handleSubmit((data) => console.log(data))}>
+        <form className="flex flex-col space-y-2" onSubmit={handleSubmit((data)=>{handleSubmitSignIn(data,setError,navigate,queryClient)})}>
 
             {/* Email */}
             <InputAuth
@@ -76,3 +82,6 @@ export default function SignIn() {
         </form>
     );
 }
+
+
+export default memo(SignIn)

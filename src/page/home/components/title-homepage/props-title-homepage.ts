@@ -7,3 +7,22 @@ export type PropsSubTitleHomePage = {
   text: string;
   className?: string;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
