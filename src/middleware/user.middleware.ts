@@ -8,7 +8,7 @@ declare module "express-serve-static-core" {
     }
 }
 class UserMiddleware {
-    private static _regexUsername = /^[a-zA-Z0-9._]{3,20}$/;
+    private static _regexUsername = /^[a-zA-Z._]{4,20}$/;
     private static _regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     private static _regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
     static validateRegister = (req: Request, res: Response, next: NextFunction) => {
@@ -40,9 +40,9 @@ class UserMiddleware {
             if (!token) {
                 throw new Error("Thiếu token");
             }
-            const hashToken = Jwt.verify(token, process.env.SECRET_KEY as string) as { id: string };            
-            req.userID  = hashToken.id;
-            if(mongoose.Types.ObjectId.isValid(hashToken.id)) return res.status(401).json({ valid: false, message: "Token không tồn tại hoặc không hợp lệ" });
+            const hashToken = Jwt.verify(token, process.env.SECRET_KEY as string) as { id: string };
+            req.userID = hashToken.id;
+            if (!mongoose.Types.ObjectId.isValid(hashToken.id)) return res.status(401).json({ valid: false, message: "Token không tồn tại hoặc không hợp lệ" });
             next();
         } catch (error) {
             return res.status(401).json({

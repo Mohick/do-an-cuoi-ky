@@ -1,3 +1,4 @@
+import { abort } from "process";
 import { storeRedis } from "../../third-party/redis/redis";
 import { templateEmailVerifyAccount } from "../../third-party/send-email/template-send-verify-email";
 import SchemaUser from "./user.schema";
@@ -21,69 +22,59 @@ class UserModels {
             if (!user) return { valid: false, message: "Email hoặc password bị sai" };
             const isValid = await bcrypt.compare(password, user.password);
             if (!isValid) return { valid: false, message: "Email hoặc password bị sai" };
-            return { valid: true, user };
+            return { valid: true, user, message: "Thành công" };
         } catch (error: any) {
-            return { valid: false, message: error.message || "Database error" };
+            console.log(error);
+            return { valid: false, message: "Email hoặc password bị sai" };
         }
     }
     async findUserById(id: string): Promise<{ valid: boolean; user?: any; message?: string }> {
         try {
             const user = await SchemaUser.findById(id);
-            return user ? { valid: true, user } : { valid: false, message: "User not found" };
+            if (!user) return { valid: false, message: "Không tìm thấy user" };
+            user.password = "";
+            return { valid: true, user, message: "Thành công" }
         } catch (error: any) {
             return { valid: false, message: error.message || "Database error" };
         }
     }
     async updateAvatar(userId: string, avatar: string):
-        Promise<{ valid: boolean; user?: any; message?: string }> {
+        Promise<{ valid: boolean; message?: string }> {
         try {
             const user = await SchemaUser.findOneAndUpdate({ _id: userId }, { avatar }, { new: true });
-            return user ? { valid: true, user } : { valid: false, message: "User not found" };
+            if (!user) return { valid: false, message: "Không tìm thấy user" };
+            return { valid: true, message: "Thành công" };
         } catch (error: any) {
             return { valid: false, message: error.message || "Database error" };
         }
     }
     async setVerifyEmail(userId: string): Promise<{ valid: boolean; message?: string }> {
         try {
-            const url = process.env.CLI_URL + '/verify-email/' + userId;
-            if (storeRedis.isReady) {
-                await storeRedis.set(userId, url, { EX: 300 });
-                const a = await storeRedis.get(userId);
-                console.log(a);
-
+            
+            const key = btoa(userId);
+            const url = process.env.CLI_URL + '/verify-email/' + key;
+            const getKey = await storeRedis.get(key);
+            if (!getKey) {
+                await storeRedis.set(key, "Chờ duyệt email", { EX: 300 });
                 const user = await SchemaUser.findById(userId);
                 if (user) {
                     await templateEmailVerifyAccount(user?.email || "", url);
                 }
                 return { valid: true, message: "Thành công" };
             }
-            return { valid: false, message: "Redis not ready" };
+            return { valid: false, message: "" };
         } catch (error: any) {
             return { valid: false, message: error.message || "Redis error khi set token" };
         }
     }
-    async getVerifyEmail(userId: string): Promise<{ valid: boolean; url?: string; message?: string }> {
+    
+    async hasVerifyEmail(key: string, userID: string): Promise<{ valid: boolean; message?: string }> {
         try {
-
-            const url = await storeRedis.get(userId);
-            if (url) {
-                return { valid: true, message: "token da ton tai" };
-            }
-            return { valid: false, message: "token khong ton tai", };
-        } catch (error: any) {
-            return { valid: false, message: error.message || "Redis error khi get token" };
-        }
-    }
-    async hasVerifyEmail(userId: string): Promise<{ valid: boolean; message?: string }> {
-        try {
-            const url = await storeRedis.get(userId);
-            if (url) {
-                await storeRedis.del(userId);
-                const a = await SchemaUser.updateOne({ _id: userId }, { verify: true });
-                return { valid: true, message: "Thành công" };
-            } else {
-                return { valid: false, message: "Token không tồn tại hoặc đã hết hạn" };
-            }
+            const getKey = await storeRedis.get(key);
+            if (!getKey) return { valid: false, message: "Token không tồn tại hoặc đã hết hạn" };
+            await storeRedis.del(key);
+            await SchemaUser.updateOne({ _id: userID }, { verify: true });
+            return { valid: true, message: "Thành công" };
         } catch (error: any) {
             return { valid: false, message: error.message || "Redis error khi get token" };
         }

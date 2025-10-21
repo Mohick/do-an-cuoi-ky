@@ -1,12 +1,14 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-const groupSchema = new mongoose.Schema({
-    name_project: {
+const groupSchema = new Schema({
+    projectName: { // Đổi thành camelCase cho nhất quán
         type: String,
         required: true,
+        trim: true
     },
     creator: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
     },
     deadline: {
@@ -17,32 +19,32 @@ const groupSchema = new mongoose.Schema({
         url: {
             type: String,
             required: true,
-            match: /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|svg))$/
-        },
-        public_image: {
-            type: String,
-            required: true
+            match: [/^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|svg))$/, 'Please fill a valid image URL']
         },
         public_id: {
             type: String,
             required: true
         }
-    }
-    ,
-    members: {
-        type: [String],
-        required: true,
-        default: []
     },
-    status:{
-        type: String,
-        required: true,
-        enum: ['đang hoạt động', 'đã hoàn thành', 'đã hủy'],
-        default: 'đang hoạt động'
-    }
+    members: [{
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        role: {
+            type: String,
+            enum: ['leader', 'member', 'confirmer'],
+            default: 'member'
+        }
+    }]
 }, {
     timestamps: true
 });
+groupSchema.pre('save', function(next) {
+    this.members.push({ user: this.creator, role: 'leader' });
+    next();
+});
 
-const SchemaGroups = mongoose.model('Groups', groupSchema);
-export default SchemaGroups;
+
+const Group = mongoose.model('Group', groupSchema);
+export default Group;

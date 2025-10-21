@@ -1,35 +1,36 @@
 import mongoose, { Schema } from "mongoose";
-
-const taskSchema = new Schema({
-    task_name: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    creator: {
-        type: String, // Hoặc ObjectId nếu liên kết với User
-        required: true,
-    },
-    url: {
-        type: String,
-    },
-    description: {
-        type: String,
-    },
-    deadline: {
-        type: Date,
-    },
-    id_group: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Group", // nếu có schema Group
-        required: true,
-    },
-    comments: {
-        type: [
+const taskSchema = new Schema(
+    {
+        task_name: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        creator: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+        url: {
+            type: String,
+        },
+        description: {
+            type: String,
+        },
+        deadline: {
+            type: Date,
+        },
+        id_group: {
+            type: Schema.Types.ObjectId,
+            ref: "Group", // Tham chiếu đến schema 'Group'
+            required: true,
+        },
+        comments: [
             {
                 user: {
-                    type: String, // có thể đổi sang ObjectId nếu liên kết với User
+                    type: Schema.Types.ObjectId,
                     required: true,
+                    ref: "User",
                 },
                 message: {
                     type: String,
@@ -41,16 +42,24 @@ const taskSchema = new Schema({
                 },
             },
         ],
-        default: [],
+        implementer: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
+        confirmer: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
         status: {
             type: String,
-            enum: ["waiting", "handling", "pending",'completed'],
+            enum: ["waiting", "handling", "pending", "completed"],
             default: "waiting",
-        }
+        },
     },
-}, {
-    timestamps: true,
-});
+    {
+        timestamps: true,
+    }
+);
 
-const SchemaTask = mongoose.model("Task", taskSchema);
-export default SchemaTask;
+const Task = mongoose.model("Task", taskSchema);
+export default Task;

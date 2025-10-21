@@ -1,16 +1,42 @@
 import { Router } from "express";
+import GroupController from "../controllers/group.controllers.ts";
+import { UserMiddleware } from "../middleware/user.middleware.ts";
+import { GroupMiddleware } from "../middleware/group.middleware.ts";
+import { upload } from "../third-party/upload-images/multer.ts";
 
-import { UserMiddleware } from "../middleware/user.middleware";
-import GroupController from "../controllers/group.controllers";
-import { GroupMiddleware } from "../middleware/group.middleware";
-import { upload } from "../third-party/upload-images/multer";
 const routerGroup = Router();
-const group = new GroupController()
 
-routerGroup.post('/create', UserMiddleware.validateAutoLogin,upload.array('image[]'), GroupMiddleware.validateCreate, group.create)
-routerGroup.get('/views-group', UserMiddleware.validateAutoLogin, group.getGroups)
-routerGroup.get('/', (req: any, res: any) => {
-    res.send('hello user')
-})
 
-export { routerGroup }
+routerGroup.post(
+    '/create', 
+    UserMiddleware.validateAutoLogin, 
+    upload.array('image[]'),
+    GroupMiddleware.validateCreate, 
+    GroupController.createGroup
+);
+
+routerGroup.get(
+    '/', 
+    UserMiddleware.validateAutoLogin, 
+    GroupController.getMyGroups
+);
+
+routerGroup.patch(
+    '/:id/status',
+    UserMiddleware.validateAutoLogin,
+    GroupController.updateGroupStatus
+);
+
+routerGroup.delete(
+    '/:id',
+    UserMiddleware.validateAutoLogin,
+    GroupController.deleteGroup
+);
+
+
+// Route test, có thể xóa khi deploy
+routerGroup.get('/hello', (req: any, res: any) => {
+    res.send('Hello from Group Router!');
+});
+
+export default routerGroup; // [SỬA] Dùng export default cho router

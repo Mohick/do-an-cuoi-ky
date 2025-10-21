@@ -1,85 +1,123 @@
-import type { NextFunction, Request, Response } from "express"
-import GroupsModels from "../models/group/group.models"
-import { cloudinary } from "../third-party/upload-images/multer"
-import fs from "fs"
+import type { NextFunction, Request, Response } from "express";
+import fs from "fs/promises";
+import GroupService from "../models/group/group.models.ts";
+import { cloudinary } from "../third-party/upload-images/multer.ts";
+import type { url } from "inspector";
 
-
-
-
-
-class GroupController {
-    private _groupsModels: GroupsModels
-    constructor() {
-        this._groupsModels = new GroupsModels()
-    }
-    create = async (req: Request, res: Response, _next: NextFunction) => {
-        try {
-            const { name_project, creator, deadline, avatar } = req.body
-            const id = req.userID as string
-            const file = (req.files as any[])[0]
-            const resulta = await cloudinary.uploader.upload(file.path)
-            fs.unlinkSync(file.path)
-            const image = {
-                url: resulta.secure_url,
-                public_image: resulta.public_id,
-                public_id: resulta.public_id
-            }
-            const result = await this._groupsModels.create(
-                name_project,
-                creator,
-                new Date(deadline),
-                image,
-                id
-            )
-            if (result.valid) {
-                return res.status(201).json({ valid: true, message: result.message })
-            } else {
-                return res.status(500).json({ valid: false, message: result.message })
-            }
-        } catch (error) {
-            console.error(error)
-            return res.status(500).json({ valid: false, message: "Internal server error" })
-        }
-    }
-
-    getGroups = async (req: Request, res: Response, _next: NextFunction) => {
-        try {
-            const id = req.userID as string
-            const groups = await this._groupsModels.getGroup(id)
-            const showList: {
-                _id: string,
-                name_project: string,
-                creator: string,
-                deadline: Date,
-                image: string,
-                createdAt?: Date,
-                status?: string
-
-            }[] = []
-
-            groups.groups.forEach((group: any) => {
-                showList.push({
-                    _id: group._id,
-                    name_project: group.name_project,
-                    creator: group.creator,
-                    deadline: group.deadline,
-                    image: group.image.url,
-                    createdAt: group.createdAt,
-                    status: group.status
-                })
-            })
-            const working = showList.filter((group: any) => group.status === "đang hoạt động")
-            const done = showList.filter((group: any) => group.status === "đã hoàn thành")
-            const cancel = showList.filter((group: any) => group.status === "đã hủy")
-            return res.status(200).json({ valid: true, working, done, cancel })
-        } catch (error) {
-            console.error(error)
-            return res.status(500).json({ valid: false, message: "Internal server error" })
-        }
-    }
-
+interface IAuthRequest extends Request {
+    userID?: string;
 }
 
+class GroupController {
+    private groupService = GroupService;
 
+    /**
+     * @desc    Tạo một group mới
+     * @route   POST /api/groups
+     */
+    public createGroup = async (req: IAuthRequest, res: Response): Promise<void> => {
+        // [THAY ĐỔI] Thêm một block `finally` để đảm bảo file tạm luôn được xóa
+        try {
+            const { name_project, deadline } = req.body;
+            const creator = req.userID;
 
-export default GroupController
+            if (!req.files || !creator) {
+                res.status(400).json({ valid: false, message: "Thiếu file ảnh hoặc thông tin người tạo." });
+                return;
+            }
+
+            const fileImg = (req.files as any)[0]
+            const uploadResult = await cloudinary.uploader.upload(fileImg.path, {
+                folder: "uploads",
+            });
+            await fs.unlink(fileImg.path);
+            const groupData = {
+                projectName: name_project,
+                creator,
+                deadline: new Date(deadline),
+                image: {
+                    url: uploadResult.url,
+                    public_id: uploadResult.public_id,
+                },
+            };
+
+            const result = await this.groupService.create(groupData);
+            
+            res.status(result.valid ? 201 : 400).json(result);
+        } catch (error: any) {
+            console.error("LỖI KHI TẠO GROUP:", error);
+            if (error.name === 'ValidationError' || error.code === 11000) {
+                res.status(400).json({ valid: false, message: "Dữ liệu không hợp lệ hoặc đã tồn tại." });
+                return;
+            }
+            res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
+        }
+    };
+    
+    /**
+     * @desc    Lấy các group của người dùng và phân loại
+     * @route   GET /api/groups
+    */
+   public getMyGroups = async (req: IAuthRequest, res: Response): Promise<void> => {
+       // [SỬA] Đổi tên hàm cho đúng convention
+       try {
+           const { status } = req.query
+           const userId = req.userID;
+           if (!userId) {
+               res.status(400).json({ valid: false, message: "Không tìm thấy ID người dùng." });
+               return;
+            }
+            // Giả sử bạn có hàm findAndCategorizeGroups trong service
+            const result = await this.groupService.findGroupsByUserId(userId);
+            result.groups = result.groups.map((group:any) => {
+                return {
+                    ...group.toObject(),
+                    image : `${group.image.url}`
+                };
+            });
+            
+            console.log(result.groups);
+            res.status(result.valid ? 201 : 400).json(result);
+        } catch (error: any) {
+            // [SỬA] Báo lỗi trực tiếp
+            console.error("LỖI KHI LẤY GROUP:", error);
+            res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
+        }
+    };
+
+    /**
+     * @desc    Cập nhật trạng thái group
+     * @route   PATCH /api/groups/:id/status
+     */
+    public updateGroupStatus = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+            const result = await this.groupService.updateStatus(id, status);
+
+            res.status(result.valid ? 201 : 400).json(result);
+        } catch (error: any) {
+            // [SỬA] Báo lỗi trực tiếp
+            console.error("LỖI KHI CẬP NHẬT STATUS:", error);
+            res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
+        }
+    };
+
+    /**
+     * @desc    Xóa một group
+     * @route   DELETE /api/groups/:id
+     */
+    public deleteGroup = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { id } = req.params;
+            const result = await this.groupService.deleteById(id);
+            res.status(result.valid ? 201 : 400).json(result);
+        } catch (error: any) {
+            // [SỬA] Báo lỗi trực tiếp
+            console.error("LỖI KHI XÓA GROUP:", error);
+            res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
+        }
+    };
+}
+
+export default new GroupController();

@@ -3,11 +3,14 @@ import UserModels from "../models/user/user.models";
 import { cloudinary } from "../third-party/upload-images/multer";
 import fs from "fs";
 import jwt from "jsonwebtoken";
-export class UserController {
+import GroupService from "../models/group/group.models";
+ class UserControllers {
     private _userModel: UserModels;
+    private _groupService =  GroupService;
     private _hashToken: (id: string) => string
     constructor() {
         this._userModel = new UserModels();
+
         this._hashToken = (id: string) => {
             return jwt.sign(
                 { id }, // payload nên là object
@@ -54,23 +57,21 @@ export class UserController {
     autoLogin = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const id = req.userID;
+            
             const user = await this._userModel.findUserById(id as string);
+
             res.status(200).json({ valid: true, user: user.user });
         } catch (error) {
-
+            res.status(500).json({ valid: false, message: (error as Error).message });
         }
     }
     sendVerifyEmail = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const id = req.userID;
-            const getVerifyEmail = await this._userModel.getVerifyEmail(id as string);            
-            if (!getVerifyEmail.valid) {
-                const sent = await this._userModel.setVerifyEmail(id as string);
-                return sent.valid
-                    ? res.status(200).json({ valid: true, message: "Thành Công" })
-                    : res.status(400).json({ valid: false, message: sent.message });
-            }
-            return res.status(400).json({ valid: false, message: getVerifyEmail.message });
+            const sent = await this._userModel.setVerifyEmail(id as string);
+            return sent.valid
+                ? res.status(200).json(sent)
+                : res.status(400).json(sent);
         } catch (error) {
             res.status(500).json({ valid: false, message: (error as Error).message });
         }
@@ -78,9 +79,9 @@ export class UserController {
     checkVerifyEmail = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const id = req.userID;
-            console.log(3);
+            const { key } = req.body;
             
-            const checkVerifyEmail = await this._userModel.hasVerifyEmail(id as string);
+            const checkVerifyEmail = await this._userModel.hasVerifyEmail(key, id as string);
             return checkVerifyEmail.valid
                 ? res.status(200).json({ valid: true, message: "Thành Công" })
                 : res.status(400).json({ valid: false, message: checkVerifyEmail.message });
@@ -88,36 +89,32 @@ export class UserController {
             res.status(500).json({ valid: false, message: (error as Error).message });
         }
     }
-    // updateAvatar = async (req: Request, res: Response, _next: NextFunction) => {
-    //     try {
-    //         const { userId } = req.body;
-    //         const avatarPath = req.file?.path; // path file tạm multer lưu
-    //         if (!userId || !avatarPath) {
-    //             return res.status(400).json({ valid: false, message: "Thiếu userId hoặc file ảnh" });
-    //         }
-    //         // Upload ảnh từ path tạm lên Cloudinary
-    //         const result = await cloudinary.uploader.upload(avatarPath, {
-    //             folder: "avatars" // muốn gom vào folder riêng trong Cloudinary
-    //         });
+    updateAvatar = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const { userId } = req.body;
+            const avatarPath = req.file?.path;
+            if (!userId || !avatarPath) {
+                return res.status(400).json({ valid: false, message: "Thiếu userId hoặc file ảnh" });
+            }
+            const result = await cloudinary.uploader.upload(avatarPath, {
+                folder: "avatars" 
+            });
+            fs.unlinkSync(avatarPath);
+            const userModel = new UserModels();
+            const updated = await userModel.updateAvatar(userId, result.secure_url);
 
-    //         // Xoá file tạm sau khi upload
-    //         fs.unlinkSync(avatarPath);
+            return updated.valid
+                ? res.status(200).json({ valid: true, message: "Thành Công" })
+                : res.status(400).json({ valid: false, message: updated.message });
 
-    //         // Update DB với link secure_url
-    //         const userModel = new UserModels();
-    //         const updated = await userModel.updateAvatar(userId, result.secure_url);
-
-    //         return updated.valid
-    //             ? res.status(200).json({ valid: true, user: updated.user })
-    //             : res.status(400).json({ valid: false, message: updated.message });
-
-    //     } catch (error) {
-    //         console.error(error);
-    //         return res.status(500).json({
-    //             valid: false,
-    //             message: (error as Error).message
-    //         });
-    //     }
-    // }
-
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                valid: false,
+                message: (error as Error).message
+            });
+        }
+    }
+    
 }
+export default new UserControllers();
