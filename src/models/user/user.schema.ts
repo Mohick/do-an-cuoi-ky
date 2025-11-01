@@ -16,7 +16,6 @@ const userSchema = new Schema({
         type: String,
         required: true,
         match: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/
-        // ít nhất 6 ký tự, gồm cả chữ và số
     },
     avatar: {
         type: String,

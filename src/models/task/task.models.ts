@@ -24,24 +24,24 @@ class TaskService {
             return { valid: false, message: error.message || 'Lỗi database khi tạo task.' };
         }
     }
+
     // chỉ user có trong list member mới lấy đc task
-    public async getFullTaskstFullStatus(groupId: string, status: string): Promise<{ valid: boolean; tasks: any; message: string }> {
+    public async getFullTaskAwaiting(groupId: string): Promise<{ valid: boolean; tasks: any; message: string }> {
         try {
             const tasks = await this.taskModel
                 .find({
-                    id_group: new Types.ObjectId(groupId),
-                    status // Sửa 'awaiting' thành 'waiting' cho đúng với schema
+                    id_group: new Types.ObjectId(groupId)
                 })
-                .populate('creator', 'name email avatar')
+                .populate('creator', 'username')
+                .populate('implementer', 'username')
                 .sort({ createdAt: 'desc' });
-
             return { valid: true, tasks, message: 'Lấy danh sách task đang chờ thành công.' };
         } catch (error: any) {
             console.error("LỖI KHI LẤY TASK WAITING:", error);
             return { valid: false, tasks: [], message: 'Lỗi server khi lấy task đang chờ.' };
         }
     }
-    // lấy ra các task của mình members {user, role}
+
     public async getFullMyTasks(groupId: string, userId: string): Promise<{ valid: boolean; tasks: any; message: string }> {
         try {
             const tasks = await this.taskModel
@@ -49,18 +49,16 @@ class TaskService {
                     id_group: new Types.ObjectId(groupId),
                     implementer: new Types.ObjectId(userId),
                 })
-                .populate('creator', 'name email avatar')
-                .populate('implementer', 'name email avatar')
-                .populate('confirmer', 'name email avatar')
+                .populate('creator', 'username email avatar')
+                .populate('implementer', 'username email avatar')
+                .populate('confirmer', 'username email avatar')
                 .sort({ updatedAt: 'desc' });
-
             return { valid: true, tasks, message: 'Lấy danh sách task bạn đang xử lý thành công.' };
         } catch (error: any) {
             console.error("LỖI KHI LẤY TASK HANDLING CỦA TÔI:", error);
             return { valid: false, tasks: [], message: 'Lỗi server khi lấy task đang xử lý.' };
         }
     }
-    // lấy ra các task đang chờ duyệt chỉ có admin và confirmer mới có thể duyệt
     public async handlePendingTask(
         userId: string,
         taskId: string,
@@ -88,57 +86,69 @@ class TaskService {
             return { valid: false, tasks: [], message: 'Lỗi server khi lấy task chờ duyệt.' };
         }
     }
-    // lấy ra các task của mình
-    public async handleDelOrClaimTask(
-        userId: string,
-        taskId: string,
-        payload: boolean,
-        userRole: 'leader' | 'confirmer'
-    ): Promise<{ valid: boolean; message: string }> {
+    public delTask = async (taskId: string): Promise<{ valid: boolean; message: string }> => {
         try {
-            if (!payload) {
-                if (userRole === 'leader') {
-                    this.taskModel.deleteOne(
-                        { _id: taskId }
-                    )
-                }
-            }
-            this.taskModel.updateOne(
-                { _id: taskId },
-                { $set: { implementer: userId } }
-            )
-            return { valid: true, message: 'Bạn không có quyền xem task đang chờ duyệt.' };
-
-        } catch (error: any) {
-            console.error("LỖI KHI LẤY TASK PENDING:", error);
-            return { valid: false, message: 'Lỗi server khi lấy task chờ duyệt.' };
-        }
-    }
-    public async handleToPending(taskId: string, userID: string): Promise<{ valid: boolean; message: string }> {
-        try {
-            this.taskModel.updateOne(
-                { _id: taskId,implementer:userID},
-                { $set: { status: 'pending' } }
-            )
-            return { valid: true, message: 'Tạo task thành cong' };
+            await this.taskModel.deleteOne({ _id: taskId });
+            return { valid: true, message: 'Xóa task thanh cong' };
         } catch (error: any) {
             console.error("LỖI KHI XỐA TASK:", error);
             return { valid: false, message: 'Lỗi server khi xóa task.' };
         }
     }
-    public async handleBackToPeding(taskId: string, userID: string): Promise<{ valid: boolean; message: string }> {
+    public claimtask = async (taskId: string, implementerId: string): Promise<{ valid: boolean; message: string }> => {
         try {
-            this.taskModel.updateOne(
-                { _id: taskId},
-                { $set: { status: 'pending' } }
-            )
-            return { valid: true, message: 'Tạo task thành cong' };
+            await this.taskModel.updateOne({ _id: taskId }, { implementer: implementerId, status: 'handling' });
+            return { valid: true, message: 'Cap nhat task thanh cong' };
         } catch (error: any) {
-            console.error("LỖI KHI XỐA TASK:", error);
-            return { valid: false, message: 'Lỗi server khi xóa task.' };
+            console.error("LỖI KHI CẽP NHẤT TASK:", error);
+            return { valid: false, message: 'Lỗi server khi cap nhat task.' };
+        }
+    }
+    public sendRequireVeryTask = async (taskId: string) => {
+        try {
+            await this.taskModel.updateOne({ _id: taskId }, { status: 'pending' });
+            return { valid: true, message: 'Cap nhat task thanh cong' };
+        } catch (error: any) {
+            console.error("LỖI KHI CẽP NHẤT TASK:", error);
+            return { valid: false, message: 'Lỗi server khi cap nhat task.' };
+        }
+    }
+    public completeTask = async (taskId: string, confirmerId: string): Promise<{ valid: boolean; message: string }> => {
+        try {
+            await this.taskModel.updateOne({ _id: taskId }, { status: 'completed', confirmer: confirmerId });
+            return { valid: true, message: 'Cap nhat task thanh cong' };
+        } catch (error: any) {
+            console.error("LỖI KHI CẽP NHẤT TASK:", error);
+            return { valid: false, message: 'Lỗi server khi cap nhat task.' };
+        }
+    }
+    public rollbackTask = async (taskId: string): Promise<{ valid: boolean; message: string }> => {
+        try {
+            await this.taskModel.updateOne({ _id: taskId }, { status: 'pending' });
+            return { valid: true, message: 'Cap nhat task thanh cong' };
+        } catch (error: any) {
+            console.error("LỖI KHI CẽP NHẤT TASK:", error);
+            return { valid: false, message: 'Lỗi server khi cap nhat task.' };
+        }
+    }
+    public rejectTask = async (taskId: string): Promise<{ valid: boolean; message: string }> => {
+        try {
+            await this.taskModel.updateOne({ _id: taskId }, { status: 'handling', confirmer: undefined });
+            return { valid: true, message: 'Cap nhat task thanh cong' };
+        } catch (error: any) {
+            console.error("LỖI KHI CẽP NHẤT TASK:", error);
+            return { valid: false, message: 'Lỗi server khi cap nhat task.' };
+        }
+    }
+    public cancelTask = async (taskId: string): Promise<{ valid: boolean; message: string }> => {
+        try {
+            await this.taskModel.updateOne({ _id: taskId }, { status: 'waiting' });
+            return { valid: true, message: 'Cap nhat task thanh cong' };
+        } catch (error: any) {
+            console.error("LỖI KHI CẽP NHẤT TASK:", error);
+            return { valid: false, message: 'Lỗi server khi cap nhat task.' };
         }
     }
 }
-// ai cũng có thể thấy được cać task miễn là thành viên trong groups
 
 export default new TaskService();

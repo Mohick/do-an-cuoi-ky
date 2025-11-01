@@ -16,7 +16,7 @@ class GroupService {
     public async findGroupsByUserId(userId: string): Promise<{ valid: boolean; groups: IGroup[] | any; message: string }> {
         try {
             const groups = await this.groupModel
-                .find({ 'members.user': userId   })
+                .find({ 'members.user': userId })
                 .sort({ createdAt: -1 });
             return { valid: true, groups, message: 'Lấy danh sách group thành công' };
         } catch (error: any) {
@@ -24,7 +24,27 @@ class GroupService {
             return { valid: false, groups: [], message: 'Lỗi server khi lấy danh sách group.' };
         }
     }
+    public async getRoleGroup(groupId: string, userId: string): Promise<{ valid: boolean; message: string; Role?: string }> {
+        try {
+            const group = await this.groupModel.findOne(
+                { _id: groupId, 'members.user': userId },
+                { 'members.$': 1 }
+            );
+            if (!group) {
+                return { valid: false, message: 'Không tìm thấy group hoặc user không phải là thành viên.' };
+            }
+            const role = group.members[0].role;
 
+            return {
+                valid: true,
+                Role: role,
+                message: 'Lấy vai trò thành công.'
+            };
+        } catch (error: any) {
+            console.error("LỖI KHI LẤY VAI TRÒ GROUP:", error);
+            return { valid: false, message: 'Lỗi server khi lấy vai trò.' };
+        }
+    }
     public async deleteById(groupId: string, userID: string): Promise<{ valid: boolean; message: string }> {
         try {
             const getUserRoleInGroup = await this.getUserRoleInGroup(groupId, userID);

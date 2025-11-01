@@ -10,13 +10,13 @@ interface IAuthRequest extends Request {
 
 class GroupController {
     private groupService = GroupService;
-
-    /**
-     * @desc    Tạo một group mới
-     * @route   POST /api/groups
-     */
+    getRoleMember = async (req: IAuthRequest, res: Response): Promise<void> => {
+        const { id_group } = req.params;
+        const userId = req.userID;
+        const result = await this.groupService.getRoleGroup(id_group, userId as string);
+        res.status(result.valid ? 200 : 400).json(result);
+    }
     public createGroup = async (req: IAuthRequest, res: Response): Promise<void> => {
-        // [THAY ĐỔI] Thêm một block `finally` để đảm bảo file tạm luôn được xóa
         try {
             const { name_project, deadline } = req.body;
             const creator = req.userID;
@@ -53,13 +53,7 @@ class GroupController {
             res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
         }
     };
-    
-    /**
-     * @desc    Lấy các group của người dùng và phân loại
-     * @route   GET /api/groups
-    */
    public getMyGroups = async (req: IAuthRequest, res: Response): Promise<void> => {
-       // [SỬA] Đổi tên hàm cho đúng convention
        try {
            const { status } = req.query
            const userId = req.userID;
@@ -67,7 +61,6 @@ class GroupController {
                res.status(400).json({ valid: false, message: "Không tìm thấy ID người dùng." });
                return;
             }
-            // Giả sử bạn có hàm findAndCategorizeGroups trong service
             const result = await this.groupService.findGroupsByUserId(userId);
             result.groups = result.groups.map((group:any) => {
                 return {
@@ -76,48 +69,13 @@ class GroupController {
                 };
             });
             
-            console.log(result.groups);
             res.status(result.valid ? 201 : 400).json(result);
         } catch (error: any) {
-            // [SỬA] Báo lỗi trực tiếp
             console.error("LỖI KHI LẤY GROUP:", error);
             res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
         }
     };
 
-    /**
-     * @desc    Cập nhật trạng thái group
-     * @route   PATCH /api/groups/:id/status
-     */
-    public updateGroupStatus = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const { id } = req.params;
-            const { status } = req.body;
-            const result = await this.groupService.updateStatus(id, status);
-
-            res.status(result.valid ? 201 : 400).json(result);
-        } catch (error: any) {
-            // [SỬA] Báo lỗi trực tiếp
-            console.error("LỖI KHI CẬP NHẬT STATUS:", error);
-            res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
-        }
-    };
-
-    /**
-     * @desc    Xóa một group
-     * @route   DELETE /api/groups/:id
-     */
-    public deleteGroup = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const { id } = req.params;
-            const result = await this.groupService.deleteById(id);
-            res.status(result.valid ? 201 : 400).json(result);
-        } catch (error: any) {
-            // [SỬA] Báo lỗi trực tiếp
-            console.error("LỖI KHI XÓA GROUP:", error);
-            res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
-        }
-    };
 }
 
 export default new GroupController();

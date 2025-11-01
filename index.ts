@@ -5,7 +5,7 @@ const app = express();
 import cors from 'cors';
 app.use(cors({
     origin: process.env.CLI_URL,
-    methods: ['GET', 'POST','PATCH'],
+    methods: ['GET', 'POST','PATCH','DELETE'],
     // allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));

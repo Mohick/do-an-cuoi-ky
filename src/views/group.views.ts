@@ -3,6 +3,7 @@ import GroupController from "../controllers/group.controllers.ts";
 import { UserMiddleware } from "../middleware/user.middleware.ts";
 import { GroupMiddleware } from "../middleware/group.middleware.ts";
 import { upload } from "../third-party/upload-images/multer.ts";
+import { router } from "./router.views.ts";
 
 const routerGroup = Router();
 
@@ -14,23 +15,15 @@ routerGroup.post(
     GroupMiddleware.validateCreate, 
     GroupController.createGroup
 );
-
 routerGroup.get(
     '/', 
     UserMiddleware.validateAutoLogin, 
     GroupController.getMyGroups
-);
-
-routerGroup.patch(
-    '/:id/status',
-    UserMiddleware.validateAutoLogin,
-    GroupController.updateGroupStatus
-);
-
-routerGroup.delete(
-    '/:id',
-    UserMiddleware.validateAutoLogin,
-    GroupController.deleteGroup
+)
+routerGroup.get(
+    '/:id_group', 
+    UserMiddleware.validateAutoLogin, 
+    GroupController.getRoleMember
 );
 
 
