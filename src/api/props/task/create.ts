@@ -11,37 +11,42 @@ export interface PropsCreateTask {
 }
 
 
-export type Comment = {
-  user: string;     // ID của người comment
-  message: string;          // Nội dung bình luận
-  createdAt: Date;          // Thời điểm tạo bình luận
-};
 
-export interface PropsTask {
-    status: 'waiting' | 'handling' | 'done' | string; // thêm union nếu có nhiều trạng thái cụ thể
+// Interface cho đối tượng 'creator' lồng trong
+export interface CreatorInfo {
+    _id: string;
+    username: string;
+}
+
+// Interface (placeholder) cho 'comments'
+// Bạn nên định nghĩa rõ cấu trúc của một comment nếu có
+export interface Comment {
+    [key: string]: any; // Hoặc định nghĩa rõ các trường
+}
+
+// Interface PropsViewsTask đã được cập nhật
+export interface PropsViewsTask {
+    status: 'waiting' | 'handling' | 'done' | string;
     _id: string;
     task_name: string;
-    creator: string;               // Hoặc string nếu liên kết với User
+    creator: CreatorInfo; // Thay đổi từ string sang object
     url?: string;
     description?: string;
-    deadline?: Date;
-    id_group: string;      // Liên kết đến Group
-    comments: Comment[];          // Danh sách bình luận
-    implementer?: string | "";
-    Confirmer?: string | "";
-    createdAt: Date;
-    updatedAt: Date;
+    deadline?: string; // Thay đổi từ Date sang string (để khớp JSON)
+    id_group: string;
+    comments: Comment[];
+    implementer?: string; // Thay đổi thành optional
+    Confirmer?: string;   // Thay đổi thành optional
+    createdAt: string; // Thay đổi từ Date sang string (để khớp JSON)
+    updatedAt: string; // Thay đổi từ Date sang string (để khớp JSON)
     __v?: number;
 }
 
 
-export interface PropsGetListTask {
-    valid: boolean
-    waitingTask: PropsTask[],
-    handlingTask: PropsTask[],
-    pendingTask: PropsTask[],
-    completedTask: PropsTask[]
-    message: string
+export interface Props_Role_Group {
+    valid?: boolean
+    Role: string
+    message?: string
 }
 
 export interface PropsUpdateClaimTask {

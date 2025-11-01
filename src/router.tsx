@@ -25,7 +25,6 @@ export default function Router() {
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="auth" element={<Auth />} />
-
                 {!data?.blockcall && (
                     <>
                         {data?.data.user.verify &&
@@ -34,7 +33,6 @@ export default function Router() {
                                     <Route index element={<HomeDashboard />} />
                                     <Route path="create-group" element={<CreateGroup />} />
                                 </Route>
-
                                 <Route path="group/" element={<LayoutGroup />}>
                                     <Route path=":id_group">
                                         <Route index element={<HomeTask />} />
@@ -60,7 +58,6 @@ export default function Router() {
                     </>
                 )}
 
-                {/* fallback 404 */}
                 <Route path="*" element={<NotFoundPage />} />
             </Routes>
         </Suspense>

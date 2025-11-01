@@ -1,19 +1,29 @@
 
 import { Link, Outlet, useOutletContext, useParams } from "react-router-dom"
-import type { PropsGetListTask, PropsTask } from "../../../../api/props/task/create"
+
 import HeaderDashboard from "../../../../components/header"
 import { motion } from "framer-motion"
 import { PlusCircleOutlined } from "@ant-design/icons"
 import ItemsGroup from "../../items"
+import { useEffect, useState } from "react"
+import { getListTaskAwaitingAPI } from "../../../../api/task"
+import type { PropsViewsTask } from "../../../../api/props/task/create"
 
 
 const AwaitingTask = () => {
-        const outletContext = useOutletContext() as PropsGetListTask;
-
+    const outletContext = useOutletContext() as string;
+    const { id_group } = useParams();
+    const [listTask, setListTask] = useState<PropsViewsTask[]>([])
+    useEffect(() => {
+        getListTaskAwaitingAPI(id_group as string).then((res: any) => {
+            setListTask(res.data.tasks)
+        })
+    },[])
     return (
         <div>
             <HeaderDashboard title="Nhiệm Vụ">
-                <Link to="create">
+
+                {outletContext === 'leader' && <Link to="create">
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -22,23 +32,23 @@ const AwaitingTask = () => {
                         <PlusCircleOutlined className="w-5 h-5" />
                         Tạo Nhiệm Vụ
                     </motion.button>
-                </Link>
+                </Link>}
             </HeaderDashboard>
-            <TaskSection listTask={outletContext?.waitingTask as PropsTask[]} title="Nhiệm Vụ  đang chờ" />
-            <Outlet context={outletContext?.waitingTask} />
+            <TaskSection listTask={listTask as PropsViewsTask[]} title="Nhiệm Vụ  đang chờ" />
+            <Outlet context={listTask} />
         </div>
     )
 }
 
 
-export const TaskSection = ({ title, listTask }: { title: string, listTask: PropsTask[] }) => {
+export const TaskSection = ({ title, listTask }: { title: string, listTask: PropsViewsTask[] }) => {
     return (
         <>
             <div className="mb-8">
                 <h3 className="text-xl font-semibold mb-4">{title}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {
-                        listTask?.map((item: PropsTask,index) => {
+                        listTask?.map((item: PropsViewsTask, index) => {
                             return (
                                 <ItemsGroup
                                     index={index}

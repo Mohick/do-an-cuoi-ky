@@ -4,8 +4,10 @@ import { HomeOutlined } from "@ant-design/icons"
 import { useAccount } from "../../hooks/account"
 import { useEffect, useState } from "react"
 import { AnimatePresence } from "framer-motion"
-import type { PropsGetListTask } from "../../api/props/task/create"
-import { getTaskAPI } from "../../api/task"
+import type { Props_Role_Group } from "../../api/props/task/create"
+
+import { getRoleGroupAPI } from "../../api/group"
+import { useRoleAccount } from "../../hooks/role"
 
 
 
@@ -45,22 +47,20 @@ const LayoutGroup = () => {
     const { data } = useAccount()
     const navigate = useNavigate();
     const { id_group } = useParams()
-    const [responsive, setReponsive] = useState<PropsGetListTask>({
+    const [responsive, setReponsive] = useState<Props_Role_Group>({
         valid: false,
-        waitingTask: [],
-        handlingTask: [],
-        pendingTask: [],
-        completedTask: [],
-        message: ""
+        Role: ''
     })
-
+    const { listRole, addOrUpdateRole } = useRoleAccount()
     useEffect(() => {
         if (data?.data.user.verify === false) {
             navigate('/verify-email')
         }
-        getTaskAPI(id_group as string).then((res: any) => {
+        if(listRole[id_group as string] !== undefined) return;
+        getRoleGroupAPI(id_group as string).then((res: any) => {
             if (res.data.valid === false) return navigate('/')
             setReponsive(res.data)
+            addOrUpdateRole(id_group as string, res.data.Role)
         }).catch((err) => {
             setReponsive(err.responsive.data)
         })
@@ -74,7 +74,7 @@ const LayoutGroup = () => {
             </div>
             <main className="col-span-10  p-6">
                 <AnimatePresence>
-                    <Outlet context={responsive} />
+                    <Outlet context={responsive.Role} />
                 </AnimatePresence>
             </main>
         </div>

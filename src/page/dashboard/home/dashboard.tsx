@@ -38,7 +38,7 @@ const HomeDashboard = () => {
             </HeaderDashboard>
 
             <>
-                <GroupSection title="Đang Làm" items={group.groups} />
+                <GroupSection title="Đang Làm" items={(group as any).groups} />
             </>
 
         </div>

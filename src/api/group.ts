@@ -13,5 +13,8 @@ const createGroupAPI = async (body: PropsCreateGroup) => {
 const getGroupAPI = async () => {
     return await getAPIJson(`/api/group?status=${status}`);
 }
+const getRoleGroupAPI = async (id: string) => {
+    return await getAPIJson(`/api/group/${id}`);
+}
 
-export { createGroupAPI, getGroupAPI }
+export { createGroupAPI, getGroupAPI, getRoleGroupAPI }

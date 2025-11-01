@@ -1,19 +1,29 @@
+
 import { motion } from "framer-motion";
 import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 import {
-  CheckCircleOutlined,
-  DeleteOutlined,
   CloseOutlined,
   ClockCircleOutlined,
   MessageOutlined,
   UserOutlined,
   LinkOutlined,
 } from "@ant-design/icons";
-import type { PropsTask } from "../../../api/props/task/create";
+import type { PropsViewsTask } from "../../../api/props/task/create";
 import { getItem } from "./hadle-views";
-import { updateCancelTaskAPI, updateClaimTaskAPI } from "../../../api/task";
+import {
+  cancelTaskAPI,
+  claimTaskAPI,
+  completeTaskAPI,
+  deleteTaskAPI,
+  rejectTaskAPI,
+  rollbackTaskAPI,
+  sendRequireVeryTaskAPI,
+  updateCancelTaskAPI,
+  updateClaimTaskAPI,
+} from "../../../api/task";
+import { useRoleAccount } from "../../../hooks/role";
+import { ComponentButton } from "../component/button-model-view";
 
-// 🎨 Màu đồng bộ cho badge status
 const statusStyles: Record<string, string> = {
   waiting: "bg-gray-100 text-gray-700 border border-gray-300",
   handling: "bg-blue-100 text-blue-700 border border-blue-300",
@@ -21,22 +31,12 @@ const statusStyles: Record<string, string> = {
   completed: "bg-green-100 text-green-700 border border-green-300",
 };
 
-// 📝 Text cho action chính và phụ tương ứng với status
-const statusActions: Record<
-  string,
-  { primary: string; secondary: string }
-> = {
-  waiting: { primary: "Nhận Task", secondary: "Xóa" },
-  handling: { primary: "Trả Task", secondary: "Làm lại" },
-  pending: { primary: "Xác nhận", secondary: "Làm lại" },
-  completed: { primary: "Hoàn thành", secondary: "Xem xét lại" },
-};
-
 const FullViewsTask = () => {
-  const listItems = useOutletContext<PropsTask[]>();
-  const { id_task } = useParams();
+  const listItems = useOutletContext<PropsViewsTask[]>();
+  const { id_task, id_group } = useParams();
+  const { listRole } = useRoleAccount();
   const navigate = useNavigate();
-  const item = getItem(listItems, id_task as string) as PropsTask;
+  const item = getItem(listItems, id_task as string) as PropsViewsTask;
 
   if (!item) {
     return (
@@ -46,6 +46,7 @@ const FullViewsTask = () => {
     );
   }
 
+  
   const statusKey = item.status as keyof typeof statusStyles;
   const hasImplementer = Boolean(item.implementer);
 
@@ -72,21 +73,23 @@ const FullViewsTask = () => {
           </button>
         </div>
 
-        {/* Nội dung */}
+        {/* Nội dung (Giữ nguyên) */}
         <div className="p-6 space-y-6 overflow-y-auto">
+          {/* ... (Tất cả JSX nội dung của bro ở đây) ... */}
+
           {/* Thông tin cơ bản */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
             <div className="flex items-center gap-2">
               <UserOutlined className="text-indigo-500" />
               <span>
-                <span className="font-semibold">Người tạo:</span> {item.creator}
+                <span className="font-semibold">Người tạo:</span> {item.creator.username}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <UserOutlined className="text-green-500" />
               <span>
                 <span className="font-semibold">Người nhận:</span>{" "}
-                {item.implementer || "Chưa có"}
+                {item.implementer !== undefined ? item.implementer?.username : "Chưa có"}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -150,33 +153,31 @@ const FullViewsTask = () => {
               />
             </div>
           )}
+
         </div>
-
-        {/* Footer nút hành động */}
         <div className="border-t p-4 bg-gray-50 flex flex-col sm:flex-row justify-end gap-3">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() =>
-              updateClaimTaskAPI({ id_task: item._id, status: item.status })
-            }
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium justify-center"
-          >
-            <CheckCircleOutlined />
-            {statusActions[statusKey]?.primary || "Thao tác"}
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() =>
-              updateCancelTaskAPI({ id_task: item._id, status: item.status })
-            }
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm font-medium justify-center"
-          >
-            <DeleteOutlined />
-            {statusActions[statusKey]?.secondary || "Hủy"}
-          </motion.button>
+          {statusKey == "waiting" && <ComponentButton valid={true} onClick={() => {
+            claimTaskAPI({ id_task: id_task || "" })
+          }} name={"Nhận"} />} 
+          {statusKey == "handling" && <>
+            <ComponentButton valid={true} onClick={() => { sendRequireVeryTaskAPI({ id_task: id_task || "" }) }} name={"Hoàn thành"} />
+            <ComponentButton valid={false} onClick={() => {cancelTaskAPI({ id_task: id_task || "", id_group: id_group || "" })}} name={"hủy"} />
+          </>}
+          {statusKey == "pending" && <>
+            <ComponentButton valid={true} onClick={() => {completeTaskAPI({ id_task: id_task || "", id_group: id_group || "" })}} name={"Xác nhận"} />
+            <ComponentButton valid={false} onClick={() => { rejectTaskAPI({ id_task: id_task || "", id_group: id_group || "" })}} name={"Từ chối"} />
+          </>}
+          {statusKey == "completed" && <>
+            <ComponentButton valid={false} onClick={() => {rollbackTaskAPI({ id_task: id_task || "", id_group: id_group || "" })}} name={"hủy"} />
+          </>}
+          {
+            listRole[id_group || ""] === "leader" &&
+            <ComponentButton
+              valid={false}
+              onClick={() => deleteTaskAPI(id_task || "", id_group || "")}
+              name="Xóa Task" // Đặt tên cho rõ
+            />
+          }
         </div>
       </motion.div>
     </div>

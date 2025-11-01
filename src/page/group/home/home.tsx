@@ -2,8 +2,8 @@
 import { motion } from "framer-motion";
 import { CheckCircleOutlined, ClockCircleOutlined, FileDoneOutlined, HourglassOutlined } from "@ant-design/icons";
 import HeaderDashboard from "../../../components/header";
-import { Link, useOutletContext, useParams } from "react-router-dom";
-import type { PropsGetListTask } from "../../../api/props/task/create";
+import { Link, useParams } from "react-router-dom";
+
 
 
 const listItems = [
@@ -48,11 +48,11 @@ const itemVariants: any = {
 
 const HomeTask = () => {
 
-    const {id_group} = useParams()
-    listItems.map((item) => {
-        item.link = item.link.replace(':id_group', id_group || '')
-        return item
-    })
+  const { id_group } = useParams()
+  listItems.map((item) => {
+    item.link = item.link.replace(':id_group', id_group || '')
+    return item
+  })
   return (
     <div className="min-h-screen">
       <HeaderDashboard title="Trang Chủ Nhóm Group" />
