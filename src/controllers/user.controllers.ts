@@ -1,16 +1,14 @@
 import type { Request, Response, NextFunction } from "express";
-import UserModels from "../models/user/user.models";
 import { cloudinary } from "../third-party/upload-images/multer";
 import fs from "fs";
 import jwt from "jsonwebtoken";
+import userModels from "../models/user/user.models";
 import GroupService from "../models/group/group.models";
- class UserControllers {
-    private _userModel: UserModels;
-    private _groupService =  GroupService;
+class UserControllers {
+    private _userModel = userModels;
+    private _groupService = GroupService;
     private _hashToken: (id: string) => string
     constructor() {
-        this._userModel = new UserModels();
-
         this._hashToken = (id: string) => {
             return jwt.sign(
                 { id }, // payload nên là object
@@ -34,6 +32,22 @@ import GroupService from "../models/group/group.models";
             });
         }
     }
+    public getUserByEmail = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const { email } = req.query;
+            const user = await this._userModel.findUserByEmail(`${email}`);
+            return user.valid
+                ? res.status(200).json({ valid: true, user: user.user })
+                : res.status(400).json({ valid: false, message: user.message });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                valid: false,
+                message: (error as Error).message
+            });
+        }
+    }
+
     login = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const { email, password } = req.body;
@@ -57,10 +71,10 @@ import GroupService from "../models/group/group.models";
     autoLogin = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const id = req.userID;
-            
+
             const user = await this._userModel.findUserById(id as string);
 
-            res.status(200).json({ valid: true, user: user.user });
+            res.status(200).json(user);
         } catch (error) {
             res.status(500).json({ valid: false, message: (error as Error).message });
         }
@@ -80,7 +94,7 @@ import GroupService from "../models/group/group.models";
         try {
             const id = req.userID;
             const { key } = req.body;
-            
+
             const checkVerifyEmail = await this._userModel.hasVerifyEmail(key, id as string);
             return checkVerifyEmail.valid
                 ? res.status(200).json({ valid: true, message: "Thành Công" })
@@ -97,11 +111,10 @@ import GroupService from "../models/group/group.models";
                 return res.status(400).json({ valid: false, message: "Thiếu userId hoặc file ảnh" });
             }
             const result = await cloudinary.uploader.upload(avatarPath, {
-                folder: "avatars" 
+                folder: "avatars"
             });
             fs.unlinkSync(avatarPath);
-            const userModel = new UserModels();
-            const updated = await userModel.updateAvatar(userId, result.secure_url);
+            const updated = await this._userModel.updateAvatar(userId, result.secure_url);
 
             return updated.valid
                 ? res.status(200).json({ valid: true, message: "Thành Công" })
@@ -115,6 +128,21 @@ import GroupService from "../models/group/group.models";
             });
         }
     }
-    
+    findUserByEmail = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const { email, id_group } = req.query;
+            const user = await this._userModel.findUserByEmail(`${email}`);
+            const findMemberInGroup = await this._groupService.getUserRoleInGroup(id_group as string, user.user._id);
+
+            if (findMemberInGroup) {
+                res.status(201).json({ valid: true, user: user.user, userInGroup: true })
+                return;
+            }
+            res.status(user.valid ? 201 : 400).json({ valid: true, user: user.user, userInGroup: false });
+            
+        } catch (error) {
+            res.status(500).json({ valid: false, message: (error as Error).message });
+        }
+    }
 }
 export default new UserControllers();

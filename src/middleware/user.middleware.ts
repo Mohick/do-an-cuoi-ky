@@ -51,6 +51,14 @@ class UserMiddleware {
             });
         }
     };
-
+    static validFindUserByEamail = (req: Request, res: Response, next: NextFunction) => {
+        const { email } = req.query;
+        const errors: Record<string, string> = {};
+        if (!this._regexEmail.test(email as string)) errors.email = "Nhập sai Email";
+        if (Object.keys(errors).length > 0) {
+            return res.status(400).json({ valid: false, errors });
+        }
+        next();
+    }
 }
 export { UserMiddleware }

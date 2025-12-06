@@ -40,6 +40,10 @@ const taskSchema = new Schema(
                     type: Date,
                     default: Date.now,
                 },
+                alert: {
+                    type: Boolean,
+                    default: true,
+                },
             },
         ],
         implementer: {

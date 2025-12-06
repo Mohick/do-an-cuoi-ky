@@ -50,7 +50,7 @@ class UserModels {
     }
     async setVerifyEmail(userId: string): Promise<{ valid: boolean; message?: string }> {
         try {
-            
+
             const key = btoa(userId);
             const url = process.env.CLI_URL + '/verify-email/' + key;
             const getKey = await storeRedis.get(key);
@@ -67,7 +67,7 @@ class UserModels {
             return { valid: false, message: error.message || "Redis error khi set token" };
         }
     }
-    
+
     async hasVerifyEmail(key: string, userID: string): Promise<{ valid: boolean; message?: string }> {
         try {
             const getKey = await storeRedis.get(key);
@@ -79,6 +79,15 @@ class UserModels {
             return { valid: false, message: error.message || "Redis error khi get token" };
         }
     }
+    async findUserByEmail(email: string): Promise<{ valid: boolean; user?: any; message?: string }> {
+        try {
+            const user = await SchemaUser.findOne({ email });
+            if (!user) return { valid: false, message: "Không tìm thấy user" };
+            return { valid: true, user: user, message: "Thành công" };
+        } catch (error: any) {
+            return { valid: false, message: error.message || "Database error" };
+        }
+    }
 }
 
-export default UserModels;
+export default new UserModels();
