@@ -7,6 +7,7 @@ import {
   MessageOutlined,
   UserOutlined,
   LinkOutlined,
+  SendOutlined,
 } from "@ant-design/icons";
 import type { PropsViewsTask } from "../../../api/props/task/create";
 import { getItem } from "./hadle-views";
@@ -15,14 +16,18 @@ import {
   claimTaskAPI,
   completeTaskAPI,
   deleteTaskAPI,
+  getCommentInTaskAPI,
   rejectTaskAPI,
   rollbackTaskAPI,
   sendRequireVeryTaskAPI,
-  updateCancelTaskAPI,
-  updateClaimTaskAPI,
+
 } from "../../../api/task";
 import { useRoleAccount } from "../../../hooks/role";
 import { ComponentButton } from "../component/button-model-view";
+import { useAccount } from "../../../hooks/account";
+import { useEffect, useState } from "react";
+import { socket } from "../../../socket/socket.io";
+
 
 const statusStyles: Record<string, string> = {
   waiting: "bg-gray-100 text-gray-700 border border-gray-300",
@@ -36,8 +41,10 @@ const FullViewsTask = () => {
   const { id_task, id_group } = useParams();
   const { listRole } = useRoleAccount();
   const navigate = useNavigate();
+  const { data } = useAccount()
   const item = getItem(listItems, id_task as string) as PropsViewsTask;
-
+  const [listComment, setListComment] = useState(item.comments);
+  const [comment, setComment] = useState<string>("");
   if (!item) {
     return (
       <div className="flex items-center justify-center min-h-[60vh] text-gray-600">
@@ -45,10 +52,15 @@ const FullViewsTask = () => {
       </div>
     );
   }
-
-  
+  useEffect(() => {
+    socket.on("send-comment", (newComment: any) => {
+      setListComment((prev: any) => [...prev, newComment]);
+    })
+    return () => {
+      socket.off("send-comment")
+    }
+  }, [])
   const statusKey = item.status as keyof typeof statusStyles;
-  const hasImplementer = Boolean(item.implementer);
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
@@ -141,38 +153,98 @@ const FullViewsTask = () => {
           </div>
 
           {/* Bình luận */}
-          {hasImplementer && (
-            <div>
-              <h3 className="font-semibold mb-2 text-gray-800 flex items-center gap-2">
-                <MessageOutlined /> Bình luận
-              </h3>
+          <div className="flex text-black relative flex-col max-h-96 h-full"> {/* Loai bo max-h-96 va overflow-y-auto o day */}
+            <h3 className="font-semibold mb-2 text-gray-800 flex items-center gap-2">
+              <MessageOutlined /> Bình luận
+            </h3>
+
+            <div className="flex flex-col max-h-96 min-h-[150px] overflow-y-auto p-3 border border-gray-200 rounded-xl bg-gray-50">
+              {/* Kiểm tra nếu không có bình luận */}
+              {listComment.length === 0 ? (
+                <p className="text-gray-500 text-center py-4">Chưa có bình luận nào.</p>
+              ) : (
+                listComment.map((comment) => (
+                  <div
+                    key={comment._id}
+                    className="mb-4 relative flex flex-col"
+                  >
+                    {/* 1. Tiêu đề (Username và Thời gian) */}
+                    <div className="flex items-center justify-between mb-1 text-xs">
+                      <div className="flex items-center gap-1.5 font-semibold text-gray-700">
+                        <UserOutlined className="text-indigo-500 text-sm" />
+                        <span className="truncate">{comment.user.username}</span>
+
+                        {/* Hiển thị 'New' (Nếu cần) */}
+                        {comment.alert && (
+                          <span className="ml-1 px-2 py-0.5 text-[10px] font-bold text-red-700 bg-red-100 rounded-full border border-red-300">
+                            NEW
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Thời gian (Đặt bên phải để dễ theo dõi) */}
+                      <span className="text-gray-400 text-xs whitespace-nowrap">
+                        {new Date(comment.createdAt).toLocaleString()}
+                      </span>
+                    </div>
+
+                    {/* 2. Nội dung Bình luận (Dạng bong bóng) */}
+                    <div className="relative bg-white p-3 rounded-xl shadow-sm border border-gray-100 max-w-[90%] break-words">
+                      <p className="text-sm text-gray-800 leading-relaxed">
+                        {comment.message}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="sticky bg-white -bottom-6 flex items-center border border-gray-300 rounded-lg w-full p-1.5 focus-within:ring-2 focus-within:ring-indigo-100 focus-within:border-indigo-500">
               <input
                 type="text"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
                 placeholder="Nhập bình luận..."
-                className="border border-gray-300 rounded-lg w-full p-2 text-sm focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none"
+                className="w-full p-0.5 text-sm placeholder:text-gray-400 outline-none border-none focus:ring-0"
               />
+              <button onClick={
+                () => {
+                  if (!comment) return
+
+                  getCommentInTaskAPI({
+                    id_task: item._id,
+                    comment: comment,
+                    userID: data?.data.user._id || "",
+                    id_group: id_group || ""
+                  })
+                  setComment("")
+                }
+              } className="p-1 text-indigo-600 cursor-pointer hover:text-indigo-800 transition duration-150">
+                <SendOutlined size={20} />
+              </button>
             </div>
-          )}
+          </div>
 
         </div>
         <div className="border-t p-4 bg-gray-50 flex flex-col sm:flex-row justify-end gap-3">
-          {statusKey == "waiting" && <ComponentButton valid={true} onClick={() => {
-            claimTaskAPI({ id_task: id_task || "" })
-          }} name={"Nhận"} />} 
+          {statusKey == "waiting" && <ComponentButton page={statusKey} valid={true} onClick={() => {
+            claimTaskAPI({ id_task: id_task || "", id_group: id_group || "" })
+          }} name={"Nhận"} />}
           {statusKey == "handling" && <>
-            <ComponentButton valid={true} onClick={() => { sendRequireVeryTaskAPI({ id_task: id_task || "" }) }} name={"Hoàn thành"} />
-            <ComponentButton valid={false} onClick={() => {cancelTaskAPI({ id_task: id_task || "", id_group: id_group || "" })}} name={"hủy"} />
+            <ComponentButton page={statusKey} valid={true} onClick={() => { sendRequireVeryTaskAPI({ id_task: id_task || "", id_group: id_group || "" }) }} name={"Hoàn thành"} />
+            <ComponentButton page={statusKey} valid={false} onClick={() => { cancelTaskAPI({ id_task: id_task || "", id_group: id_group || "" }) }} name={"hủy"} />
           </>}
           {statusKey == "pending" && <>
-            <ComponentButton valid={true} onClick={() => {completeTaskAPI({ id_task: id_task || "", id_group: id_group || "" })}} name={"Xác nhận"} />
-            <ComponentButton valid={false} onClick={() => { rejectTaskAPI({ id_task: id_task || "", id_group: id_group || "" })}} name={"Từ chối"} />
+            {(listRole[id_group || ""] === "leader" || listRole[id_group || ""] === "confirmer") &&
+              <ComponentButton page={statusKey} valid={true} onClick={() => { completeTaskAPI({ id_task: id_task || "", id_group: id_group || "" }) }} name={"Xác nhận"} />
+            }
+            <ComponentButton page={statusKey} valid={false} onClick={() => { rejectTaskAPI({ id_task: id_task || "", id_group: id_group || "" }) }} name={"Từ chối"} />
           </>}
           {statusKey == "completed" && <>
-            <ComponentButton valid={false} onClick={() => {rollbackTaskAPI({ id_task: id_task || "", id_group: id_group || "" })}} name={"hủy"} />
+            <ComponentButton page={statusKey} valid={false} onClick={() => { rollbackTaskAPI({ id_task: id_task || "", id_group: id_group || "" }) }} name={"hủy"} />
           </>}
           {
             listRole[id_group || ""] === "leader" &&
-            <ComponentButton
+            <ComponentButton page={statusKey}
               valid={false}
               onClick={() => deleteTaskAPI(id_task || "", id_group || "")}
               name="Xóa Task" // Đặt tên cho rõ

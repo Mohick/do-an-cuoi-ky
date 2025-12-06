@@ -8,14 +8,21 @@ import type { PropsCreateTask } from "../../../api/props/task/create"
 import { XOutlined } from "@ant-design/icons"
 
 const CreateTask = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<PropsCreateTask>()
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<PropsCreateTask>()
   const { id_group } = useParams()
   const navigate = useNavigate()
 
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <motion.form
-        onSubmit={handleSubmit((data) => handleCreateTask(data, id_group as string))}
+        onSubmit={handleSubmit(async (data) => {
+          try {
+            await handleCreateTask(data, id_group as string)
+            reset()
+          } catch (error) {
+
+          }
+        })}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         className="relative w-full max-w-lg space-y-5 rounded-lg bg-white/10 p-6 shadow-lg backdrop-blur-md border border-white/30"

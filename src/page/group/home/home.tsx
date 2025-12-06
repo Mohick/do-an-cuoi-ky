@@ -3,12 +3,16 @@ import { motion } from "framer-motion";
 import { CheckCircleOutlined, ClockCircleOutlined, FileDoneOutlined, HourglassOutlined } from "@ant-design/icons";
 import HeaderDashboard from "../../../components/header";
 import { Link, useParams } from "react-router-dom";
+import { socket } from "../../../socket/socket.io";
+import { useEffect, useState } from "react";
+import type { PropsGetGroup } from "../../../api/props/group/props-get";
+import { getGroupAPI } from "../../../api/group";
 
 
 
 const listItems = [
   {
-    link: "/group/:id_group/awaiting",
+    link: "/group/:id_group/waiting",
     title: "Nhiệm Vụ",
     icon: <FileDoneOutlined className="text-blue-500 text-3xl" />,
     color: "from-blue-100 to-blue-200",
@@ -53,6 +57,14 @@ const HomeTask = () => {
     item.link = item.link.replace(':id_group', id_group || '')
     return item
   })
+  useEffect(() => {
+    return () => {
+      listItems.map((item) => {
+        item.link = item.link.replace(id_group || '', ':id_group')
+        return item
+      })
+    }
+  }, [id_group])
   return (
     <div className="min-h-screen">
       <HeaderDashboard title="Trang Chủ Nhóm Group" />

@@ -1,6 +1,6 @@
 import { Outlet, useNavigate, useParams } from "react-router-dom"
 import SideBarLayout from "../dashboard/side-bar-layout"
-import { HomeOutlined } from "@ant-design/icons"
+import { BarChartOutlined, ControlOutlined, HomeOutlined, SettingFilled } from "@ant-design/icons"
 import { useAccount } from "../../hooks/account"
 import { useEffect, useState } from "react"
 import { AnimatePresence } from "framer-motion"
@@ -8,6 +8,7 @@ import type { Props_Role_Group } from "../../api/props/task/create"
 
 import { getRoleGroupAPI } from "../../api/group"
 import { useRoleAccount } from "../../hooks/role"
+import { socket } from "../../socket/socket.io"
 
 
 
@@ -26,13 +27,18 @@ const listSideBar: {
             icon: <HomeOutlined />
         }, {
             name: 'Tiến Độ Hoàn Thành',
-            link: '/group/:id_group/library',
-            icon: <HomeOutlined />
+            link: '/group/:id_group/process',
+            icon: <BarChartOutlined />
+        },
+        {
+            name: 'Cài đặt',
+            link: '/group/:id_group/setting',
+            icon: <SettingFilled />
         },
         {
             name: 'Dashboard',
-            link: '/group/:id_group/Dashboard',
-            icon: <HomeOutlined />
+            link: '/Dashboard',
+            icon: <ControlOutlined />
         }
     ]
 
@@ -40,6 +46,11 @@ const listSideBar: {
 
 
 
+const replaceLink = (find: string, newReplace?: string) => {
+    for (let i = 0; i < listSideBar.length; i++) {
+        listSideBar[i].link = listSideBar[i].link.replace(find, newReplace as string)
+    }
+}
 
 
 
@@ -52,21 +63,30 @@ const LayoutGroup = () => {
         Role: ''
     })
     const { listRole, addOrUpdateRole } = useRoleAccount()
+
     useEffect(() => {
         if (data?.data.user.verify === false) {
             navigate('/verify-email')
         }
-        if(listRole[id_group as string] !== undefined) return;
-        getRoleGroupAPI(id_group as string).then((res: any) => {
+
+        socket.emit('join-group', id_group)
+        replaceLink(':id_group', id_group as string)
+        if (listRole[id_group as string] !== undefined) return;
+        getRoleGroupAPI(id_group as string, socket.id as string).then((res: any) => {
             if (res.data.valid === false) return navigate('/')
             setReponsive(res.data)
             addOrUpdateRole(id_group as string, res.data.Role)
         }).catch((err) => {
             setReponsive(err.responsive.data)
         })
-        listSideBar[0].link = `/group/${id_group}`
+        return () => {
+            socket.emit('leave-group', id_group)
+            socket.disconnect()
+            replaceLink(id_group as string, ':id_group')
+        }
     }, [])
-    if (!responsive.valid) return <div>Loading...</div>
+
+    if (!listRole[id_group as string]) return <div>Loading...</div>
     return (
         <div className={`grid grid-cols-12 min-h-screen gap-2 bg-black text-white p-5 `}>
             <div className="grid col-span-2">

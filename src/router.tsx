@@ -17,6 +17,11 @@ import AwaitingTask from "./page/group/home/task/awaiting"
 import HandlingTask from "./page/group/home/work/handling"
 import PendingTask from "./page/group/home/pending/pending"
 import CompletedTask from "./page/group/home/completed/completed"
+import ProgressTask from "./page/group/progress/progress"
+import Setting from "./page/group/setting/setting"
+import ModelsAddMember from "./page/group/models/model-add-member"
+import JoinGroup from "./page/group/join-group/join-group"
+import { ModelUpdateInfoGroup } from "./page/group/models/model-update-group"
 
 export default function Router() {
     const { data } = useAccount()
@@ -30,13 +35,19 @@ export default function Router() {
                         {data?.data.user.verify &&
                             <>
                                 <Route path="dashboard" element={<LayoutDashboard />}>
-                                    <Route index element={<HomeDashboard />} />
-                                    <Route path="create-group" element={<CreateGroup />} />
+                                    <Route path="" element={<HomeDashboard />} >
+                                        <Route path="create-group" element={<CreateGroup />} />
+                                    </Route>
                                 </Route>
                                 <Route path="group/" element={<LayoutGroup />}>
                                     <Route path=":id_group">
                                         <Route index element={<HomeTask />} />
-                                        <Route path="awaiting" element={<AwaitingTask />} >
+                                        <Route path="process" element={<ProgressTask />} />
+                                        <Route path="setting" element={<Setting />} >
+                                            <Route path="add-member" element={<ModelsAddMember />} />
+                                            <Route path="edit-group" element={<ModelUpdateInfoGroup />} />
+                                        </Route>
+                                        <Route path="waiting" element={<AwaitingTask />} >
                                             <Route path="create" element={<CreateTask />} />
                                             <Route path="views/:id_task" element={<FullViewsTask />} />
                                         </Route>
@@ -51,6 +62,7 @@ export default function Router() {
                                         </Route>
                                     </Route>
                                 </Route>
+                                <Route path="/join-group" element={<JoinGroup />} />
                             </>
                         }
                         {!data?.data.user.verify && <Route path="verify-email" element={<VerifyEmailPage />} />}

@@ -18,7 +18,7 @@ const handleSubmitSignIn = (data: any, setError: any, navigate: any, queryClient
     loginAPI(data)
         .then((res) => {
             queryClient.refetchQueries({ queryKey: ['account'] });
-            navigate('/dashboard')
+            navigate('/verify-email')
         })
         .catch((err) => {
             setError("email", { message: err.response.data.message })

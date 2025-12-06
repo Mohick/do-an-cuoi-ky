@@ -10,7 +10,7 @@ const AlertSuccessSignUp = ({ closeAlert }: {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="fixed inset-0 flex justify-center items-center bg-white/50 z-50"
+            className="fixed min-h-screen flex justify-center items-center bg-white/50 z-50"
         >
             <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}

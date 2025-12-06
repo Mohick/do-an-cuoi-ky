@@ -35,7 +35,10 @@ export interface PropsViewsTask {
     deadline?: string; // Thay đổi từ Date sang string (để khớp JSON)
     id_group: string;
     comments: Comment[];
-    implementer?: string; // Thay đổi thành optional
+    implementer?: {
+        _id: string;
+        username: string;
+    }; // Thay đổi thành optional
     Confirmer?: string;   // Thay đổi thành optional
     createdAt: string; // Thay đổi từ Date sang string (để khớp JSON)
     updatedAt: string; // Thay đổi từ Date sang string (để khớp JSON)

@@ -4,7 +4,7 @@ import SideBarLayout from "./side-bar-layout";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAccount } from "../../hooks/account";
 import { useEffect } from "react";
-
+import { AlertComponent } from "../../components/alert/alert.componet";
 
 const listSideBar: {
     name: string,
@@ -40,6 +40,7 @@ export default function LayoutDashboard() {
             <main className="col-span-10  p-6">
                 <Outlet />
             </main>
+            <AlertComponent />
         </div>
     );
 }

@@ -23,7 +23,12 @@ const verifyEmailAPI = async () => {
     const post = await getAPIJson(`/api/user/verify-email`);
     return post
 }
-const checkVerifyAPI = async (body:any) => {
-    return await patchAPIJson(`/api/user/check-verify`,body);
+const checkVerifyAPI = async (body: any) => {
+    return await patchAPIJson(`/api/user/check-verify`, body);
 }
-export { registerAPI, loginAPI, autoLoginAPI, verifyEmailAPI,checkVerifyAPI }
+
+const findUserByEmailAPI = async (email: string, id_group: string) => {
+    const post = await getAPIJson(`/api/user/find-user-by-email?email=${email}&id_group=${id_group}`);
+    return post
+}
+export { registerAPI, loginAPI, autoLoginAPI, verifyEmailAPI, checkVerifyAPI, findUserByEmailAPI }

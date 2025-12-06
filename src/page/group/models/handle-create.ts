@@ -9,9 +9,9 @@ import { createTaskAPI } from "../../../api/task"
 
 
 
-const handleCreateTask = (data: PropsCreateTask, id_group: string) => {
+const handleCreateTask = async (data: PropsCreateTask, id_group: string) => {
     data.id_group = id_group
-    createTaskAPI(data)
+    await createTaskAPI(data)
 }
 
 export {

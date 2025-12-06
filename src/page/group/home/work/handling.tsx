@@ -1,17 +1,53 @@
 
-import { Outlet, useOutletContext, useParams } from "react-router-dom"
-import type { PropsGetListTask, PropsTask } from "../../../../api/props/task/create"
+import { Outlet, useParams } from "react-router-dom"
 import HeaderDashboard from "../../../../components/header"
+import { useEffect, useState } from "react"
+import { getMyTaskAPI } from "../../../../api/task"
+import { socket } from "../../../../socket/socket.io"
+import type { PropsViewsTask } from "../../../../api/props/task/create"
+import { useAlert } from "../../../../components/alert/alert.hook"
+import { AlertComponent } from "../../../../components/alert/alert.componet"
 import { TaskSection } from "../task/awaiting"
 
 
 const HandlingTask = () => {
-    const outletContext = useOutletContext() as PropsGetListTask;
+    const { id_group } = useParams();
+    const [listMyTask, setListTask] = useState<PropsViewsTask[]>([])
+    const { addAlert } = useAlert()
+    useEffect(() => {
+        getMyTaskAPI(id_group as string).then((res: any) => {
+            setListTask(res.data.tasks)
+        })
+        socket.on("add-handling-task", (task: PropsViewsTask) => {
+            setListTask((prev: PropsViewsTask[]) => [...prev, task])
+            addAlert({
+                title: "Thành công",
+                message: "Có nhiệm vụ mới đã được thêm",
+                status: "success"
+            })
+        })
+        socket.on("remove-handling-task", (idTask: string) => {
+            setListTask((prev: PropsViewsTask[]) => prev.filter((task: PropsViewsTask) => task._id !== idTask))
+            addAlert({
+                title: "Thành công",
+                message: "Có người đã nhận nhiệm vụ",
+                status: "error"
+            })
+        })
+        return () => {
+            socket.off("add-handling-task")
+            socket.off("remove-handling-task")
+        }
+    }, [])
+    console.log(listMyTask);
+    
     return (
         <div>
-            <HeaderDashboard title="Nhiệm Vụ"/>
-            <TaskSection listTask={outletContext?.handlingTask as PropsTask[]} title="Nhiệm Vụ  đang làm" />
-            <Outlet context={outletContext?.handlingTask} />
+            <HeaderDashboard title="Nhiệm Vụ" />
+            <TaskSection listTask={listMyTask as PropsViewsTask[]} title="Nhiệm Vụ  đang làm" />
+            <Outlet context={listMyTask} />
+            <AlertComponent />
+
         </div>
     )
 }
