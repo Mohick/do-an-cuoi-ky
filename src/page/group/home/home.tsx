@@ -3,10 +3,8 @@ import { motion } from "framer-motion";
 import { CheckCircleOutlined, ClockCircleOutlined, FileDoneOutlined, HourglassOutlined } from "@ant-design/icons";
 import HeaderDashboard from "../../../components/header";
 import { Link, useParams } from "react-router-dom";
-import { socket } from "../../../socket/socket.io";
-import { useEffect, useState } from "react";
-import type { PropsGetGroup } from "../../../api/props/group/props-get";
-import { getGroupAPI } from "../../../api/group";
+import { useEffect } from "react";
+;
 
 
 

@@ -1,5 +1,5 @@
 
-import { Link, Outlet, useOutletContext, useParams } from "react-router-dom"
+import { Link, Outlet, useParams } from "react-router-dom"
 
 import HeaderDashboard from "../../../../components/header"
 import { motion } from "framer-motion"
@@ -11,13 +11,13 @@ import type { PropsViewsTask } from "../../../../api/props/task/create"
 import { socket } from "../../../../socket/socket.io"
 import { AlertComponent } from "../../../../components/alert/alert.componet"
 import { useAlert } from "../../../../components/alert/alert.hook"
+import { useRoleAccount } from "../../../../hooks/role"
 
 const AwaitingTask = () => {
-    const outletContext = useOutletContext() as string;
     const { id_group } = useParams();
     const [listTask, setListTask] = useState<PropsViewsTask[]>([])
-    const { addAlert } = useAlert()
-
+    const { addAlert } = useAlert() as any
+       const {listRole}  =  useRoleAccount()
     useEffect(() => {
         const fetchTasks = async () => {
             if (!id_group) return; // Đảm bảo có id_group
@@ -54,7 +54,7 @@ const AwaitingTask = () => {
             addAlert({
                 title: "Thông báo",
                 message: "Nhiệm vụ đã được chuyển/xóa",
-                status: "info"
+                status: "success"
             });
         };
 
@@ -72,7 +72,7 @@ const AwaitingTask = () => {
         <div>
             <HeaderDashboard title="Nhiệm Vụ">
 
-                {outletContext === 'leader' && <Link to="create">
+                {listRole[`${id_group}`] === 'leader' && <Link to="create">
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}

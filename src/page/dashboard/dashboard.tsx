@@ -1,5 +1,5 @@
 "use client";
-import { HomeOutlined } from "@ant-design/icons";
+import { HomeOutlined, UserOutlined } from "@ant-design/icons";
 import SideBarLayout from "./side-bar-layout";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAccount } from "../../hooks/account";
@@ -18,8 +18,13 @@ const listSideBar: {
         },
         {
             name: 'Thư viện',
-            link: '/library',
+            link: '/dashboard/library',
             icon: <HomeOutlined />
+        },
+        {
+            name: "Tài kh0ản",
+            link: "/dashboard/account",
+            icon: <UserOutlined />
         }
     ]
 export default function LayoutDashboard() {

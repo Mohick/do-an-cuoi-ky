@@ -1,5 +1,5 @@
 
-import { Outlet, useOutletContext, useParams } from "react-router-dom"
+import { Outlet,  useParams } from "react-router-dom"
 import HeaderDashboard from "../../../../components/header"
 import { TaskSection } from "../task/awaiting"
 import { useEffect, useState } from "react"
@@ -13,7 +13,7 @@ import { AlertComponent } from "../../../../components/alert/alert.componet"
 const CompletedTask = () => {
     const { id_group } = useParams();
     const [listMyTask, setListTask] = useState<PropsViewsTask[]>()
-    const { addAlert } = useAlert()
+    const { addAlert } = useAlert() as any
 
     useEffect(() => {
         getCompleteTaskAPI(id_group as string).then((res: any) => {
@@ -36,6 +36,10 @@ const CompletedTask = () => {
                 status: "success"
             })
         })
+        return ()=>{
+            socket.off("remove-completed-task")
+            socket.off("add-completed-task")
+        }
     }, [])
     return (
         <div>

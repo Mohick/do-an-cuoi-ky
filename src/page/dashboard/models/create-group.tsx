@@ -30,7 +30,7 @@ const Form = () => {
   } = useForm<GroupFormData>();
 
   const [preview, setPreview] = useState<string | null>(null);
-  const { addAlert } = useAlert()
+  const { addAlert } = useAlert() as any
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     if (!file) {

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import type { PropsViewsTask } from "../../api/props/task/create";
 
 const option: { [key: string]: string } = {

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { PlusCircleTwoTone } from "@ant-design/icons";
 import { Link, Outlet } from "react-router-dom";
 import HeaderDashboard from "../../../components/header";
-import Items, { type ItemsProps } from "./items-page-dashboard";
+import Items from "./items-page-dashboard";
 import { getGroupAPI } from "../../../api/group";
 import type { Group, PropsGetGroup } from "../../../api/props/group/props-get";
 import { socket } from "../../../socket/socket.io";
@@ -20,9 +20,8 @@ const HomeDashboard = () => {
         setValid(data.valid);
       })
       .catch((err) => console.log(err));
-    socket.connect()
     socket.on('new-group', (group) => {
-      setGroup((prev) => ([group,...prev]))
+      setGroup((prev) => ([group, ...prev]))
     })
     return () => {
       socket.off('new-group')

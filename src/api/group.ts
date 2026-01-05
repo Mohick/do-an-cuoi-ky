@@ -20,7 +20,7 @@ const getRoleGroupAPI = async (id: string, socketID: string) => {
 const updateVerifyJoinGroupAPI = async (body: { id_verify: string }) => {
     return await patchAPIJson(`/api/group/update/verify-join-group`, body);
 }
-const updateGroupAddMemberAPI = async (body: { id_group: string, userID: string, emai: string, groupName: string, username: string }) => {
+const updateGroupAddMemberAPI = async (body: { id_group: string, userID: string, email: string, groupName: string, username: string }) => {
     return await patchAPIJson(`/api/group/update/add-member`, body);
 }
 const getMemberHasJoinedGroupAPI = async (id_group: string) => {

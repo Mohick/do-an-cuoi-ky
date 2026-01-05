@@ -17,7 +17,7 @@ const JoinGroup = () => {
           return;
         }
 
-        const res = await updateVerifyJoinGroupAPI({ id_verify });
+        const res = await updateVerifyJoinGroupAPI({ id_verify }) as any;
 
         if (res.data?.valid) {
           setStatus("success");

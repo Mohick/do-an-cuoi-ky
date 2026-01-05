@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { User, CheckCircle, Table, Crown, Mail, Loader } from "lucide-react";
 import { useParams } from "react-router-dom";
@@ -19,12 +19,12 @@ interface TopMember {
     role: MemberRoleInfo;
 }
 
-interface TopMemberResponse {
-    valid: boolean;
-    topMember: TopMember[];
-    message: string;
-}
-// ---------------------------------------------------
+// interface TopMemberResponse {
+//     valid: boolean;
+//     topMember: TopMember[];
+//     message: string;
+// }
+// // ---------------------------------------------------
 
 
 // Component Rank Icon (Giữ nguyên)
@@ -45,8 +45,8 @@ const RankIcon = ({ rank }: { rank: number }) => {
 
 // Component Role Ribbon (Giữ nguyên)
 const RoleRibbon = ({ roleInfo }: { roleInfo: MemberRoleInfo }) => {
-    const roleString = roleInfo.role || 'member'; 
-    
+    const roleString = roleInfo.role || 'member';
+
     const displayRoleMap: Record<string, string> = {
         'leader': 'LEADER',
         'confirmer': 'XÁC NHẬN',
@@ -98,7 +98,7 @@ const TaskStat = ({ icon: Icon, label, count, colorClass, bgColorClass }: {
 
 export default function MemberTable() {
     const { id_group } = useParams();
-    const [topMembers, setTopMembers] = useState<TopMember[]>([]); 
+    const [topMembers, setTopMembers] = useState<TopMember[]>([]);
     // ❌ ĐÃ XÓA state selectedMember
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -115,10 +115,10 @@ export default function MemberTable() {
             setIsLoading(true);
             setError(null);
             try {
-                const response = await getTopFiveMembersAPI({ id_group: id_group as string }); 
-                
-                if (response.data.valid && Array.isArray(response.data.topMember)) { 
-                    setTopMembers(response.data.topMember); 
+                const response = await getTopFiveMembersAPI({ id_group: id_group as string }) as any
+
+                if (response.data.valid && Array.isArray(response.data.topMember)) {
+                    setTopMembers(response.data.topMember);
                 } else {
                     setError(response.data.message || "Không thể tải dữ liệu thành viên.");
                     setTopMembers([]);
@@ -148,7 +148,7 @@ export default function MemberTable() {
         },
     };
 
-    const itemVariants = {
+    const itemVariants: {} = {
         hidden: { x: -10, opacity: 0 },
         visible: {
             x: 0,
@@ -176,9 +176,9 @@ export default function MemberTable() {
             </div>
         );
     }
-    
+
     if (topMembers.length === 0) {
-         return (
+        return (
             <div className="w-full max-w-xl mx-auto bg-gray-800 p-8 rounded-xl border border-gray-700">
                 <p className="text-gray-400 font-medium">Không có thành viên nào hoàn thành task trong nhóm này.</p>
             </div>
@@ -204,10 +204,12 @@ export default function MemberTable() {
                         className="shadow-lg shadow-gray-950/50 rounded-lg relative overflow-hidden"
                     >
                         {/* ROLE RIBBON */}
-                        <RoleRibbon roleInfo={m.role} /> 
+                        <RoleRibbon roleInfo={m.role} />
 
                         <motion.div
-                            variants={itemVariants}
+                            variants={
+                                itemVariants
+                            }
                             // ❌ XÓA onClick={handleClick(m)} để tránh hiển thị chi tiết
                             className={`flex items-center relative justify-between px-5 py-2 transition-all duration-300
                                 bg-gray-900 border border-gray-800 hover:shadow-xl hover:border-blue-600
@@ -265,7 +267,7 @@ export default function MemberTable() {
             </motion.div>
 
             {/* ❌ KHỐI SELECTED MEMBER DETAILS ĐÃ ĐƯỢC XÓA */}
-            
+
         </div>
     );
 }

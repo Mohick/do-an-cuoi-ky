@@ -84,7 +84,7 @@ const LayoutGroup = () => {
             socket.disconnect()
             replaceLink(id_group as string, ':id_group')
         }
-    }, [])
+    }, [id_group])
 
     if (!listRole[id_group as string]) return <div>Loading...</div>
     return (

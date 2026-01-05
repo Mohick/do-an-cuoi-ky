@@ -3,11 +3,11 @@ import { useAlert } from "./alert.hook";
 import { CheckCircle, XCircle, AlertTriangle, Info } from "lucide-react";
 
 const AlertComponent: FC = () => {
-  const { listAlert, removeAlert } = useAlert();
+  const { listAlert, removeAlert } = useAlert() as  any
 
   return (
     <div className="fixed top-4 right-4 z-50 flex flex-col gap-3">
-      {listAlert.map((alert) => (
+      {listAlert.map((alert:any) => (
         <AlertItem key={alert.id} alert={alert} onClose={() => removeAlert(alert.id)} />
       ))}
     </div>

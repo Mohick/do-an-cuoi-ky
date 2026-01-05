@@ -1,4 +1,4 @@
-import { QueryClient, useQueryClient } from "@tanstack/react-query"
+import { QueryClient } from "@tanstack/react-query"
 import { loginAPI } from "../../../api/user"
 
 
@@ -16,7 +16,7 @@ import { loginAPI } from "../../../api/user"
 
 const handleSubmitSignIn = (data: any, setError: any, navigate: any, queryClient: QueryClient) => {
     loginAPI(data)
-        .then((res) => {
+        .then(() => {
             queryClient.refetchQueries({ queryKey: ['account'] });
             navigate('/verify-email')
         })

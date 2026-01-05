@@ -17,7 +17,7 @@ const handleCreateGroup = async (items: any, navigate: NavigateFunction, addAler
     try {
         const { user, projectName, endDate, image } = items
         await createGroupAPI({ creator: user, name_project: projectName, deadline: endDate, image })
-            .then((res) => {
+            .then(() => {
                 addAlert({ type: 'success', message: 'Tạo nhóm mới thành công' });
                 navigate('/dashboard')
             })

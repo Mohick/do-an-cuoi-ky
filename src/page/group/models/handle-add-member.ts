@@ -11,7 +11,7 @@ import { updateGroupAddMemberAPI } from "../../../api/group"
 const handleAddMember = async (body: {
     id_group: string
     userID: string
-    emai: string
+    email: string
     groupName: string
     username: string
 }) => {

@@ -1,13 +1,14 @@
 // Improved CircleChart.tsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
   Legend,
-  ChartOptions,
-  TooltipItem,
+  type ChartOptions,
+  type TooltipItem,
+
 } from "chart.js";
 import { useParams } from "react-router-dom";
 import { getManagerTaskAPI } from "../../../../api/group";
@@ -55,7 +56,7 @@ export default function CircleChart() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response = await getManagerTaskAPI({ id_group });
+        const response = await getManagerTaskAPI({ id_group }) as { data: any };
         const apiData: ApiResponse = response.data;
 
         if (!apiData.valid || !apiData.lengthFullTask) {
@@ -80,36 +81,36 @@ export default function CircleChart() {
 
   const chartData = dataTasks
     ? {
-        labels: [
-          `Chưa làm (${dataTasks.sizeTaskAwaiting})`,
-          `Đang làm (${dataTasks.sizeTaskHandling})`,
-          `Chờ duyệt (${dataTasks.sizeTaskPending})`,
-          `Đã hoàn thành (${dataTasks.sizeTaskCompleted})`,
-        ],
-        datasets: [
-          {
-            data: [
-              dataTasks.sizeTaskAwaiting,
-              dataTasks.sizeTaskHandling,
-              dataTasks.sizeTaskPending,
-              dataTasks.sizeTaskCompleted,
-            ],
-            backgroundColor: [
-              TASK_COLORS.TODO,
-              TASK_COLORS.DOING,
-              TASK_COLORS.PENDING,
-              TASK_COLORS.COMPLETED,
-            ],
-            borderColor: [
-              TASK_BORDERS.TODO,
-              TASK_BORDERS.DOING,
-              TASK_BORDERS.PENDING,
-              TASK_BORDERS.COMPLETED,
-            ],
-            borderWidth: 2,
-          },
-        ],
-      }
+      labels: [
+        `Chưa làm (${dataTasks.sizeTaskAwaiting})`,
+        `Đang làm (${dataTasks.sizeTaskHandling})`,
+        `Chờ duyệt (${dataTasks.sizeTaskPending})`,
+        `Đã hoàn thành (${dataTasks.sizeTaskCompleted})`,
+      ],
+      datasets: [
+        {
+          data: [
+            dataTasks.sizeTaskAwaiting,
+            dataTasks.sizeTaskHandling,
+            dataTasks.sizeTaskPending,
+            dataTasks.sizeTaskCompleted,
+          ],
+          backgroundColor: [
+            TASK_COLORS.TODO,
+            TASK_COLORS.DOING,
+            TASK_COLORS.PENDING,
+            TASK_COLORS.COMPLETED,
+          ],
+          borderColor: [
+            TASK_BORDERS.TODO,
+            TASK_BORDERS.DOING,
+            TASK_BORDERS.PENDING,
+            TASK_BORDERS.COMPLETED,
+          ],
+          borderWidth: 2,
+        },
+      ],
+    }
     : null;
 
   const options: ChartOptions<"pie"> = {
@@ -130,7 +131,7 @@ export default function CircleChart() {
             const currentValue = tooltipItem.raw as number;
             const data = tooltipItem.chart.data.datasets[0].data;
             const total = data.reduce(
-              (acc: number, val: number | null) => acc + (val || 0),
+              (acc: any, val: any | any) => acc + (val || 0),
               0
             );
             const percent = total

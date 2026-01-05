@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import Logo from "../../components/logo";
 import SignUp from "./sign-up/sign-up";
 import { AnimatePresence } from "framer-motion";
@@ -8,11 +8,11 @@ import { useAccount } from "../../hooks/account";
 
 
 
-type SubmitPayload = {
-    title: string;
-    message: string;
-    validate: boolean;
-};
+// type SubmitPayload = {
+//     title: string;
+//     message: string;
+//     validate: boolean;
+// };
 
 
 export default function Auth() {

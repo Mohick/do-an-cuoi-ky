@@ -1,5 +1,5 @@
-import { Suspense, useEffect } from "react"
-import { Route, Routes, Navigate } from "react-router-dom"
+import { Suspense } from "react"
+import { Route, Routes } from "react-router-dom"
 import { HomePage } from "./page/home/home"
 import Auth from "./page/auth/auth"
 import LayoutDashboard from "./page/dashboard/dashboard"
@@ -22,9 +22,12 @@ import Setting from "./page/group/setting/setting"
 import ModelsAddMember from "./page/group/models/model-add-member"
 import JoinGroup from "./page/group/join-group/join-group"
 import { ModelUpdateInfoGroup } from "./page/group/models/model-update-group"
+import { socket } from "./socket/socket.io"
+import AccountUser from "./page/dashboard/account/account"
 
 export default function Router() {
     const { data } = useAccount()
+    socket.connect()
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <Routes>
@@ -37,6 +40,9 @@ export default function Router() {
                                 <Route path="dashboard" element={<LayoutDashboard />}>
                                     <Route path="" element={<HomeDashboard />} >
                                         <Route path="create-group" element={<CreateGroup />} />
+                                    </Route>
+                                    <Route path="account" element={<AccountUser />} >
+
                                     </Route>
                                 </Route>
                                 <Route path="group/" element={<LayoutGroup />}>
@@ -68,10 +74,11 @@ export default function Router() {
                         {!data?.data.user.verify && <Route path="verify-email" element={<VerifyEmailPage />} />}
                         {!data?.data.user.verify && <Route path="verify-email/:id" element={<CheckVerify />} />}
                     </>
-                )}
+                )
+                }
 
                 <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-        </Suspense>
+            </Routes >
+        </Suspense >
     )
 }

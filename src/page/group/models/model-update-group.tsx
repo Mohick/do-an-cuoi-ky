@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 
@@ -14,8 +14,7 @@ interface UpdateGroupInputs {
 
 const ModelUpdateInfoGroup  = () => {
     const {
-        register,
-        handleSubmit,
+        register,   
         watch,
         formState: { errors },
     } = useForm<UpdateGroupInputs>();

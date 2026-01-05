@@ -2,10 +2,10 @@
 
 import { io } from "socket.io-client";
 
-export const socket = io(import.meta.env.VITE_BE_URL,
+export const socket =  io(import.meta.env.VITE_BE_URL,
     {
         withCredentials: true,
-        autoConnect: false
+        autoConnect: true
     }
 )
 

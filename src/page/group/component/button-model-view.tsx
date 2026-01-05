@@ -1,6 +1,6 @@
 import { CheckCircleOutlined, CloseOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import {  useNavigate, useParams } from "react-router-dom";
 
 interface ComponentButtonProps {
     valid: boolean;

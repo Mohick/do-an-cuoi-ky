@@ -28,7 +28,7 @@ const SideBarLayout = ({
     return <div className="space-y-2">
         <TitleDashboard text={name} />
         {
-            listSideBar.map((item, index) =>
+            listSideBar.map((item) =>
                 <Link to={item.link} key={item.link}
                     className={`flex items-center gap-3 p-2 text-gray-500 rounded-md hover:bg-[#252528] ${location.pathname === item.link ? 'bg-[#252528] text-white' : ''}`}>
                     <div className="">

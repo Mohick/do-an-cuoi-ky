@@ -36,7 +36,7 @@ const statusStyles: Record<string, string> = {
   completed: "bg-green-100 text-green-700 border border-green-300",
 };
 
-const FullViewsTask = () => {
+const  FullViewsTask = () => {
   const listItems = useOutletContext<PropsViewsTask[]>();
   const { id_task, id_group } = useParams();
   const { listRole } = useRoleAccount();
@@ -50,7 +50,7 @@ const FullViewsTask = () => {
       <div className="flex items-center justify-center min-h-[60vh] text-gray-600">
         ❌ Không tìm thấy công việc.
       </div>
-    );
+    ); 
   }
   useEffect(() => {
     socket.on("send-comment", (newComment: any) => {

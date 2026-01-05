@@ -154,7 +154,7 @@ const ModelsAddMember = () => {
                           const isSuccess = await handleAddMember({
                             id_group: id_group || "",
                             userID: result.user?._id || "",
-                            email: result.user?.email || "",
+                            email: `${result.user?.email}` || "",
                             groupName: "đẹp trai" ,
                             username: result.user?.username || "",
                           });

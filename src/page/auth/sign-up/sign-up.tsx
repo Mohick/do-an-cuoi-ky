@@ -1,12 +1,12 @@
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import InputAuth from "../component/input";
 import ButtonAuth from "../component/button";
 import { handleSubmitRegister } from "./handle-submit";
 import type { PropsSubTitleHomePage } from "../../home/components/title-homepage/props-title-homepage";
-import { useNavigate } from "react-router-dom";
-import { useCallback, useState } from "react";
+
+import { useState } from "react";
 
 import { AnimatePresence } from "framer-motion";
 import AlertFailseSignUp from "./models/alert-failse";
@@ -48,12 +48,12 @@ export default function SignUp() {
   const [toggle, setToggle] = useState(false);
   const [alertMessage, setAlertMessage] = useState(true);
   console.log(alertMessage);
-  
+
   return (
     <>
       <form
         className="flex flex-col space-y-2"
-        onSubmit={handleSubmit(async (data: any) => handleSubmitRegister(data, setError, setToggle,setAlertMessage))}
+        onSubmit={handleSubmit(async (data: any) => handleSubmitRegister(data, setError, setToggle, setAlertMessage))}
       >
         {/* username */}
         <InputAuth

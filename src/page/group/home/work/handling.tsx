@@ -13,7 +13,7 @@ import { TaskSection } from "../task/awaiting"
 const HandlingTask = () => {
     const { id_group } = useParams();
     const [listMyTask, setListTask] = useState<PropsViewsTask[]>([])
-    const { addAlert } = useAlert()
+    const { addAlert } = useAlert() as any
     useEffect(() => {
         getMyTaskAPI(id_group as string).then((res: any) => {
             setListTask(res.data.tasks)
@@ -22,7 +22,7 @@ const HandlingTask = () => {
             setListTask((prev: PropsViewsTask[]) => [...prev, task])
             addAlert({
                 title: "Thành công",
-                message: "Có nhiệm vụ mới đã được thêm",
+                message: "Nhiệm Vụ Đã Được Hoàn Thành",
                 status: "success"
             })
         })
@@ -31,7 +31,7 @@ const HandlingTask = () => {
             addAlert({
                 title: "Thành công",
                 message: "Có người đã nhận nhiệm vụ",
-                status: "error"
+                status: "success"
             })
         })
         return () => {

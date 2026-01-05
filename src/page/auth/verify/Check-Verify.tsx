@@ -1,16 +1,16 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircleOutlined, CloseCircleOutlined, LoadingOutlined } from "@ant-design/icons";
 import { checkVerifyAPI } from "../../../api/user";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const CheckVerify = () => {
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
-  const {id} = useParams()
+  const { id } = useParams()
   useEffect(() => {
     checkVerifyAPI({ key: id }).then((res: any) => {
       setIsVerified(res.data.valid)
-    }).catch((err) => {
+    }).catch(() => {
       setIsVerified(false)
     })
   }, []);

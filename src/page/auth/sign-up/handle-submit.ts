@@ -8,7 +8,7 @@ import type { PropsRegister } from "../../../api/props/user/props-register";
 const handleSubmitRegister = async (data: PropsRegister, setError: any, setToggle:
     (toggle: boolean) => void, setAlertMessage: (toggle: boolean) => void): Promise<any> => {
     registerAPI(data)
-        .then((res) => {
+        .then(() => {
             setToggle(true)
             setAlertMessage(true)
         })
