@@ -24,7 +24,7 @@ client.on('error', err => console.log('Redis Client Error', err));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 connectDB();
-connectRedis();
+// connectRedis();
 router(app);
 initSocket(server)
 

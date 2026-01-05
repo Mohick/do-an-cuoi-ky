@@ -90,6 +90,7 @@ class TaskController {
                 return;
             }
             const result = await this.taskService.delTask(id);
+            getIO().to(`${id_group}`).emit("had-del-task",`${id}`)
             res.status(result.valid ? 200 : 400).json(result);
         } catch (error: any) {
             console.error("LỖI CONTROLLER KHI LẤY MY TASK:", error);
