@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  /* IE/Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari */
+}
+
+* {
+  scrollbar-width: thin ;
+  scrollbar-color: transparent transparent;
+}
+
+#layout-app {
+  max-width: 90%;
+  margin: 0 auto;
+  width: 100%;
+
+}
+
+.bg-app {
+  background-color: #131b29;
+}
