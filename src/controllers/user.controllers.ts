@@ -52,12 +52,20 @@ class UserControllers {
         try {
             const { email, password } = req.body;
             const logged = await this._userModel.login(email, password);
+<<<<<<< HEAD
             
             return logged.valid
                 ? res.status(200).cookie("token", this._hashToken(logged.user._id), {
                     httpOnly: process.env.ENVIRONMENT === "dev" ? false : true,
                     secure: process.env.ENVIRONMENT === "dev" ? false : true,
                     sameSite: process.env.ENVIRONMENT === "dev" ? "lax" : "none",
+=======
+            return logged.valid
+                ? res.status(200).cookie("token", this._hashToken(logged.user._id), {
+                    httpOnly: process.env.EVIRONMENT === "dev" ? false : true,
+                    secure: process.env.EVIRONMENT === "dev" ? false : true,
+                    sameSite: process.env.EVIRONMENT === "dev" ? "lax" : "none",
+>>>>>>> 5f7a284a274c2f7e9d606ac6e5c621b02a12492c
                     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
                 }).json({ valid: true, message: "Thành Công" })
                 : res.status(400).json({ valid: false, message: logged.message });
@@ -72,7 +80,11 @@ class UserControllers {
     autoLogin = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const id = req.userID;
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 5f7a284a274c2f7e9d606ac6e5c621b02a12492c
             const user = await this._userModel.findUserById(id as string);
 
             res.status(200).json(user);

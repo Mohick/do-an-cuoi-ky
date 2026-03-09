@@ -53,8 +53,11 @@ class UserModels {
 
             const key = btoa(userId);
             const url = process.env.CLI_URL + '/verify-email/' + key;
+<<<<<<< HEAD
           
             
+=======
+>>>>>>> 5f7a284a274c2f7e9d606ac6e5c621b02a12492c
             const getKey = await storeRedis.get(key);
             if (!getKey) {
                 await storeRedis.set(key, "Chờ duyệt email", { EX: 300 });
@@ -64,7 +67,11 @@ class UserModels {
                 }
                 return { valid: true, message: "Thành công" };
             }
+<<<<<<< HEAD
             return { valid: false, message: "Cookie đã đc gửi" };
+=======
+            return { valid: false, message: "" };
+>>>>>>> 5f7a284a274c2f7e9d606ac6e5c621b02a12492c
         } catch (error: any) {
             return { valid: false, message: error.message || "Redis error khi set token" };
         }
