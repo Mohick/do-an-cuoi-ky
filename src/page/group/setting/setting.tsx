@@ -47,21 +47,25 @@ const Setting = () => {
 
             {/* Nút xóa group ở cuối */}
             {userRole === "leader" ? <div className="flex justify-end">
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-1 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-bold transition"
-                >
-                    <Trash2 className="w-4 h-4" /> Xóa group
-                </motion.button>
-            </div> : <div className="flex justify-end"> 
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-1 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-bold transition"
-                >
-                    <Trash2 className="w-4 h-4" /> Rời nhóm
-                </motion.button>
+                <Link to={'delete'}>
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center gap-1 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-bold transition"
+                    >
+                        <Trash2 className="w-4 h-4" /> Xóa group
+                    </motion.button>
+                </Link>
+            </div> : <div className="flex justify-end">
+                <Link to={'leave'}>
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center gap-1 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-bold transition"
+                    >
+                        <Trash2 className="w-4 h-4" /> Rời nhóm
+                    </motion.button>
+                </Link>
             </div>}
         </div>
     );

@@ -24,6 +24,8 @@ import JoinGroup from "./page/group/join-group/join-group"
 import { ModelUpdateInfoGroup } from "./page/group/models/model-update-group"
 import { socket } from "./socket/socket.io"
 import AccountUser from "./page/dashboard/account/account"
+import ModelLeaveGroup from "./page/group/setting/leave-group.model"
+import ModelDeleteGroup from "./page/group/setting/delete-group.model"
 
 export default function Router() {
     const { data } = useAccount()
@@ -52,6 +54,8 @@ export default function Router() {
                                         <Route path="setting" element={<Setting />} >
                                             <Route path="add-member" element={<ModelsAddMember />} />
                                             <Route path="edit-group" element={<ModelUpdateInfoGroup />} />
+                                            <Route path="leave" element={<ModelLeaveGroup />} />
+                                            <Route path="delete" element={<ModelDeleteGroup />} />
                                         </Route>
                                         <Route path="waiting" element={<AwaitingTask />} >
                                             <Route path="create" element={<CreateTask />} />
