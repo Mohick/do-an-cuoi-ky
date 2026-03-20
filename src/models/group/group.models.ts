@@ -9,7 +9,7 @@ class GroupService {
     public async create(groupData: ICreateGroupDTO): Promise<{ valid: boolean; message: string, group?: any }> {
         try {
             const group = (await this.groupModel.create(groupData))
-            const newGroup = await   group.populate('creator', 'username email avatar');
+            const newGroup = await group.populate('creator', 'username email avatar');
             return { valid: true, message: 'Tạo group thành công', group: newGroup };
         } catch (error: any) {
             console.error("LỖI KHI TẠO GROUP:", error);
@@ -38,7 +38,7 @@ class GroupService {
             }
             const role = group.members[0].role;
             console.log(group);
-            
+
             return {
                 valid: true,
                 Role: role,
@@ -312,6 +312,37 @@ class GroupService {
         } catch (error: any) {
             console.error("LỖI KHI KICK MEMBER:", error);
             return { valid: false, message: 'Lỗi server khi kick member.' };
+        }
+    }
+    public leaveGroup = async (groupId: string, userID: string) => {
+        try {
+            const group = await this.groupModel.findById(groupId);
+            if (!group) {
+                return { valid: false, message: 'Không tìm thấy group.' };
+            }
+            const getDel = group.members.filter((m: any) => !m.user.equals(userID));
+            group.members = getDel as any;
+            await group.save();
+            return { valid: true, message: 'Rời nhóm thành công' };
+        } catch (error: any) {
+            console.error("LỖI KHI RỜI NHÓM:", error);
+            return { valid: false, message: 'Lỗi server khi rời nhóm.' };
+        }
+    }
+    public deleteGroup = async (groupId: string, userID: string) => {
+        try {
+            const getUserRoleInGroup = await this.getUserRoleInGroup(groupId, userID);
+            if (getUserRoleInGroup !== 'leader') {
+                return { valid: false, message: 'Chi leader moi co quyen xoa group' }
+            }
+            const deletedGroup = await this.groupModel.findByIdAndDelete(groupId);
+            if (!deletedGroup) {
+                return { valid: false, message: 'Không tìm thấy group để xóa.' };
+            }
+            return { valid: true, message: 'Xóa group thành công.' };
+        } catch (error: any) {
+            console.error("LỖI KHI XÓA GROUP:", error);
+            return { valid: false, message: 'Lỗi server khi xóa group.' };
         }
     }
 

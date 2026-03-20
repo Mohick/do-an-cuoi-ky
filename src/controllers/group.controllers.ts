@@ -266,7 +266,28 @@ class GroupController {
             res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
         }
     }
-
+    public leaveGroup = async (req: IAuthRequest, res: Response): Promise<void> => {
+        try {
+            const userID = req.userID;
+            const { id_group } = req.body;
+            const result = await this.groupService.leaveGroup(id_group, `${userID}`);
+            res.status(result.valid ? 201 : 400).json(result);
+        } catch (error: any) {
+            console.error("LỖI KHI RỜI NHÓM:", error);
+            res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
+        }
+    }
+    public deleteGroup = async (req: IAuthRequest, res: Response): Promise<void> => {
+        try {
+            const userID = req.userID;
+            const { id_group } = req.params;
+            const result = await this.groupService.deleteGroup(id_group, `${userID}`);
+            res.status(result.valid ? 201 : 400).json(result);
+        } catch (error: any) {
+            console.error("LỖI KHI XOA NHÓM:", error);
+            res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
+        }
+    }
 }
 
 export default new GroupController();

@@ -71,7 +71,19 @@ routerGroup.patch(
     UserMiddleware.validateAutoLogin,
     GroupController.kickMember
 )
-
+routerGroup.patch(
+    '/update/leave-group',
+    UserMiddleware.validateAutoLogin,
+    GroupController.leaveGroup
+)
+routerGroup.delete(
+    '/delete/:id_group',
+    UserMiddleware.validateAutoLogin,
+    GroupController.deleteGroup
+)
+routerGroup.get('/', (req: any, res: any) => {
+    res.send('hello group')
+})
 
 
 export default routerGroup; // [SỬA] Dùng export default cho router
