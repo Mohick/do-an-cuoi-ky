@@ -324,30 +324,16 @@ class TaskService {
                         comments: {
                             user: objectIdUser,
                             message: comment,
-                            // Giả định logic alert: thông báo nếu người comment KHÔNG phải là người thực hiện (implementer)
-                            // Vì chúng ta dùng updateOne, ta cần đọc Task trước hoặc đơn giản hóa logic này.
-                            // Tuy nhiên, để giữ logic của bạn, cách tối ưu nhất là dùng findByIdAndUpdate và kiểm tra.
                         }
                     }
                 }
             );
-
-            // Kiểm tra xem Task có được tìm thấy và cập nhật không
-            if (updateResult.matchedCount === 0) {
-                return { valid: false, message: "Không tìm thấy nhiệm vụ." };
-            }
-
-            // --- GIẢI PHÁP 2 (Nếu bạn vẫn cần logic alert phức tạp) ---
-            // Nếu bạn cần logic kiểm tra task.implementer (như đoạn code cũ), 
-            // thì việc dùng findById và save vẫn là cách dễ nhất:
 
             const task = await this.taskModel.findById(taskID);
 
             if (!task) {
                 return { valid: false, message: "Không tìm thấy nhiệm vụ." };
             }
-
-            // Đảm bảo task.implementer tồn tại trước khi gọi .toString()
             const shouldAlert = task.implementer && (objectIdUser.toString() !== task.implementer.toString());
 
             task.comments.push({
@@ -356,7 +342,7 @@ class TaskService {
                 alert: shouldAlert
             });
 
-            await (await task.save()).populate('comments.user', 'username avatar');
+            await task.populate('comments.user', 'username avatar');
             return { valid: true, message: "Thành công", newComment: task.comments[task.comments.length - 1] };
 
         } catch (error: any) {

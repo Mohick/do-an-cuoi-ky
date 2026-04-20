@@ -25,6 +25,11 @@ const taskSchema = new Schema(
             ref: "Group", // Tham chiếu đến schema 'Group'
             required: true,
         },
+        priority: {
+            type: String,
+            enum: ["thấp", "trung bình", "cao"],
+            default: "thấp",
+        },
         comments: [
             {
                 user: {

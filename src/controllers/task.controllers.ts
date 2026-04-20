@@ -13,12 +13,15 @@ class TaskController {
         try {
             const creatorId = req.userID;
             const { id_group } = req.body;
+            req.body.priority = req.body.priority ? req.body.priority.toLowerCase() : "thấp";
             if (!creatorId || !id_group) {
                 res.status(401).json({ valid: false, message: "Yêu cầu xác thực và cung cấp vai trò." });
                 return;
             }
+            console.log(id_group);
+            
             const result = await this.taskService.create(req.body, creatorId, await this.groupService.getUserRoleInGroup(id_group, creatorId));
-
+            
             getIO().to(id_group).emit('add-waiting-task', result.task);
             res.status(201).json(result);
         } catch (error: any) {
@@ -90,7 +93,7 @@ class TaskController {
                 return;
             }
             const result = await this.taskService.delTask(id);
-            getIO().to(`${id_group}`).emit("had-del-task",`${id}`)
+            getIO().to(`${id_group}`).emit("has-del-task",`${id}`)
             res.status(result.valid ? 200 : 400).json(result);
         } catch (error: any) {
             console.error("LỖI CONTROLLER KHI LẤY MY TASK:", error);
@@ -226,7 +229,7 @@ class TaskController {
 
             const result = await this.taskService.commentInTask(id_task, userID, comment);
             getIO().to(id_group).emit('send-comment', result.newComment);
-            console.log(result.newComment);
+           
             
             res.status(result.valid ? 201 : 400).json(result);
         } catch (error: any) {

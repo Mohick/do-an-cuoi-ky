@@ -37,8 +37,6 @@ class GroupService {
                 return { valid: false, message: 'Không tìm thấy group hoặc user không phải là thành viên.' };
             }
             const role = group.members[0].role;
-            console.log(group);
-
             return {
                 valid: true,
                 Role: role,
