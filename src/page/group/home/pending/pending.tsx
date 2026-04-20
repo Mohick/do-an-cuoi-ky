@@ -25,9 +25,28 @@ const PendingTask = () => {
                 title: "Thành công",
                 message: "Có nhiệm vụ mới đã được thêm",
                 status: "success"
-            });   
+            });
         })
 
+        socket.on("has-del-task", async (data: string) => {
+
+            // Khi nhận được sự kiện "has-del-task", gọi lại API để lấy danh sách nhiệm vụ mới nhất
+            try {
+                setListTask((prev) => prev.filter((task) => task._id !== data));
+                addAlert({
+                    title: "Thành công",
+                    message: "Nhiệm vụ đã được chuyển/xóa`",
+                    status: "success"
+                });
+            } catch (error) {
+                console.error("Lỗi khi tải danh sách nhiệm vụ:", error);
+                addAlert({
+                    title: "Lỗi",
+                    message: "Không thể tải danh sách nhiệm vụ",
+                    status: "error"
+                });
+            }
+        });
         socket.on("add-pending-task", (task: string) => {
             setListTask((prev: PropsViewsTask[] | any) => [...prev, task])
             addAlert({
@@ -39,6 +58,7 @@ const PendingTask = () => {
         return () => {
             socket.off("remove-pending-task")
             socket.off("add-pending-task")
+            socket.off("has-del-task")
         }
     }, [])
 

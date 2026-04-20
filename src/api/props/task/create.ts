@@ -8,6 +8,7 @@ export interface PropsCreateTask {
     description?: string
     deadline: string
     id_group: string
+    priority: 'Thấp' | 'Trung bình' | 'Cao'
 }
 
 
@@ -43,6 +44,7 @@ export interface PropsViewsTask {
     createdAt: string; // Thay đổi từ Date sang string (để khớp JSON)
     updatedAt: string; // Thay đổi từ Date sang string (để khớp JSON)
     __v?: number;
+    priority: 'Thấp' | 'Trung bình' | 'Cao';
 }
 
 

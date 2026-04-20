@@ -7,16 +7,18 @@ import axios from "axios";
 
 export const getCookies = () => {
     const cookieString = document.cookie
-    console.log(document.cookie);
+   
     
     const map = new Map()
     if (cookieString) {
         cookieString.split(';').forEach((cookie) => {
             const [key, value] = cookie.split('=')
-            map.set(key, value)
+            map.set(key.trim(), value.trim())
         })
+        
         return map
     }
+    
     return map
 }
 

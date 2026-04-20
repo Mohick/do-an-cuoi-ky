@@ -68,10 +68,13 @@ const LayoutGroup = () => {
         if (data?.data.user.verify === false) {
             navigate('/verify-email')
         }
-
+        console.log(id_group);
+        
         socket.emit('join-group', id_group)
         replaceLink(':id_group', id_group as string)
         if (listRole[id_group as string] !== undefined) return;
+
+        
         getRoleGroupAPI(id_group as string, socket.id as string).then((res: any) => {
             if (res.data.valid === false) return navigate('/')
             setReponsive(res.data)
@@ -81,7 +84,6 @@ const LayoutGroup = () => {
         })
         return () => {
             socket.emit('leave-group', id_group)
-            socket.disconnect()
             replaceLink(id_group as string, ':id_group')
         }
     }, [id_group])

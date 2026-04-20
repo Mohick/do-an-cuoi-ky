@@ -36,7 +36,7 @@ const statusStyles: Record<string, string> = {
   completed: "bg-green-100 text-green-700 border border-green-300",
 };
 
-const  FullViewsTask = () => {
+const FullViewsTask = () => {
   const listItems = useOutletContext<PropsViewsTask[]>();
   const { id_task, id_group } = useParams();
   const { listRole } = useRoleAccount();
@@ -50,7 +50,7 @@ const  FullViewsTask = () => {
       <div className="flex items-center justify-center min-h-[60vh] text-gray-600">
         ❌ Không tìm thấy công việc.
       </div>
-    ); 
+    );
   }
   useEffect(() => {
     socket.on("send-comment", (newComment: any) => {
@@ -75,6 +75,8 @@ const  FullViewsTask = () => {
         <div className="relative bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-4">
           <h1 className="text-xl sm:text-2xl font-semibold pr-10 break-words">
             {item.task_name}
+            <br />
+            <span className="text-xs text-indigo-200 font-normal">Độ ưu tiên: {item.priority}</span>
           </h1>
 
           <button
@@ -97,6 +99,7 @@ const  FullViewsTask = () => {
                 <span className="font-semibold">Người tạo:</span> {item.creator.username}
               </span>
             </div>
+
             <div className="flex items-center gap-2">
               <UserOutlined className="text-green-500" />
               <span>

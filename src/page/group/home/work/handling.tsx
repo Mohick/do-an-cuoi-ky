@@ -26,6 +26,26 @@ const HandlingTask = () => {
                 status: "success"
             })
         })
+        
+        socket.on("has-del-task", async (data: string) => {
+
+            // Khi nhận được sự kiện "has-del-task", gọi lại API để lấy danh sách nhiệm vụ mới nhất
+            try {
+                setListTask((prev) => prev.filter((task) => task._id !== data));
+                addAlert({
+                    title: "Thành công",
+                    message: "Nhiệm vụ đã được chuyển/xóa`",
+                    status: "success"
+                });
+            } catch (error) {
+                console.error("Lỗi khi tải danh sách nhiệm vụ:", error);
+                addAlert({
+                    title: "Lỗi",
+                    message: "Không thể tải danh sách nhiệm vụ",
+                    status: "error"
+                });
+            }
+        });
         socket.on("remove-handling-task", (idTask: string) => {
             setListTask((prev: PropsViewsTask[]) => prev.filter((task: PropsViewsTask) => task._id !== idTask))
             addAlert({
@@ -35,16 +55,17 @@ const HandlingTask = () => {
             })
         })
         return () => {
+            socket.off("has-del-task")
             socket.off("add-handling-task")
             socket.off("remove-handling-task")
         }
     }, [])
-    console.log(listMyTask);
-    
+
     return (
         <div>
             <HeaderDashboard title="Nhiệm Vụ" />
             <TaskSection listTask={listMyTask as PropsViewsTask[]} title="Nhiệm Vụ  đang làm" />
+            
             <Outlet context={listMyTask} />
             <AlertComponent />
 

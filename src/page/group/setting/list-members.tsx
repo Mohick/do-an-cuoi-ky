@@ -1,9 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { MoreVertical, Crown, Trash2, ShieldCheck, User, UserPlus } from "lucide-react";
+import { MoreVertical, Crown, Trash2, ShieldCheck, User, UserPlus, Key } from "lucide-react";
 import { Link, Outlet, useParams } from "react-router-dom";
 import { useRoleAccount } from "../../../hooks/role";
 import { useEffect, useState } from "react";
 import { getMemberHasJoinedGroupAPI, getMemberNotJoinedGroupAPI, updateChangeRoleConfirmerAPI, updateChangeRoleLeaderAPI, updateChangeRoleMemberAPI, updateKickMemberAPI } from "../../../api/group";
+import { set } from "react-hook-form";
 
 const listVariants = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.08 } } };
 const itemVariants = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } };
@@ -29,7 +30,7 @@ const ListMemberInGroups = () => {
     const [joinedMembers, setJoinedMembers] = useState<Member[]>([]);
     const [notJoinedMembers, setNotJoinedMembers] = useState<Member[]>([]);
     const userRole = listRole?.[id_group || ""] || "leader";
-
+    const [oververWrite, setOververWrite] = useState<{ [Key: string]: "leader" | "member" | "confirmer" }>({});
     useEffect(() => {
         let isMounted = true;
         Promise.all([
@@ -38,14 +39,17 @@ const ListMemberInGroups = () => {
         ]).then(([joinedRes, notJoinedRes]: any) => {
             if (!isMounted) return;
 
-            const joined: Member[] = joinedRes.data?.members?.map((m: any) => ({
-                _id: m.user._id,
-                username: m.user.username,
-                avatar: m.user.avatar,
-                role: m.role,
-                joined: true,
-                email: m.user.email || "",
-            })) || [];
+            const joined: Member[] = joinedRes.data?.members?.map((m: any) => {
+                setOververWrite((prev) => ({ ...prev, [m._id]: m.role }));
+                return ({
+                    _id: m.user._id,
+                    username: m.user.username,
+                    avatar: m.user.avatar,
+                    role: m.role,
+                    joined: true,
+                    email: m.user.email || "",
+                })
+            }) || [];
 
             const notJoined: Member[] = notJoinedRes.data?.members?.map((m: any) => ({
                 _id: m.user._id,
@@ -63,7 +67,9 @@ const ListMemberInGroups = () => {
         return () => { isMounted = false; };
     }, [id_group]);
 
-    const renderMemberItem = (item: Member) => (
+    const renderMemberItem = (item: Member,) => (
+        
+        
         <motion.div
             key={item._id}
             variants={itemVariants}
@@ -74,59 +80,62 @@ const ListMemberInGroups = () => {
                 <div>
                     <div className="flex items-center gap-2">
                         <span>{item.username}</span>
-                        <span className="px-2 py-0.5 text-xs bg-indigo-600 rounded-lg">{roleVN[item.role]}</span>
+                        <span className="px-2 py-0.5 text-xs bg-indigo-600 rounded-lg">{roleVN[oververWrite[item._id] ?? item.role]}</span>
                     </div>
                     <span className="text-gray-400 text-sm">Email: {item.email}</span>
                 </div>
-                {item.role === "leader" && <Crown className="w-4 h-4 text-yellow-400" />}
-                {item.role === "confirmer" && <ShieldCheck className="w-4 h-4 text-green-400" />}
+                {oververWrite[item._id] ? oververWrite[item._id] === "leader" && <Crown className="w-4 h-4 text-yellow-400" /> : item.role === "leader" && <Crown className="w-4 h-4 text-yellow-400" />}
+                {oververWrite[item._id] ? oververWrite[item._id] === "confirmer" && <ShieldCheck className="w-4 h-4 text-green-400" /> : item.role === "confirmer" && <ShieldCheck className="w-4 h-4 text-green-400" />}
             </div>
             {userRole === "leader" && item.role !== "leader" && (
-                <div className="relative group">
-                    <MoreVertical className="w-5 h-5 text-gray-300 cursor-pointer" />
-                    <AnimatePresence>
-                        <motion.ul
-                            initial={{ opacity: 0, y: -5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -5 }}
-                            transition={{ duration: 0.15 }}
-                            className="absolute hidden group-hover:block z-50 p-2 top-full right-0 w-52 bg-gray-900 border border-gray-700 rounded-xl shadow-md"
-                        >
-                            <li
-                                onClick={() => {
-                                    updateChangeRoleLeaderAPI({
-                                        id_group: id_group as string,
-                                        userID: item._id
-                                    })
-                                }}
-                                className="flex items-center gap-2 px-2 py-1 hover:bg-gray-800 rounded-lg cursor-pointer"><Crown className="w-4 h-4 text-yellow-400" /> Nhượng quyền leader</li>
-                            <li
-                                onClick={() => {
-                                    updateChangeRoleConfirmerAPI({
-                                        id_group: id_group as string,
-                                        userID: item._id
-                                    })
-                                }}
-                                className="flex items-center gap-2 px-2 py-1 hover:bg-gray-800 rounded-lg cursor-pointer"><ShieldCheck className="w-4 h-4 text-green-400" /> Người kiểm duyệt</li>
-                            <li
-                                onClick={() => {
-                                    updateChangeRoleMemberAPI({
-                                        id_group: id_group as string,
-                                        userID: item._id
-                                    })  
-                                }}
-                                className="flex items-center gap-2 px-2 py-1 hover:bg-gray-800 rounded-lg cursor-pointer"><User className="w-4 h-4 text-gray-400" /> Chỉ là thành viên</li>
-                            <li
-                                onClick={() => {
-                                    updateKickMemberAPI({
-                                        id_group: id_group as string,
-                                        userID: item._id
-                                    })
-                                }}
+            <div className="relative group">
+                <MoreVertical className="w-5 h-5 text-gray-300 cursor-pointer" />
+                <AnimatePresence>
+                    <motion.ul
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute hidden group-hover:block z-50 p-2 top-full right-0 w-52 bg-gray-900 border border-gray-700 rounded-xl shadow-md"
+                    >
+                        <li
+                            onClick={() => {
+                                updateChangeRoleLeaderAPI({
+                                    id_group: id_group as string,
+                                    userID: item._id
+                                })
+                                setOververWrite((prev) => ({ ...prev, [item._id]: "leader" }));
+                            }}
+                            className="flex items-center gap-2 px-2 py-1 hover:bg-gray-800 rounded-lg cursor-pointer"><Crown className="w-4 h-4 text-yellow-400" /> Nhượng quyền leader</li>
+                        <li
+                            onClick={() => {
+                                updateChangeRoleConfirmerAPI({
+                                    id_group: id_group as string,
+                                    userID: item._id
+                                })
+                                setOververWrite((prev) => ({ ...prev, [item._id]: "confirmer" }));
+                            }}
+                            className="flex items-center gap-2 px-2 py-1 hover:bg-gray-800 rounded-lg cursor-pointer"><ShieldCheck className="w-4 h-4 text-green-400" /> Người kiểm duyệt</li>
+                        <li
+                            onClick={() => {
+                                updateChangeRoleMemberAPI({
+                                    id_group: id_group as string,
+                                    userID: item._id
+                                })
+                                setOververWrite((prev) => ({ ...prev, [item._id]: "member" }));
+                            }}
+                            className="flex items-center gap-2 px-2 py-1 hover:bg-gray-800 rounded-lg cursor-pointer"><User className="w-4 h-4 text-gray-400" /> Chỉ là thành viên</li>
+                        <li
+                            onClick={() => {
+                                updateKickMemberAPI({
+                                    id_group: id_group as string,
+                                    userID: item._id
+                                })
+                            }}
                             className="flex items-center gap-2 px-2 py-1 hover:bg-gray-800 rounded-lg cursor-pointer"><Trash2 className="w-4 h-4 text-red-400" /> Xóa thành viên</li>
-                        </motion.ul>
-                    </AnimatePresence>
-                </div>
+                    </motion.ul>
+                </AnimatePresence>
+            </div>
             )}
         </motion.div>
     );

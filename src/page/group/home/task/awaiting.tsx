@@ -17,7 +17,7 @@ const AwaitingTask = () => {
     const { id_group } = useParams();
     const [listTask, setListTask] = useState<PropsViewsTask[]>([])
     const { addAlert } = useAlert() as any
-       const {listRole}  =  useRoleAccount()
+    const { listRole } = useRoleAccount()
     useEffect(() => {
         const fetchTasks = async () => {
             if (!id_group) return; // Đảm bảo có id_group
@@ -35,8 +35,27 @@ const AwaitingTask = () => {
                 });
             }
         };
-
         fetchTasks();
+
+        socket.on("has-del-task", async (data: string) => {
+
+            // Khi nhận được sự kiện "has-del-task", gọi lại API để lấy danh sách nhiệm vụ mới nhất
+            try {
+                setListTask((prev) => prev.filter((task) => task._id !== data));
+                addAlert({
+                    title: "Thành công",
+                    message: "Nhiệm vụ đã được chuyển/xóa`",
+                    status: "success"
+                });
+            } catch (error) {
+                console.error("Lỗi khi tải danh sách nhiệm vụ:", error);
+                addAlert({
+                    title: "Lỗi",
+                    message: "Không thể tải danh sách nhiệm vụ",
+                    status: "error"
+                });
+            }
+        });
 
         // 1. Lắng nghe thêm nhiệm vụ mới
         const handleAddTask = (task: PropsViewsTask) => {
@@ -65,6 +84,7 @@ const AwaitingTask = () => {
         return () => {
             socket.off("add-waiting-task", handleAddTask);
             socket.off("remove-waiting-task", handleRemoveTask);
+            socket.off("has-del-task");
         };
         // Thêm id_group, getListTaskAwaitingAPI và addAlert vào dependency array nếu chúng thay đổi
     }, [id_group, addAlert]);
@@ -95,7 +115,7 @@ export const TaskSection = ({ title, listTask }: { title: string, listTask: Prop
 
 
     // Kiểm tra xem listTask có tồn tại và có phần tử nào không
-    const hasTasks = listTask && listTask.length > 0; 
+    const hasTasks = listTask && listTask.length > 0;
 
     return (
         <>

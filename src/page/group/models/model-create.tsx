@@ -46,7 +46,18 @@ const CreateTask = () => {
           />
           {errors.task_name && <p className="text-red-400 text-sm mt-1">{errors.task_name.message}</p>}
         </div>
-
+        <div>
+          <label className="block text-sm font-medium text-white mb-1">Ưu Tiên</label>
+          <select
+            {...register("priority", { required: "Vui lòng chọn ưu tiên" })}
+            className="w-full rounded-lg border border-white/40 bg-transparent text-white placeholder-white/50 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="thấp">Thấp</option>
+            <option value="trung bình">Trung bình</option>
+            <option value="cao">Cao</option>
+          </select>
+          {errors.priority && <p className="text-red-400 text-sm mt-1">{errors.priority.message}</p>}
+        </div>
         {/* URL */}
         <div>
           <label className="block text-sm font-medium text-white mb-1">Đường dẫn (URL)</label>
