@@ -16,7 +16,7 @@ const getImg = (target: HTMLInputElement) => {
 const EditAccount = () => {
  
     const user: UserInterface = useOutletContext();
-    const [preview, setPreview] = useState<string>(user.avatar);
+    const [preview, setPreview] = useState<string>(user.avatar.url);
     const [file, setFile] = useState<File | null>(null);
     // 1. Khởi tạo Hook Form
     const {
@@ -135,7 +135,7 @@ const EditAccount = () => {
                     <div className="flex gap-3 pt-4 border-t border-slate-700">
                         <button
                             type="button"
-                            onClick={() => { reset(); setPreview(user.avatar); }}
+                            onClick={() => { reset(); setPreview(user.avatar.url); }}
                             className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white transition-all text-sm"
                         >
                             <ReloadOutlined /> Reset

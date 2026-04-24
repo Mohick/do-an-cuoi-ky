@@ -12,7 +12,9 @@ export interface PropsAccount {
             username: string,
             email: string,
             verify: boolean
-            avatar: string
+            avatar: {
+                url: string
+            }
         }
     }
     blockcall: boolean

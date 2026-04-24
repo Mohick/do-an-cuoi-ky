@@ -4,7 +4,7 @@
 
 
 
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Hammer, Cog, Cpu } from 'lucide-react';
 import gsap from 'gsap';

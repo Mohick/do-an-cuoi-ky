@@ -35,7 +35,7 @@ const CompletedTask = () => {
 
             // Khi nhận được sự kiện "has-del-task", gọi lại API để lấy danh sách nhiệm vụ mới nhất
             try {
-                setListTask((prev) => prev.filter((task) => task._id !== data));
+                setListTask((prev) => prev ? prev.filter((task) => task._id !== data) : []);
                 addAlert({
                     title: "Thành công",
                     message: "Nhiệm vụ đã được chuyển/xóa`",

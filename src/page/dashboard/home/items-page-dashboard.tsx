@@ -1,9 +1,7 @@
 // File: components/Items.tsx
-import React, { useState } from "react";
+import React from "react";
 import { motion, type Variants, type MotionProps } from "framer-motion";
-import { UserOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-import { gsap } from "gsap";
 export interface ItemsProps extends MotionProps {
   _id: string;
   indexItems: number;
@@ -44,11 +42,7 @@ const Items: React.FC<ItemsProps> = ({
   
   ...props
 }) => {
-  const created = new Date(createdAt).toLocaleDateString();
   const end = new Date(deadline).toLocaleDateString();
-  useState(() => {
-
-  }, []);
 
   return (
     <motion.div

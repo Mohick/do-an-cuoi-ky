@@ -1,8 +1,8 @@
-import { axiosInstanceJson, getCookies } from "../axios-instand";
+import { axiosInstanceJson } from "../axios-instand";
 
 
 
-const getAPIJson = async (path: string, getNotToken: boolean = false) => {
+const getAPIJson = async (path: string) => {
     const response = await axiosInstanceJson.get(path);
     return response
 }
