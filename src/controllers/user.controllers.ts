@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { cloudinary } from "../third-party/upload-images/multer";
-import fs from "fs";
+import fs from "fs/promises";
 import jwt from "jsonwebtoken";
 import userModels from "../models/user/user.models";
 import GroupService from "../models/group/group.models";
@@ -52,7 +52,7 @@ class UserControllers {
         try {
             const { email, password } = req.body;
             const logged = await this._userModel.login(email, password);
-            
+
             return logged.valid
                 ? res.status(200).cookie("token", this._hashToken(logged.user._id), {
                     httpOnly: process.env.ENVIRONMENT === "dev" ? false : true,
@@ -72,7 +72,7 @@ class UserControllers {
     autoLogin = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const id = req.userID;
-            
+
             const user = await this._userModel.findUserById(id as string);
 
             res.status(200).json(user);
@@ -114,9 +114,12 @@ class UserControllers {
             const result = await cloudinary.uploader.upload(avatarPath, {
                 folder: "avatars"
             });
-            fs.unlinkSync(avatarPath);
-            const updated = await this._userModel.updateAvatar(userId, result.secure_url);
+            fs.unlink(avatarPath);
 
+            const user = {
+
+            }
+            const updated = await this._userModel.updateUser(userId, user);
             return updated.valid
                 ? res.status(200).json({ valid: true, message: "Thành Công" })
                 : res.status(400).json({ valid: false, message: updated.message });
@@ -140,10 +143,42 @@ class UserControllers {
                 return;
             }
             res.status(user.valid ? 201 : 400).json({ valid: true, user: user.user, userInGroup: false });
-            
+
         } catch (error) {
             res.status(500).json({ valid: false, message: (error as Error).message });
         }
+    }
+
+    public updateUser = async (req: Request, res: Response, _next: NextFunction) => {
+        const { email, username, password } = req.body;
+        const id = req.userID;
+        const fileImg = (req.files as any)[0]
+        const uploadResult = await cloudinary.uploader.unsigned_upload(
+            fileImg.path,
+            process.env.CLOUDINARY_PRESET as string,
+            {
+                folder: "uploads",
+                cloud_name: process.env.CLOUDINARY_CLOUD_NAME // Đảm bảo có cloud_name ở đây
+            }
+        );
+        const avatar = {
+            public_id: uploadResult.public_id,
+            url: uploadResult.secure_url
+        }
+        const user = {
+            email,
+            username,
+            password,
+            avatar
+        }
+        await fs.unlink(fileImg.path);
+        req.body.avatar = uploadResult.secure_url
+
+        this._userModel.updateUser(id as string, user)
+            .then((result) => {
+                res.status(result.valid ? 200 : 400).json(result)
+            })
+            .catch((error) => res.status(500).json({ valid: false, message: (error as Error).message }));
     }
 }
 export default new UserControllers();

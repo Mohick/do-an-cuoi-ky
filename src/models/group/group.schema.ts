@@ -20,7 +20,7 @@ const groupSchema = new Schema({
         url: {
             type: String,
             required: true,
-            match: [/^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|svg))$/, 'Please fill a valid image URL']
+            match: [/^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|svg|webp))$/, 'Please fill a valid image URL']
         },
         public_id: {
             type: String,

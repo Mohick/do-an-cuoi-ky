@@ -26,7 +26,15 @@ class TaskService {
             return { valid: false, message: error.message || 'Lỗi database khi tạo task.' };
         }
     }
-
+    findAllTaskByGroupId = async (groupId: string): Promise<{ valid: boolean; tasks: ITask[]; message: string }> => {
+        try {
+            const tasks = await this.taskModel.find({ id_group: groupId });
+            return { valid: true, tasks: tasks, message: 'Lấy danh sách task thành công.' };
+        } catch (error: any) {
+            console.error("LỖI KHI LẤY TASK:", error);
+            return { valid: false, tasks: [], message: 'Lỗi server khi lấy task.' };
+        }
+    }
     // chỉ user có trong list member mới lấy đc task
     public async getFullTaskAwaiting(groupId: string): Promise<{ valid: boolean; tasks: any; message: string }> {
         try {
@@ -201,11 +209,11 @@ class TaskService {
         try {
             const task = await this.taskModel.find({ id_group: id_group })
             const lengthFullTask = {
-                fullSizeTasks: task.length - 1 || 0,
-                sizeTaskAwaiting: task.filter((item: any) => item.status === 'waiting').length - 1 || 0,
-                sizeTaskHandling: task.filter((item: any) => item.status === 'handling').length - 1 || 0,
-                sizeTaskPending: task.filter((item: any) => item.status === 'pending').length - 1 || 0,
-                sizeTaskCompleted: task.filter((item: any) => item.status === 'completed').length - 1 || 0
+                fullSizeTasks: task.length  || 0,
+                sizeTaskAwaiting: task.filter((item: any) => item.status === 'waiting').length  || 0,
+                sizeTaskHandling: task.filter((item: any) => item.status === 'handling').length  || 0,
+                sizeTaskPending: task.filter((item: any) => item.status === 'pending').length  || 0,
+                sizeTaskCompleted: task.filter((item: any) => item.status === 'completed').length  || 0
             }
 
             return { valid: true, message: 'Cap nhat task thanh cong', lengthFullTask };
@@ -214,99 +222,7 @@ class TaskService {
             return { valid: false, message: 'Lỗi server khi cap nhat task.' };
         }
     }
-    public topFiveMemberCompletedTaskMore = async (groupId: string): Promise<{ valid: boolean; message: string; topMember?: any }> => {
-        try {
-            const objectIdGroupId = new mongoose.Types.ObjectId(groupId);
-
-            const data = await this.taskModel.aggregate([
-                // --- GIAI ĐOẠN 1: TÍNH TOÁN VÀ SẮP XẾP TASK (GIỮ NGUYÊN) ---
-                { $match: { status: "completed", id_group: objectIdGroupId } },
-                { $group: { _id: "$implementer", totalTasksCompleted: { $sum: 1 } } },
-                { $sort: { totalTasksCompleted: -1 } },
-                { $limit: 5 },
-                {
-                    $addFields: {
-                        implementerObjectId: { $toObjectId: "$_id" }
-                    }
-                },
-
-                // 5. Nối User (GIỮ NGUYÊN)
-                {
-                    $lookup: {
-                        from: "users",
-                        localField: "implementerObjectId",
-                        foreignField: "_id",
-                        as: "user"
-                    }
-                },
-                { $unwind: "$user" },
-
-                // --- GIAI ĐOẠN 2: NỐI VÀ LỌC ROLE CHÍNH XÁC ---
-
-                // 6. ✅ SỬA LỖI CÚ PHÁP: Dùng $lookup với 'pipeline' để match Group ID
-                {
-                    $lookup: {
-                        from: "groups",
-                        // Truyền ID người thực hiện và ID nhóm vào pipeline
-                        let: { memberId: "$implementerObjectId", groupId: objectIdGroupId },
-                        pipeline: [
-                            // Lọc document Group chính xác
-                            { $match: { $expr: { $eq: ["$_id", "$$groupId"] } } },
-                            // Lọc mảng members để tìm role của thành viên
-                            {
-                                $project: {
-                                    role: {
-                                        $arrayElemAt: [
-                                            {
-                                                $filter: {
-                                                    input: "$members",
-                                                    as: "member",
-                                                    cond: { $eq: ["$$member.user", "$$memberId"] }
-                                                }
-                                            },
-                                            0
-                                        ]
-                                    }
-                                }
-                            }
-                        ],
-                        as: "groupRoleArray"
-                    }
-                },
-
-                // 7. Giải nén Group Role (vì mảng này chỉ chứa 1 document role)
-                { $unwind: "$groupRoleArray" },
-
-                // 8. Định hình kết quả cuối cùng (Loại bỏ bước $filter/arrayElemAt cũ, dùng trường đã join)
-                {
-                    $project: {
-                        _id: "$user._id",
-                        username: "$user.username",
-                        email: "$user.email",
-                        totalTasksCompleted: "$totalTasksCompleted",
-                        // ✅ Lấy role từ kết quả lookup group đã được giải nén
-                        role: "$groupRoleArray.role"
-                    }
-                },
-
-                // 9. ✅ BƯỚC CUỐI CÙNG: Loại bỏ trùng lặp (nếu cần)
-                {
-                    $group: {
-                        _id: "$_id",
-                        username: { $first: "$username" },
-                        email: { $first: "$email" },
-                        totalTasksCompleted: { $first: "$totalTasksCompleted" },
-                        role: { $first: "$role" },
-                    }
-                }
-            ]);
-
-            return { valid: true, topMember: data, message: "Thành công" };
-        } catch (error: any) {
-            console.error("LỖI KHI TÌM TOP MEMBER VÀ ROLE:", error);
-            return { valid: false, message: 'Lỗi server khi tìm top member và role.' };
-        }
-    }
+  
 
     public commentInTask = async (
         taskID: string,

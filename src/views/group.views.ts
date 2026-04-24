@@ -22,11 +22,7 @@ routerGroup.get(
     UserMiddleware.validateAutoLogin,
     GroupController.getMyGroups
 )
-routerGroup.get(
-    '/get-top-five-members-better/:id_group',
-    UserMiddleware.validateAutoLogin,
-    GroupController.topFiveMemberCompletedTaskMore
-)
+
 routerGroup.patch(
     '/update/add-member',
     UserMiddleware.validateAutoLogin,
@@ -40,6 +36,11 @@ routerGroup.patch(
 routerGroup.get('/info-group/:id_group',
     UserMiddleware.validateAutoLogin,
     GroupController.getInfoGroup
+)
+routerGroup.get(
+    '/get-top-five-members-better/:id_group',
+    UserMiddleware.validateAutoLogin,
+    GroupController.topFiveMemberCompletedTaskMore
 )
 routerGroup.get(
     '/:id_group/members',

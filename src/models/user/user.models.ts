@@ -33,6 +33,10 @@ class UserModels {
             const user = await SchemaUser.findById(id);
             if (!user) return { valid: false, message: "Không tìm thấy user" };
             user.password = "";
+            user.avatar = {
+                url: user.avatar.url,
+                public_id: ''
+            };
             return { valid: true, user, message: "Thành công" }
         } catch (error: any) {
             return { valid: false, message: error.message || "Database error" };
@@ -53,8 +57,8 @@ class UserModels {
 
             const key = btoa(userId);
             const url = process.env.CLI_URL + '/verify-email/' + key;
-          
-            
+
+
             const getKey = await storeRedis.get(key);
             if (!getKey) {
                 await storeRedis.set(key, "Chờ duyệt email", { EX: 300 });
@@ -86,6 +90,15 @@ class UserModels {
             const user = await SchemaUser.findOne({ email });
             if (!user) return { valid: false, message: "Không tìm thấy user" };
             return { valid: true, user: user, message: "Thành công" };
+        } catch (error: any) {
+            return { valid: false, message: error.message || "Database error" };
+        }
+    }
+    async updateUser(userId: string, data: any): Promise<{ valid: boolean; message?: string }> {
+        try {
+            const user = await SchemaUser.findOneAndUpdate({ _id: userId }, data, { new: true });
+            if (!user) return { valid: false, message: "Không tìm thấy user" };
+            return { valid: true, message: "Thành công" };
         } catch (error: any) {
             return { valid: false, message: error.message || "Database error" };
         }

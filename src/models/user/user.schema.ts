@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { Schema } from "mongoose";
 import bcrypt from "bcrypt"
 
+
 const userSchema = new Schema({
     username: {
         type: String,
@@ -18,9 +19,27 @@ const userSchema = new Schema({
         match: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/
     },
     avatar: {
+        type: {
+            url: {
+                type: String,
+                required: true,
+                match: [/^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|svg|webp))$/, 'Please fill a valid image URL']
+            },
+            public_id: {
+                type: String,
+                required: true
+            }
+        },
+        default: {
+            url: '',
+            public_id: '"https://res.cloudinary.com/deiuv1q6x/image/upload/v1777019097/uploads/nawqyk3wxcnp9161r8ol.jpg"'
+        }
+    },
+    bio: {
         type: String,
-        match: /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i,
-        default: 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
+        maxlength: [500, 'Bio không được vượt quá 500 ký tự'],
+        default: 'No thing about me',
+        minlength: [10, 'Bio phải có ít nhất 10 ký tự']
     },
     notification: {
         type: [{

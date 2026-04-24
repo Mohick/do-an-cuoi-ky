@@ -26,6 +26,7 @@ class GroupController {
         try {
             const { name_project, deadline } = req.body;
             const creator = req.userID;
+            console.log(process.env.CLOUDINARY_NAME, process.env.CLOUDINARY_KEY, process.env.CLOUDINARY_SECRET);
 
             if (!req.files || !creator) {
                 res.status(400).json({ valid: false, message: "Thiếu file ảnh hoặc thông tin người tạo." });
@@ -33,9 +34,15 @@ class GroupController {
             }
 
             const fileImg = (req.files as any)[0]
-            const uploadResult = await cloudinary.uploader.upload(fileImg.path, {
-                folder: "uploads",
-            });
+            const uploadResult = await cloudinary.uploader.unsigned_upload(
+                fileImg.path,
+                process.env.CLOUDINARY_PRESET as string,
+                {
+                    folder: "uploads",
+                    cloud_name: process.env.CLOUDINARY_CLOUD_NAME // Đảm bảo có cloud_name ở đây
+                }
+            );
+            
             await fs.unlink(fileImg.path);
             const groupData = {
                 projectName: name_project,
@@ -46,11 +53,12 @@ class GroupController {
                     public_id: uploadResult.public_id,
                 },
             };
+         
 
             const result = await this.groupService.create(groupData);
-            if(result.valid) {
+            if (result.valid) {
                 const newObject = result.group.toObject();
-               
+
                 getIO().emit('new-group', {
                     ...newObject,
                     image: `${newObject.image.url}`
@@ -75,6 +83,8 @@ class GroupController {
                 res.status(400).json({ valid: false, message: "Không tìm thấy ID người dùng." });
                 return;
             }
+          
+            
             const result = await this.groupService.findGroupsByUserId(userId);
             result.groups = result.groups.map((group: any) => {
                 return {
@@ -259,7 +269,7 @@ class GroupController {
     public topFiveMemberCompletedTaskMore = async (req: IAuthRequest, res: Response): Promise<void> => {
         try {
             const { id_group } = req.params;
-            const result = await this.taskService.topFiveMemberCompletedTaskMore(`${id_group}`);
+            const result = await this.groupService.topFiveMemberCompletedTaskMore(`${id_group}`);
             res.status(result.valid ? 201 : 400).json(result);
         } catch (error: any) {
             console.error("LỖI KHI LẤY GROUP:", error);

@@ -2,10 +2,11 @@ import GroupModel from './group.schema.ts'; // Import Mongoose model của bạn
 import type { IGroup, ICreateGroupDTO } from './group.interface.ts'; // Import interfaces
 import type { Type } from 'typescript';
 import type mongoose from 'mongoose';
-
+import Task from '../task/task.schema.ts';
 
 class GroupService {
     private groupModel = GroupModel;
+    private taskModel = Task;
     public async create(groupData: ICreateGroupDTO): Promise<{ valid: boolean; message: string, group?: any }> {
         try {
             const group = (await this.groupModel.create(groupData))
@@ -19,8 +20,16 @@ class GroupService {
     public async findGroupsByUserId(userId: string): Promise<{ valid: boolean; groups: IGroup[] | any; message: string }> {
         try {
             const groups = await this.groupModel
-                .find({ 'members.user': userId })
+                .find({
+                    members: {
+                        $elemMatch: {
+                            user: userId,
+                            joined: true
+                        }
+                    }
+                },)
                 .sort({ createdAt: -1 }).populate('creator', 'username email avatar');
+            console.log(groups);
             return { valid: true, groups, message: 'Lấy danh sách group thành công' };
         } catch (error: any) {
             console.error("LỖI KHI TÌM GROUP:", error);
@@ -33,6 +42,7 @@ class GroupService {
                 { _id: groupId, 'members.user': userId },
                 { 'members.$': 1 }
             )
+
             if (!group) {
                 return { valid: false, message: 'Không tìm thấy group hoặc user không phải là thành viên.' };
             }
@@ -290,6 +300,50 @@ class GroupService {
         } catch (error: any) {
             console.error("LỖI KHI KICK MEMBER:", error);
             return { valid: false, message: 'Lỗi server khi kick member.' };
+        }
+    }
+    public topFiveMemberCompletedTaskMore = async (groupId: string): Promise<{ valid: boolean; message: string; topMember?: any }> => {
+        try {
+            return Promise.all([
+                this.taskModel.find({ id_group: groupId, status: 'completed' }).populate('implementer', 'username email avatar'),
+                this.groupModel.findById(groupId).populate('members.user', 'username email avatar')
+            ]).then(([tasks, group]) => {
+                if (!group) {
+                    return { valid: false, message: 'Không tìm thấy group.' };
+                }
+                const listMember = group.members.reduce((list: any, member: any) => {
+                    const acc = {} as any;
+                    acc.role = member.role;
+                    acc._id = member.user._id;
+                    acc.username = member.user.username;
+                    acc.email = member.user.email;
+                    list.push(acc);
+                    return list;
+                }, []);
+                const countTask = {} as { [key: string]: number };
+                tasks.forEach((task: any) => {
+                    if (task.implementer) {
+                        const id = task.implementer._id.toString();
+                        countTask[id] = (countTask[id] || 0) + 1;
+                    }
+                });
+                const topMember = listMember.map((member: any) => {
+                    return {
+                        ...member,
+                        totalTasksCompleted: countTask[member._id.toString()] || 0
+                    }
+                });
+                topMember.sort((a: any, b: any) => {
+                    const countA = countTask[a._id.toString()] || 0;
+                    const countB = countTask[b._id.toString()] || 0;
+                    return countB - countA;
+                });
+
+                return { valid: true, message: 'Lấy top member thành công', topMember };
+            });
+        } catch (error: any) {
+            console.error("LỖI KHI TÌM TOP MEMBER VÀ ROLE:", error);
+            return { valid: false, message: 'Lỗi server khi tìm top member và role.' };
         }
     }
     public updateInfoGroup = async ({ groupId, userID, body }: {
