@@ -1,4 +1,4 @@
-import { axiosInstanceJson, getCookies } from "../axios-instand";
+import { axiosInstanceJson, axiosInstanceMultipart, getCookies } from "../axios-instand";
 
 
 
@@ -8,4 +8,10 @@ const patchAPIJson = async (path: string,body?:any, getNotToken: boolean = false
     return response
 }
 
-export { patchAPIJson }
+const patchAPIMultipart = async (path: string,body?:any, getNotToken: boolean = false) => {
+    if (!getCookies().get('token') && !getNotToken) return { blockcall: true };
+    const response = await axiosInstanceMultipart.patch(path,body);
+    return response
+}
+
+export { patchAPIJson,patchAPIMultipart}

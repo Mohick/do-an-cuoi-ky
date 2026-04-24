@@ -51,10 +51,10 @@ const CreateTask = () => {
           <select
             {...register("priority", { required: "Vui lòng chọn ưu tiên" })}
             className="w-full rounded-lg border border-white/40 bg-transparent text-white placeholder-white/50 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="thấp">Thấp</option>
-            <option value="trung bình">Trung bình</option>
-            <option value="cao">Cao</option>
+         >
+            <option className="text-black" value="thấp">Thấp</option>
+            <option className="text-black" value="trung bình">Trung bình</option>
+            <option className="text-black" value="cao">Cao</option>
           </select>
           {errors.priority && <p className="text-red-400 text-sm mt-1">{errors.priority.message}</p>}
         </div>

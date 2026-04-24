@@ -11,6 +11,9 @@ import { AlertComponent } from "../../../../components/alert/alert.componet"
 
 
 const CompletedTask = () => {
+    const [filterOptions, setFilterOptions] = useState({
+        priority: "Tất cả", // Giá trị mặc định là "all"
+    });
     const { id_group } = useParams();
     const [listMyTask, setListTask] = useState<PropsViewsTask[]>()
     const { addAlert } = useAlert() as any
@@ -64,8 +67,21 @@ const CompletedTask = () => {
     }, [])
     return (
         <div>
-            <HeaderDashboard title="Nhiệm Vụ" />
-            <TaskSection listTask={listMyTask as PropsViewsTask[]} title="Nhiệm Vụ  đang làm" />
+            <HeaderDashboard title="Nhiệm Vụ" >
+                <div className="gap-2 flex justify-center items-center">
+                    <h3 className="text-xl">Filter : </h3>
+                    <div className="flex gap-2 bg-white p-2 group rounded font-bold relative cursor-pointer text-black">
+                        <p>Độ ưu tiên :</p>
+                        <select onChange={(e) => setFilterOptions({ ...filterOptions, priority: e.target.value })}>
+                            <option className="hover:bg-black/25 py-1" >Tất cả</option>
+                            <option className="hover:bg-black/25 py-1" >Thấp</option>
+                            <option className="hover:bg-black/25 py-1" >Trung bình</option>
+                            <option className="hover:bg-black/25 py-1" >Cao</option>
+                        </select>
+                    </div>
+                </div>
+            </HeaderDashboard>
+            <TaskSection listTask={listMyTask as PropsViewsTask[]} title="Nhiệm Vụ  đang làm"  filterOptions={filterOptions}/>
             <Outlet context={listMyTask} />
             <AlertComponent />
         </div>

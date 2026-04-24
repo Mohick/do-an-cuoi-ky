@@ -5,18 +5,14 @@ import { useParams } from "react-router-dom";
 import { getTopFiveMembersAPI } from "../../../../api/group";
 
 // --- Định nghĩa Interface (Giữ nguyên) ---
-interface MemberRoleInfo {
-    user: string;
-    role: 'leader' | 'member' | 'confirmer' | string;
-    _id: string;
-}
+
 
 interface TopMember {
     _id: string;
     username: string;
     email: string;
     totalTasksCompleted: number;
-    role: MemberRoleInfo;
+    role: 'leader' | 'member' | 'confirmer' | string;
 }
 
 // interface TopMemberResponse {
@@ -44,7 +40,7 @@ const RankIcon = ({ rank }: { rank: number }) => {
 };
 
 // Component Role Ribbon (Giữ nguyên)
-const RoleRibbon = ({ roleInfo }: { roleInfo: MemberRoleInfo }) => {
+const RoleRibbon = ({ roleInfo }: { roleInfo: TopMember }) => {
     const roleString = roleInfo.role || 'member';
 
     const displayRoleMap: Record<string, string> = {
@@ -184,8 +180,9 @@ export default function MemberTable() {
             </div>
         );
     }
-
-
+    console.log(topMembers);
+    
+    
     return (
         <div className="w-full max-w-xl mx-auto bg-gray-900 p-4 md:p-6 rounded-xl shadow-2xl border border-gray-700 h-full overflow-y-auto">
             <h2 className="text-2xl font-extrabold text-white mb-4 border-b border-gray-700 pb-2">
@@ -197,14 +194,15 @@ export default function MemberTable() {
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-            >
+                >
                 {topMembers.map((m, index) => (
                     <div
+                        
                         key={m._id}
                         className="shadow-lg shadow-gray-950/50 rounded-lg relative overflow-hidden"
                     >
                         {/* ROLE RIBBON */}
-                        <RoleRibbon roleInfo={m.role} />
+                        <RoleRibbon roleInfo={m} />
 
                         <motion.div
                             variants={
@@ -232,12 +230,12 @@ export default function MemberTable() {
                                     </div>
                                     {/* ROLE CỦA MEMBER */}
                                     <p className={`text-[9px] font-semibold px-1 py-0 rounded-full 
-                                        ${m.role.role === 'leader' ? 'bg-red-900/50 text-red-400' :
-                                            m.role.role === 'confirmer' ? 'bg-orange-900/50 text-orange-400' :
+                                        ${m.role === 'leader' ? 'bg-red-900/50 text-red-400' :
+                                            m.role === 'confirmer' ? 'bg-orange-900/50 text-orange-400' :
                                                 'bg-purple-900/50 text-purple-400'
                                         }`}
                                     >
-                                        {m.role.role.toUpperCase()}
+                                        {m.role.toUpperCase()}
                                     </p>
                                 </div>
 

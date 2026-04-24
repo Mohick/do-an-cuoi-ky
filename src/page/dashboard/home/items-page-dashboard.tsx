@@ -1,11 +1,12 @@
 // File: components/Items.tsx
-import React from "react";
+import React, { useState } from "react";
 import { motion, type Variants, type MotionProps } from "framer-motion";
 import { UserOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-
+import { gsap } from "gsap";
 export interface ItemsProps extends MotionProps {
   _id: string;
+  indexItems: number;
   image?: string;
   projectName?: string;
   creator?: {
@@ -40,20 +41,19 @@ const Items: React.FC<ItemsProps> = ({
   creator = { _id: "", username: "Không rõ" },
   createdAt = "2023-01-01",
   deadline = "2023-01-01",
+  
   ...props
 }) => {
   const created = new Date(createdAt).toLocaleDateString();
   const end = new Date(deadline).toLocaleDateString();
-  console.log(creator.username);
-  
+  useState(() => {
+
+  }, []);
+
   return (
     <motion.div
       key={_id}
-      className="col-span-3 w-full rounded-2xl overflow-hidden shadow-md cursor-pointer
-        border border-transparent
-        bg-gradient-to-br from-[#3b82f6] via-[#6366f1] to-[#8b5cf6]
-        dark:from-[#1e1b4b] dark:via-[#312e81] dark:to-[#4c1d95]
-        text-white"
+      className={`item-${_id} col-span-3 w-full rounded-2xl border-white overflow-hidden shadow-md cursor-pointerborder from-[#8cd0fe] to-transparent`}
       variants={cardVariants}
       initial="initial"
       animate="animate"
@@ -61,63 +61,28 @@ const Items: React.FC<ItemsProps> = ({
       whileTap="tap"
       {...props}
     >
-      <Link to={`/group/${_id}`}>
-        {/* IMAGE */}
-        <div className="relative h-52 w-full group">
-          <img
-            src={image}
-            alt={projectName}
-            loading="lazy"
-            className="w-full h-full object-cover opacity-80
-              transition-transform duration-500 group-hover:scale-105"
-          />
+      <Link to={`/group/${_id}`} className="grid grid-cols-12 h-full">
+        <motion.div 
+        initial={{ opacity: 0, x: 120,  }}
+        animate={{ opacity: 1, x: 0 ,width: "100%"}}
+        
+        transition={{ duration: 0.5, delay: 0.2 * props.indexItems, ease: "easeOut" }}
+        className="show_text w-full col-span-8 flex-1 h-full p-4 border border-8 origin-right rounded-l-2xl border-gray-200">
+          <h3 className="text-lg font-bold truncate">{projectName}</h3>
 
-          {/* OVERLAY */}
-          <motion.div
-            className="absolute ml-2 mb-2 bottom-0 w-full text-xs capitalize space-y-2 text-white"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { delay: 0.3 } }}
-          >
-            {/* USER BUBBLE */}
-            <motion.div
-              className=" left-3 bottom-3 inline-flex items-center gap-2 px-3 py-1.5 
-                text-xs rounded-lg shadow-md
-                bg-gradient-to-r from-[#4f46e5]/80 to-[#7c3aed]/80 
-                backdrop-blur-md"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0, transition: { delay: 0.2 } }}
-            >
-              <UserOutlined className="text-[0.8rem]" />
-              <span className="truncate max-w-[10rem] font-light">
-                {creator.username}
-              </span>
-            </motion.div>
+          <p className="text-xs font-bold text-gray-400 mt-2 truncate">
+            Deadline : {end}
+          </p>
+        </motion.div>
+        <div className="col-span-4 h-full  flex  bg-white  items-center relative justify-center">
+          <img src={image} alt={projectName} className="w-full max-h-[100px] h-fit object-cover rounded-full bg-white orverflow-hidden" />
+          <div className="absolute  bg-gradient-to-r from-[#7c7c7c] to-transparent text-white w-full h-full"></div>
+          <div className="  absolute bg-white right-full h-full  w-2">
 
-            {/* DATE BOX */}
-            <div
-              className=" w-fit 
-                px-2 py-1 rounded-md 
-                bg-white/20 backdrop-blur-md text-white/90 shadow-sm"
-            >
-              ngày tạo: {created}
-              <br />
-              ngày kết thúc: {end}
-            </div>
-          </motion.div>
-        </div>
-
-        {/* CONTENT */}
-        <div className="px-2 py-3">
-          <motion.h3
-            className="mb-1 text-base font-semibold tracking-tight text-white drop-shadow-sm"
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0, transition: { delay: 0.25 } }}
-          >
-            {projectName}
-          </motion.h3>
+          </div>
         </div>
       </Link>
-    </motion.div>
+    </motion.div >
   );
 };
 

@@ -1,5 +1,5 @@
 import { getAPIJson } from "./crud/get";
-import { patchAPIJson } from "./crud/patch";
+import { patchAPIJson, patchAPIMultipart } from "./crud/patch";
 import { postAPIJson } from "./crud/post"
 import type { PropsRegister } from "./props/user/props-register";
 import type { PropsLogin } from "./props/user/props-sigin";
@@ -31,4 +31,7 @@ const findUserByEmailAPI = async (email: string, id_group: string) => {
     const post = await getAPIJson(`/api/user/find-user-by-email?email=${email}&id_group=${id_group}`);
     return post
 }
-export { registerAPI, loginAPI, autoLoginAPI, verifyEmailAPI, checkVerifyAPI, findUserByEmailAPI }
+const updateAccountAPI = async (body: any) => {
+    return await patchAPIMultipart(`/api/user/update-account`, body);
+}
+export { registerAPI, loginAPI, autoLoginAPI, verifyEmailAPI, checkVerifyAPI, findUserByEmailAPI, updateAccountAPI }

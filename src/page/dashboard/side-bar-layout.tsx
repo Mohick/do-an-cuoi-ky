@@ -30,11 +30,11 @@ const SideBarLayout = ({
         {
             listSideBar.map((item) =>
                 <Link to={item.link} key={item.link}
-                    className={`flex items-center gap-3 p-2 text-gray-500 rounded-md hover:bg-[#252528] ${location.pathname === item.link ? 'bg-[#252528] text-white' : ''}`}>
+                    className={`flex items-center gap-3 p-2 text-gray-500 rounded-md hover:bg-[#252528] ${location.pathname.trim().toLowerCase() === item.link.trim().toLowerCase() ? 'bg-[#252528] text-white' : ''}`}>
                     <div className="">
                         {item.icon}
                     </div>
-                    <div className="">
+                    <div className="font-bold">
                         {item.name}
                     </div>
                 </Link>

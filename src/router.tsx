@@ -26,6 +26,8 @@ import { socket } from "./socket/socket.io"
 import AccountUser from "./page/dashboard/account/account"
 import ModelLeaveGroup from "./page/group/setting/leave-group.model"
 import ModelDeleteGroup from "./page/group/setting/delete-group.model"
+import EditAccount from "./page/dashboard/account/models.edit"
+import Developing from "./ultils/dev-mode"
 
 export default function Router() {
     const { data } = useAccount()
@@ -44,7 +46,7 @@ export default function Router() {
                                         <Route path="create-group" element={<CreateGroup />} />
                                     </Route>
                                     <Route path="account" element={<AccountUser />} >
-
+                                        <Route path="edit" element={<EditAccount />} />
                                     </Route>
                                 </Route>
                                 <Route path="group/" element={<LayoutGroup />}>
@@ -80,7 +82,7 @@ export default function Router() {
                     </>
                 )
                 }
-
+                <Route path="library" element={<Developing/>}/>
                 <Route path="*" element={<NotFoundPage />} />
             </Routes >
         </Suspense >
