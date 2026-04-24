@@ -22,17 +22,15 @@ const userSchema = new Schema({
         type: {
             url: {
                 type: String,
-                required: true,
                 match: [/^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|svg|webp))$/, 'Please fill a valid image URL']
             },
             public_id: {
                 type: String,
-                required: true
             }
         },
         default: {
-            url: '',
-            public_id: '"https://res.cloudinary.com/deiuv1q6x/image/upload/v1777019097/uploads/nawqyk3wxcnp9161r8ol.jpg"'
+            url: 'https://res.cloudinary.com/deiuv1q6x/image/upload/v1777019097/uploads/nawqyk3wxcnp9161r8ol.jpg',
+            public_id: ''
         }
     },
     bio: {
