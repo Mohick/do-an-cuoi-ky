@@ -5,21 +5,10 @@ import axios from "axios";
 
 
 
-export const getCookies = () => {
-    const cookieString = document.cookie
-   
+export const getLocalStorage = (str:string) => {
+
     
-    const map = new Map()
-    if (cookieString) {
-        cookieString.split(';').forEach((cookie) => {
-            const [key, value] = cookie.split('=')
-            map.set(key.trim(), value.trim())
-        })
-        
-        return map
-    }
-    
-    return map
+    return localStorage.getItem('token')
 }
 
 const axiosInstanceJson = axios.create({
@@ -35,14 +24,14 @@ const axiosInstanceMultipart = axios.create({
     },withCredentials:true
 });
 axiosInstanceMultipart.interceptors.request.use((config) => {
-    const token = getCookies().get('token');
+    const token = getLocalStorage('token');
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
 })
 axiosInstanceJson.interceptors.request.use((config) => {
-    const token = getCookies().get('token');
+    const token = getLocalStorage('token');
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
     }
