@@ -178,7 +178,6 @@ class GroupController {
             if (result.valid) {
                 await storeRedis.del(id_verify);
             }
-
             res.status(result.valid ? 201 : 400).json(result);
         } catch (error: any) {
             console.error("LỖI KHI XÁC MINH THAM GIA NHÓM:", error);

@@ -59,7 +59,7 @@ class UserControllers {
                     secure: process.env.ENVIRONMENT === "dev" ? false : true,
                     sameSite: process.env.ENVIRONMENT === "dev" ? "lax" : "none",
                     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-                }).json({ valid: true, message: "Thành Công" })
+                }).json({ valid: true, cookies: this._hashToken(logged.user._id), message: "Thành Công" })
                 : res.status(400).json({ valid: false, message: logged.message });
         } catch (error) {
             console.error(error);

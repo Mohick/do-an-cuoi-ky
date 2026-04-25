@@ -35,11 +35,11 @@ class UserMiddleware {
     }
     static validateAutoLogin = (req: Request, res: Response, next: NextFunction) => {
         try {
-            // const { authorization } = req.headers;
-            // const token = authorization?.split(" ")[1];
-            const isToken = req.headers.cookie?.split(";");
-            const getToken = isToken?.find(item => item.includes("token"));
-            const token = getToken?.split("=")[1].trim();
+            const { authorization } = req.headers;
+            const token = authorization?.split(" ")[1];
+            // const isToken = req.headers.cookie?.split(";");
+            // const getToken = isToken?.find(item => item.includes("token"));
+            // const token = getToken?.split("=")[1].trim();
             
             
             if (!token) {
