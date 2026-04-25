@@ -150,35 +150,32 @@ class UserControllers {
     }
 
     public updateUser = async (req: Request, res: Response, _next: NextFunction) => {
-        const { email, username, password } = req.body;
-        const id = req.userID;
-        const fileImg = (req.files as any)[0]
-        const uploadResult = await cloudinary.uploader.unsigned_upload(
-            fileImg.path,
-            process.env.CLOUDINARY_PRESET as string,
-            {
-                folder: "uploads",
-                cloud_name: process.env.CLOUDINARY_CLOUD_NAME // Đảm bảo có cloud_name ở đây
-            }
-        );
-        const avatar = {
-            public_id: uploadResult.public_id,
-            url: uploadResult.secure_url
-        }
-        const user = {
-            email,
-            username,
-            password,
-            avatar
-        }
-        await fs.unlink(fileImg.path);
-        req.body.avatar = uploadResult.secure_url
+        try {
+            const { email, username, password } = req.body;
+            const id = req.userID;
+            const fileImg = (req.files as any)[0]
+            const uploadResult = await cloudinary.uploader.upload(fileImg.path)
 
-        this._userModel.updateUser(id as string, user)
-            .then((result) => {
-                res.status(result.valid ? 200 : 400).json(result)
-            })
-            .catch((error) => res.status(500).json({ valid: false, message: (error as Error).message }));
+            const avatar = {
+                public_id: uploadResult.public_id,
+                url: uploadResult.secure_url
+            }
+            const user = {
+                email,
+                username,
+                password,
+                avatar
+            }
+            await fs.unlink(fileImg.path);
+            req.body.avatar = uploadResult.secure_url
+
+            const updateUser = await this._userModel.updateUser(id as string, user)
+            res.status(updateUser.valid ? 200 : 400).json(updateUser);
+        } catch (error) {
+            console.log(error);
+
+            res.status(500).json({ valid: false, message: (error as Error).message });
+        }
     }
 }
 export default new UserControllers();

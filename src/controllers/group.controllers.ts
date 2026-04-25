@@ -26,20 +26,18 @@ class GroupController {
         try {
             const { name_project, deadline } = req.body;
             const creator = req.userID;
-            console.log(process.env.CLOUDINARY_NAME, process.env.CLOUDINARY_KEY, process.env.CLOUDINARY_SECRET);
-
             if (!req.files || !creator) {
                 res.status(400).json({ valid: false, message: "Thiếu file ảnh hoặc thông tin người tạo." });
                 return;
             }
-
             const fileImg = (req.files as any)[0]
+            console.log(fileImg.path,process.env.CLOUDINARY_NAME,process.env.CLOUDINARY_PRESET);
+            
             const uploadResult = await cloudinary.uploader.unsigned_upload(
                 fileImg.path,
                 process.env.CLOUDINARY_PRESET as string,
                 {
                     folder: "uploads",
-                    cloud_name: process.env.CLOUDINARY_CLOUD_NAME // Đảm bảo có cloud_name ở đây
                 }
             );
             

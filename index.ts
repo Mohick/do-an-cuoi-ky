@@ -16,6 +16,7 @@ const allowedOrigins = [
   process.env.PROD_CLIENT_URL,
 ].filter(Boolean);
 
+
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -42,5 +43,5 @@ router(app);
 initSocket(server,)
 
 server.listen(PORT, () => {
-    console.log(`listening on http://localhost:${PORT}`);
+  console.log(`listening on http://localhost:${PORT}`);
 })
