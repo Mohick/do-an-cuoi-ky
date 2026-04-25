@@ -8,7 +8,7 @@ import axios from "axios";
 export const getLocalStorage = (str:string) => {
 
     
-    return localStorage.getItem('token')
+    return localStorage.getItem(str)
 }
 
 const axiosInstanceJson = axios.create({
