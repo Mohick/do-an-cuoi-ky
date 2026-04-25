@@ -37,7 +37,11 @@ class UserMiddleware {
         try {
             // const { authorization } = req.headers;
             // const token = authorization?.split(" ")[1];
-            const token = req.cookies.token as string;
+            const isToken = req.headers.cookie?.split(";");
+            const getToken = isToken?.find(item => item.includes("token"));
+            const token = getToken?.split("=")[1].trim();
+            
+            
             if (!token) {
                 throw new Error("Thiếu token");
             }
