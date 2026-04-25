@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 connectRedis();
 router(app);
-initSocket(server, corsOptions)
+initSocket(server,)
 
 server.listen(PORT, () => {
     console.log(`listening on http://localhost:${PORT}`);
