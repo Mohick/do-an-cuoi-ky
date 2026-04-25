@@ -1,182 +1,161 @@
-
-import { Link, Outlet, useParams } from "react-router-dom"
-
-import HeaderDashboard from "../../../../components/header"
-import { motion } from "framer-motion"
-import { PlusCircleOutlined } from "@ant-design/icons"
-import ItemsGroup from "../../items"
-import { useEffect, useState } from "react"
-import { getListTaskAwaitingAPI } from "../../../../api/task"
-import type { PropsViewsTask } from "../../../../api/props/task/create"
-import { socket } from "../../../../socket/socket.io"
-import { AlertComponent } from "../../../../components/alert/alert.componet"
-import { useAlert } from "../../../../components/alert/alert.hook"
-import { useRoleAccount } from "../../../../hooks/role"
+import { Link, Outlet, useParams } from "react-router-dom";
+import HeaderDashboard from "../../../../components/header";
+import { motion } from "framer-motion";
+import { PlusCircleOutlined } from "@ant-design/icons";
+import ItemsGroup from "../../items";
+import { useEffect, useState } from "react";
+import { getListTaskAwaitingAPI } from "../../../../api/task";
+import type { PropsViewsTask } from "../../../../api/props/task/create";
+import { socket } from "../../../../socket/socket.io";
+import { AlertComponent } from "../../../../components/alert/alert.componet";
+import { useAlert } from "../../../../components/alert/alert.hook";
+import { useRoleAccount } from "../../../../hooks/role";
 
 const AwaitingTask = () => {
-    const { id_group } = useParams();
-    const [listTask, setListTask] = useState<PropsViewsTask[]>([])
-    const { addAlert } = useAlert() as any
-    const { listRole } = useRoleAccount()
-    const [filterOptions, setFilterOptions] = useState({
-        priority: "Tất cả", // Giá trị mặc định là "all"
+  const { id_group } = useParams();
+  const [listTask, setListTask] = useState<PropsViewsTask[]>([]);
+  const { addAlert } = useAlert() as any;
+  const { listRole } = useRoleAccount();
+  const [filterOptions, setFilterOptions] = useState({ priority: "Tất cả" });
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      if (!id_group) return;
+      try {
+        const res = await getListTaskAwaitingAPI(id_group) as any;
+        setListTask(res.data.tasks);
+      } catch {
+        addAlert({ title: "Lỗi", message: "Không thể tải danh sách nhiệm vụ", status: "error" });
+      }
+    };
+    fetchTasks();
+
+    socket.on("has-del-task", (data: string) => {
+      setListTask((prev) => prev.filter((t) => t._id !== data));
+      addAlert({ title: "Thành công", message: "Nhiệm vụ đã được chuyển/xóa", status: "success" });
     });
-    useEffect(() => {
-        const fetchTasks = async () => {
-            if (!id_group) return; // Đảm bảo có id_group
-            try {
-                // Đặt await trực tiếp
-                const res = await getListTaskAwaitingAPI(id_group) as any;
-                // Đảm bảo kiểu dữ liệu, thay (res: any) bằng kiểu chính xác nếu có
-                setListTask(res.data.tasks);
-            } catch (error) {
-                console.error("Lỗi khi tải danh sách nhiệm vụ:", error);
-                addAlert({
-                    title: "Lỗi",
-                    message: "Không thể tải danh sách nhiệm vụ",
-                    status: "error"
-                });
-            }
-        };
-        fetchTasks();
 
-        socket.on("has-del-task", async (data: string) => {
+    const handleAddTask = (task: PropsViewsTask) => {
+      setListTask((prev) => [task, ...prev]);
+      addAlert({ title: "Thành công", message: "Có nhiệm vụ mới đã được thêm", status: "success" });
+    };
+    const handleRemoveTask = (taskID: string) => {
+      setListTask((prev) => prev.filter((t) => t._id !== taskID));
+      addAlert({ title: "Thông báo", message: "Nhiệm vụ đã được chuyển/xóa", status: "success" });
+    };
 
-            // Khi nhận được sự kiện "has-del-task", gọi lại API để lấy danh sách nhiệm vụ mới nhất
-            try {
-                setListTask((prev) => prev.filter((task) => task._id !== data));
-                addAlert({
-                    title: "Thành công",
-                    message: "Nhiệm vụ đã được chuyển/xóa`",
-                    status: "success"
-                });
-            } catch (error) {
-                console.error("Lỗi khi tải danh sách nhiệm vụ:", error);
-                addAlert({
-                    title: "Lỗi",
-                    message: "Không thể tải danh sách nhiệm vụ",
-                    status: "error"
-                });
-            }
-        });
+    socket.on("add-waiting-task", handleAddTask);
+    socket.on("remove-waiting-task", handleRemoveTask);
 
-        // 1. Lắng nghe thêm nhiệm vụ mới
-        const handleAddTask = (task: PropsViewsTask) => {
-            setListTask((prev) => [task, ...prev]);
-            addAlert({
-                title: "Thành công",
-                message: "Có nhiệm vụ mới đã được thêm",
-                status: "success"
-            });
-        };
+    return () => {
+      socket.off("add-waiting-task", handleAddTask);
+      socket.off("remove-waiting-task", handleRemoveTask);
+      socket.off("has-del-task");
+    };
+  }, [id_group, addAlert]);
 
-        // 2. Lắng nghe xóa nhiệm vụ
-        const handleRemoveTask = (taskID: string) => {
-            setListTask((prev) => prev.filter((task) => task._id !== taskID));
-            addAlert({
-                title: "Thông báo",
-                message: "Nhiệm vụ đã được chuyển/xóa",
-                status: "success"
-            });
-        };
-
-        socket.on("add-waiting-task", handleAddTask);
-        socket.on("remove-waiting-task", handleRemoveTask);
-
-        // Dọn dẹp: Tắt lắng nghe khi component unmount
-        return () => {
-            socket.off("add-waiting-task", handleAddTask);
-            socket.off("remove-waiting-task", handleRemoveTask);
-            socket.off("has-del-task");
-        };
-        // Thêm id_group, getListTaskAwaitingAPI và addAlert vào dependency array nếu chúng thay đổi
-    }, [id_group, addAlert]);
-  
-    
-    return (
-        <div>
-            <HeaderDashboard title="Nhiệm Vụ">
-
-                <div className="flex gap-2 items-center">
-                    <div className="gap-2 flex justify-center items-center">
-                        <h3 className="text-xl">Filter : </h3>
-                        <div className="flex gap-2 bg-white p-2 group rounded font-bold relative cursor-pointer text-black">
-                            <p>Độ ưu tiên :</p>
-                            <select onChange={(e) => setFilterOptions({ ...filterOptions, priority: e.target.value })}>
-
-                                <option className="hover:bg-black/25 py-1" >Tất cả</option>
-                                <option className="hover:bg-black/25 py-1" >Thấp</option>
-                                <option className="hover:bg-black/25 py-1" >Trung bình</option>
-                                <option className="hover:bg-black/25 py-1" >Cao</option>
-                            </select>
-                        </div>
-                    </div>
-                    {listRole[`${id_group}`] === 'leader' && <Link to="create">
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="flex items-center cursor-pointer gap-2 px-4 py-2 rounded-2xl bg-blue-600 text-white font-medium shadow-md hover:bg-blue-700 transition-colors"
-                        >
-                            <PlusCircleOutlined className="w-5 h-5" />
-                            Tạo Nhiệm Vụ
-                        </motion.button>
-                    </Link>}
-                </div>
-            </HeaderDashboard>
-            <TaskSection listTask={listTask as PropsViewsTask[]} filterOptions={filterOptions} title="Nhiệm Vụ  đang chờ" />
-            <Outlet context={listTask} />
-            <AlertComponent />
-        </div>
-    )
-}
-
-
-export const TaskSection = ({ title, listTask, filterOptions }: { title: string, listTask: PropsViewsTask[], filterOptions: any }) => {
-
-
-    // Kiểm tra xem listTask có tồn tại và có phần tử nào không
-    const hasTasks = listTask && listTask.length > 0;
-
-    
-    return (
-        <>
-            <div className="mb-8">
-                <h3 className="text-xl font-semibold mb-4">{title}</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {
-                        // Hiển thị danh sách tasks nếu có
-                        hasTasks ? (
-                            listTask.map((item: PropsViewsTask, index) => {
-                            
-                                
-                                if (filterOptions.priority == "Tất cả") {
-                                    return (
-                                        <ItemsGroup
-                                            index={index}
-                                            key={item._id}
-                                            item={item}
-                                        />
-                                    )
-                                }else if (item.priority.toLowerCase() === filterOptions.priority.toLowerCase()) {
-                                    return (
-                                        <ItemsGroup
-                                            index={index}
-                                            key={item._id}
-                                            item={item}
-                                        />
-                                    )
-                                }
-                            })
-                        ) : (
-                            // Hiển thị thông báo nếu không có items
-                            <p className="text-gray-500 italic col-span-full">
-                                Không có items nào trong mục này.
-                            </p>
-                        )
-                    }
-                </div>
+  return (
+    <div className="min-h-screen bg-[#131b29]">
+      <HeaderDashboard title="Nhiệm Vụ">
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Filter */}
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)]">
+              Ưu tiên
+            </span>
+            <div className="relative">
+              <select
+                onChange={(e) => setFilterOptions({ ...filterOptions, priority: e.target.value })}
+                className="appearance-none bg-[#1a1a1a] border border-[rgba(255,185,0,0.18)] rounded-[8px] text-[#e0e0e0] text-[12px] px-[10px] pr-7 py-[5px] outline-none cursor-pointer"
+              >
+                <option>Tất cả</option>
+                <option>Thấp</option>
+                <option>Trung bình</option>
+                <option>Cao</option>
+              </select>
+              <svg
+                className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"
+                width="10" height="6" viewBox="0 0 10 6" fill="none"
+              >
+                <path d="M1 1l4 4 4-4" stroke="#ffb900" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
             </div>
-        </>
-    )
-}
-export default AwaitingTask
+          </div>
+
+          {/* Tạo nhiệm vụ */}
+          {listRole[`${id_group}`] === "leader" && (
+            <Link to="create">
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+                className="flex items-center gap-[6px] px-[14px] py-[7px] rounded-[10px]
+                  bg-[rgba(255,185,0,0.12)] border border-[rgba(255,185,0,0.25)]
+                  text-[#ffb900] text-[12px] font-medium cursor-pointer
+                  hover:bg-[rgba(255,185,0,0.18)] transition-colors"
+              >
+                <PlusCircleOutlined style={{ fontSize: 14 }} />
+                Tạo Nhiệm Vụ
+              </motion.button>
+            </Link>
+          )}
+        </div>
+      </HeaderDashboard>
+
+      <div className="p-5">
+        <TaskSection
+          title="Nhiệm vụ đang chờ"
+          listTask={listTask}
+          filterOptions={filterOptions}
+        />
+      </div>
+
+      <Outlet context={listTask} />
+      <AlertComponent />
+    </div>
+  );
+};
+
+export const TaskSection = ({
+  title,
+  listTask,
+  filterOptions,
+}: {
+  title: string;
+  listTask: PropsViewsTask[];
+  filterOptions: any;
+}) => {
+  const filtered =
+    filterOptions.priority === "Tất cả"
+      ? listTask
+      : listTask.filter(
+          (t) => t.priority.toLowerCase() === filterOptions.priority.toLowerCase()
+        );
+
+  return (
+    <div className="mb-8">
+      {/* Section header */}
+      <div className="flex items-center gap-3 mb-4">
+        <h3 className="text-[13px] font-medium text-[#f0f0f0] whitespace-nowrap">{title}</h3>
+        <span className="text-[11px] bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.2)] rounded-full px-[9px] py-[2px]">
+          {filtered.length}
+        </span>
+        <div className="flex-1 h-px bg-[rgba(255,185,0,0.08)]" />
+      </div>
+
+      {/* Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[10px]">
+        {filtered.length > 0 ? (
+          filtered.map((item, index) => (
+            <ItemsGroup key={item._id} index={index} item={item} />
+          ))
+        ) : (
+          <p className="text-[12px] text-white/20 italic col-span-full py-6">
+            Không có nhiệm vụ nào trong mục này.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default AwaitingTask;

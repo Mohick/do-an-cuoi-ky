@@ -1,4 +1,4 @@
-import { Suspense } from "react"
+import { Suspense, useEffect } from "react"
 import { Route, Routes } from "react-router-dom"
 import { HomePage } from "./page/home/home"
 import Auth from "./page/auth/auth"
@@ -31,7 +31,9 @@ import Developing from "./ultils/dev-mode"
 
 export default function Router() {
     const { data } = useAccount()
-    socket.connect()
+    useEffect(() => {
+        socket.connect()
+    }, [])
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <Routes>
@@ -82,7 +84,7 @@ export default function Router() {
                     </>
                 )
                 }
-                <Route path="library" element={<Developing/>}/>
+                <Route path="library" element={<Developing />} />
                 <Route path="*" element={<NotFoundPage />} />
             </Routes >
         </Suspense >
