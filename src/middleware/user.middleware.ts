@@ -35,8 +35,9 @@ class UserMiddleware {
     }
     static validateAutoLogin = (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { authorization } = req.headers;
-            const token = authorization?.split(" ")[1];
+            // const { authorization } = req.headers;
+            // const token = authorization?.split(" ")[1];
+            const token = req.cookies.token as string;
             if (!token) {
                 throw new Error("Thiếu token");
             }
