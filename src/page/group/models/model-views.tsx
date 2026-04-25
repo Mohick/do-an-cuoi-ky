@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 import {
   CloseOutlined,
@@ -21,10 +21,10 @@ import { useEffect, useState } from "react";
 import { socket } from "../../../socket/socket.io";
 
 const statusConfig: { [key: string]: { badge: string; label: string; bar: string } } = {
-  waiting:   { badge: "bg-[rgba(120,120,130,0.15)] text-[#aaa] border border-[rgba(130,130,140,0.2)]",   label: "Chờ",         bar: "from-[#555] to-[#888]" },
-  handling:  { badge: "bg-[rgba(59,130,246,0.12)] text-blue-400 border border-[rgba(59,130,246,0.2)]",   label: "Đang xử lý", bar: "from-[#2563eb] to-[#60a5fa]" },
-  pending:   { badge: "bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.22)]",   label: "Pending",     bar: "from-[#b37d00] to-[#ffb900]" },
-  completed: { badge: "bg-[rgba(34,197,94,0.10)] text-green-400 border border-[rgba(34,197,94,0.2)]",    label: "Hoàn thành", bar: "from-[#15803d] to-[#4ade80]" },
+  waiting: { badge: "bg-[rgba(120,120,130,0.15)] text-[#aaa] border border-[rgba(130,130,140,0.2)]", label: "Chờ", bar: "from-[#555] to-[#888]" },
+  handling: { badge: "bg-[rgba(59,130,246,0.12)] text-blue-400 border border-[rgba(59,130,246,0.2)]", label: "Đang xử lý", bar: "from-[#2563eb] to-[#60a5fa]" },
+  pending: { badge: "bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.22)]", label: "Pending", bar: "from-[#b37d00] to-[#ffb900]" },
+  completed: { badge: "bg-[rgba(34,197,94,0.10)] text-green-400 border border-[rgba(34,197,94,0.2)]", label: "Hoàn thành", bar: "from-[#15803d] to-[#4ade80]" },
 };
 
 const InfoCard = ({ label, children }: { label: string; children: React.ReactNode }) => (
@@ -232,7 +232,7 @@ const FullViewsTask = () => {
             <ComponentButton page={statusKey} valid={false} onClick={() => rollbackTaskAPI({ id_task: id_task || "", id_group: id_group || "" })} name="Hủy" />
           )}
           {listRole[id_group || ""] === "leader" && (
-            <ComponentButton page={statusKey} valid={false} onClick={() => deleteTaskAPI(id_task || "", id_group || "")} name="Xóa Task" />
+            <ComponentButton page={statusKey as string} valid={false} onClick={() => deleteTaskAPI(id_task || "", id_group || "")} name="Xóa Task" />
           )}
         </div>
       </motion.div>
