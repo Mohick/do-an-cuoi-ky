@@ -153,27 +153,38 @@ class UserControllers {
         try {
             const { email, username, password } = req.body;
             const id = req.userID;
-            const fileImg = (req.files as any)[0]
-            const uploadResult = await cloudinary.uploader.upload(fileImg.path)
+            const fileImg = (req.files as any)[0];
+
+            const fileBuffer = await fs.readFile(fileImg.path);
+            const form = new FormData();
+            form.append('file', new Blob([fileBuffer], { type: fileImg.mimetype }), fileImg.originalname);
+            form.append('upload_preset', process.env.CLOUDINARY_PRESET as string);
+            form.append('public_id', `avatars/${Date.now()}`);
+
+            const uploadRes = await fetch(
+                `https://api.cloudinary.com/v1_1/drzmyhioi/image/upload`,
+                { method: 'POST', body: form }
+            );
+            const uploadResult = await uploadRes.json() as any;
+
+            if (uploadResult.error) {
+                throw new Error(uploadResult.error.message);
+            }
+
+            await fs.unlink(fileImg.path);
 
             const avatar = {
                 public_id: uploadResult.public_id,
                 url: uploadResult.secure_url
-            }
-            const user = {
-                email,
-                username,
-                password,
-                avatar
-            }
-            await fs.unlink(fileImg.path);
-            req.body.avatar = uploadResult.secure_url
+            };
+            const user = { email, username, password, avatar };
+            req.body.avatar = uploadResult.secure_url;
 
-            const updateUser = await this._userModel.updateUser(id as string, user)
+            const updateUser = await this._userModel.updateUser(id as string, user);
             res.status(updateUser.valid ? 200 : 400).json(updateUser);
+
         } catch (error) {
             console.log(error);
-
             res.status(500).json({ valid: false, message: (error as Error).message });
         }
     }

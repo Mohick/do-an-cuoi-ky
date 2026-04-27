@@ -22,57 +22,67 @@ class GroupController {
         const result = await this.groupService.getRoleGroup(id_group, userId as string);
         res.status(result.valid ? 200 : 400).json(result);
     }
-    public createGroup = async (req: IAuthRequest, res: Response): Promise<void> => {
-        try {
-            const { name_project, deadline } = req.body;
-            const creator = req.userID;
-            if (!req.files || !creator) {
-                res.status(400).json({ valid: false, message: "Thiếu file ảnh hoặc thông tin người tạo." });
-                return;
-            }
-            const fileImg = (req.files as any)[0]
-            console.log(fileImg.path,process.env.CLOUDINARY_NAME,process.env.CLOUDINARY_PRESET);
-            
-            const uploadResult = await cloudinary.uploader.unsigned_upload(
-                fileImg.path,
-                process.env.CLOUDINARY_PRESET as string,
-                {
-                    folder: "uploads",
-                }
-            );
-            
-            await fs.unlink(fileImg.path);
-            const groupData = {
-                projectName: name_project,
-                creator,
-                deadline: new Date(deadline),
-                image: {
-                    url: uploadResult.url,
-                    public_id: uploadResult.public_id,
-                },
-            };
-         
-
-            const result = await this.groupService.create(groupData);
-            if (result.valid) {
-                const newObject = result.group.toObject();
-
-                getIO().emit('new-group', {
-                    ...newObject,
-                    image: `${newObject.image.url}`
-                });
-                res.status(result.valid ? 201 : 400).json(result);
-            }
-            res.status(result.valid ? 201 : 400).json(result);
-        } catch (error: any) {
-            console.error("LỖI KHI TẠO GROUP:", error);
-            if (error.name === 'ValidationError' || error.code === 11000) {
-                res.status(400).json({ valid: false, message: "Dữ liệu không hợp lệ hoặc đã tồn tại." });
-                return;
-            }
-            res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
+   public createGroup = async (req: IAuthRequest, res: Response): Promise<void> => {
+    try {
+        const { name_project, deadline } = req.body;
+        const creator = req.userID;
+        if (!req.files || !creator) {
+            res.status(400).json({ valid: false, message: "Thiếu file ảnh hoặc thông tin người tạo." });
+            return;
         }
-    };
+
+        const fileImg = (req.files as any)[0];
+        const fileBuffer = await fs.readFile(fileImg.path);
+
+        const form = new FormData();
+        form.append('file', new Blob([fileBuffer], { type: fileImg.mimetype }), fileImg.originalname);
+        form.append('upload_preset', process.env.CLOUDINARY_PRESET as string);
+        form.append('public_id', `groups/${Date.now()}`);
+
+        const uploadRes = await fetch(
+            `https://api.cloudinary.com/v1_1/drzmyhioi/image/upload`,
+            { method: 'POST', body: form }
+        );
+        const uploadResult = await uploadRes.json() as any;
+        console.log("UPLOAD RESULT:", uploadResult);
+
+        if (uploadResult.error) {
+            throw new Error(uploadResult.error.message);
+        }
+
+        await fs.unlink(fileImg.path);
+
+        const groupData = {
+            projectName: name_project,
+            creator,
+            deadline: new Date(deadline),
+            image: {
+                url: uploadResult.secure_url,
+                public_id: uploadResult.public_id,
+            },
+        };
+
+        const result = await this.groupService.create(groupData);
+        if (result.valid) {
+            const newObject = result.group.toObject();
+            getIO().emit('new-group', {
+                ...newObject,
+                image: `${newObject.image.url}`
+            });
+            res.status(201).json(result);
+            return;
+        }
+        res.status(400).json(result);
+
+    } catch (error: any) {
+        console.error("LỖI KHI TẠO GROUP:", error);
+        if (error.name === 'ValidationError' || error.code === 11000) {
+            res.status(400).json({ valid: false, message: "Dữ liệu không hợp lệ hoặc đã tồn tại." });
+            return;
+        }
+        res.status(500).json({ valid: false, message: "Lỗi server nội bộ." });
+    }
+};
     public getMyGroups = async (req: IAuthRequest, res: Response): Promise<void> => {
         try {
             const { status } = req.query
@@ -81,8 +91,8 @@ class GroupController {
                 res.status(400).json({ valid: false, message: "Không tìm thấy ID người dùng." });
                 return;
             }
-          
-            
+
+
             const result = await this.groupService.findGroupsByUserId(userId);
             result.groups = result.groups.map((group: any) => {
                 return {

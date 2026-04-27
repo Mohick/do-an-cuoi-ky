@@ -29,7 +29,7 @@ class GroupService {
                     }
                 },)
                 .sort({ createdAt: -1 }).populate('creator', 'username email avatar');
-            console.log(groups);
+           
             return { valid: true, groups, message: 'Lấy danh sách group thành công' };
         } catch (error: any) {
             console.error("LỖI KHI TÌM GROUP:", error);

@@ -18,7 +18,6 @@ class TaskController {
                 res.status(401).json({ valid: false, message: "Yêu cầu xác thực và cung cấp vai trò." });
                 return;
             }
-            console.log(id_group);
             
             const result = await this.taskService.create(req.body, creatorId, await this.groupService.getUserRoleInGroup(id_group, creatorId));
             
