@@ -14,9 +14,11 @@ export interface UserInterface {
     username: string;
     email: string;
     avatar: AvatarType;
+    _id: string
+    bio: string
+    
 }
 
-const description = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores corrupti hic nemo quaerat, vitae quas quae esse excepturi, sint est sed, illum ipsa deleniti. Impedit dolore inventore a quod omnis."
 
 const AccountUser = () => {
     const { data } = useAccount();
@@ -42,6 +44,8 @@ const AccountUser = () => {
                     >
                         <img
                             src={userData.avatar.url}
+                            loading="lazy"
+
                             alt="avatar"
                             className='w-24 h-24 rounded-full border-4 border-amber-400/50 object-cover shadow-[0_0_20px_rgba(251,191,36,0.3)]'
                         />
@@ -80,7 +84,7 @@ const AccountUser = () => {
                     </div>
                 </div>
 
-                <Link to={'edit'}>
+                <Link to={'edit-account'}>
                     <motion.div
                         whileHover={{ scale: 1.1, rotate: 15 }}
                         whileTap={{ scale: 0.9 }}
@@ -101,13 +105,13 @@ const AccountUser = () => {
                     </div>
 
                     {/* Nút Edit Bio nhẹ nhàng */}
-                    <Link to="edit" className='text-gray-500 hover:text-amber-400 transition-colors flex items-center gap-1 text-xs mb-2 mr-2'>
+                    <Link to="edit-bio" className='text-gray-500 hover:text-amber-400 transition-colors flex items-center gap-1 text-xs mb-2 mr-2'>
                         <EditOutlined /> CHỈNH SỬA BIO
                     </Link>
                 </div>
 
-                <div className='border border-white/20 p-8 rounded-b-xl flex flex-wrap rounded-tr-xl bg-white/[0.02] backdrop-blur-md min-h-[150px] leading-relaxed'>
-                    {description.split(" ").map((char, index) => {
+                <div className='border border-white/20 p-8 break-words rounded-b-xl flex flex-wrap rounded-tr-xl  backdrop-blur-md min-h-[150px] leading-relaxed'>
+                    {userData.bio.split(" ").map((char, index) => {
 
                         return (
                             <motion.span

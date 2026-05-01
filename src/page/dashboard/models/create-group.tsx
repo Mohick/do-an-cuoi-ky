@@ -104,7 +104,17 @@ const Form = () => {
             </label>
             <input
               type="text"
-              {...register("projectName", { required: "Vui lòng nhập tên dự án" })}
+              {...register("projectName", {
+                required: "Vui lòng nhập tên dự án",
+                validate: {
+                  noScript: (v) =>
+                    !/(<script|javascript:|on\w+=)/i.test(v) || "Tên dự án chứa ký tự không an toàn",
+                  wordLimit: (v) =>
+                    v.trim().split(/\s+/).length <= 50 || "Tên dự án không được quá 50 từ",
+                  noSpecial: (v) =>
+                    /^[^<>]*$/.test(v) || "Tên dự án không được chứa các thẻ HTML (<, >)"
+                }
+              })}
               placeholder="Ví dụ: Ứng dụng Quản lý Task"
               disabled={isSubmitting}
               className="w-full bg-[#1c2840] border border-[rgba(255,255,255,0.07)] rounded-[10px]
@@ -151,6 +161,8 @@ const Form = () => {
                   src={preview}
                   className="w-full h-full object-cover absolute inset-0"
                   initial={{ opacity: 0 }}
+                  loading="lazy"
+
                   animate={{ opacity: 1 }}
                 />
                 <div className="absolute inset-0 bg-black/30" />

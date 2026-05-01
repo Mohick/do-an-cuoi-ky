@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { User, CheckCircle, Crown, Mail, Loader } from "lucide-react";
+import { User, CheckCircle, Crown, Mail } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { getTopFiveMembersAPI } from "../../../../api/group";
 
@@ -13,9 +13,9 @@ interface TopMember {
 }
 
 const roleConfig: Record<string, { label: string; badge: string; icon: string }> = {
-  leader:    { label: "Leader",    badge: "bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.25)]",       icon: "text-[#ffb900]" },
-  confirmer: { label: "Xác nhận",  badge: "bg-[rgba(139,92,246,0.12)] text-purple-400 border border-[rgba(139,92,246,0.2)]",    icon: "text-purple-400" },
-  member:    { label: "Thành viên",badge: "bg-[rgba(59,130,246,0.12)] text-blue-400 border border-[rgba(59,130,246,0.2)]",       icon: "text-blue-400" },
+  leader: { label: "Leader", badge: "bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.25)]", icon: "text-[#ffb900]" },
+  confirmer: { label: "Xác nhận", badge: "bg-[rgba(139,92,246,0.12)] text-purple-400 border border-[rgba(139,92,246,0.2)]", icon: "text-purple-400" },
+  member: { label: "Thành viên", badge: "bg-[rgba(59,130,246,0.12)] text-blue-400 border border-[rgba(59,130,246,0.2)]", icon: "text-blue-400" },
 };
 
 const RankBadge = ({ rank }: { rank: number }) => {
@@ -49,7 +49,7 @@ const containerVariants = {
   visible: { opacity: 1, transition: { staggerChildren: 0.06 } },
 };
 
-const itemVariants = {
+const itemVariants: Record<string, any> = {
   hidden: { x: -10, opacity: 0 },
   visible: { x: 0, opacity: 1, transition: { type: "spring", stiffness: 120 } },
 };
@@ -130,7 +130,7 @@ export default function MemberTable() {
           return (
             <motion.div
               key={m._id}
-              variants={itemVariants}
+              variants={itemVariants }
               whileHover={{ y: -2, scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
               className={`

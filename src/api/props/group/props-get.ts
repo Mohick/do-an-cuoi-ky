@@ -24,4 +24,5 @@ export interface PropsGetGroup {
   valid: boolean;
   groups: Group[];
   message: string;
+  hasMore?: boolean;
 }

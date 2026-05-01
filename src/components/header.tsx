@@ -16,7 +16,7 @@ const HeaderDashboard: FC<Props_Header_Dashboard> = ({
 }) => {
     return (
         <motion.div
-            className="pys-6 flex items-center justify-between"
+            className="pys-6 flex items-center flex-wrap justify-between"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}

@@ -58,7 +58,7 @@ const Items: React.FC<ItemsProps> = ({
   return (
     <motion.div
       key={_id}
-      className={`item-${_id} col-span-3 w-full rounded-2xl overflow-hidden cursor-pointer relative
+      className={`item-${_id}w-full rounded-2xl overflow-hidden cursor-pointer relative
         bg-[#111111] border border-[#ffb900]/10
         shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,185,0,0.06)]`}
       variants={cardVariants}
@@ -120,6 +120,7 @@ const Items: React.FC<ItemsProps> = ({
           <motion.img
             src={image}
             alt={projectName}
+            loading="lazy"
             className="w-full h-full object-cover"
             initial={{ scale: 1.1, filter: "brightness(0.6) saturate(0.8)" }}
             animate={{ scale: 1, filter: "brightness(0.7) saturate(0.9)" }}

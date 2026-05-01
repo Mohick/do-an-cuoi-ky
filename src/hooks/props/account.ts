@@ -15,6 +15,7 @@ export interface PropsAccount {
             avatar: {
                 url: string
             }
+            bio: string
         }
     }
     blockcall: boolean

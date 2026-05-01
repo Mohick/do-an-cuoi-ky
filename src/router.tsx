@@ -26,8 +26,10 @@ import { socket } from "./socket/socket.io"
 import AccountUser from "./page/dashboard/account/account"
 import ModelLeaveGroup from "./page/group/setting/leave-group.model"
 import ModelDeleteGroup from "./page/group/setting/delete-group.model"
-import EditAccount from "./page/dashboard/account/models.edit"
+import EditAccount from "./page/dashboard/account/edit_account.models"
 import Developing from "./ultils/dev-mode"
+import EditBio from "./page/dashboard/account/edit_bio.models"
+import LoadingApp from "./ultils/loading-app"
 
 export default function Router() {
     const { data } = useAccount()
@@ -35,7 +37,7 @@ export default function Router() {
         socket.connect()
     }, [])
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoadingApp />}>
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="auth" element={<Auth />} />
@@ -48,7 +50,8 @@ export default function Router() {
                                         <Route path="create-group" element={<CreateGroup />} />
                                     </Route>
                                     <Route path="account" element={<AccountUser />} >
-                                        <Route path="edit" element={<EditAccount />} />
+                                        <Route path="edit-account" element={<EditAccount />} />
+                                        <Route path="edit-bio" element={<EditBio />} />
                                     </Route>
                                 </Route>
                                 <Route path="group/" element={<LayoutGroup />}>

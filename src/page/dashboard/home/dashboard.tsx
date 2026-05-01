@@ -10,14 +10,14 @@ import { socket } from "../../../socket/socket.io";
 
 const HomeDashboard = () => {
   const [group, setGroup] = useState<Group[]>([]);
-  const [valid, setValid] = useState<boolean>(false);
-
+  const [page, setPage] = useState<{ limit: number, page: number }>({ limit: 10, page: 1 });
+  const [showMore, setShowMore] = useState(false);
   useEffect(() => {
-    getGroupAPI()
+    getGroupAPI(page)
       .then((res: any) => {
         const data: PropsGetGroup = res.data ?? {};
-        setGroup(data.groups);
-        setValid(data.valid);
+        setGroup(group.concat(data.groups ?? []));
+        setShowMore(data.hasMore ?? false);
       })
       .catch((err) => console.log(err));
 
@@ -25,24 +25,11 @@ const HomeDashboard = () => {
       setGroup((prev) => [g, ...prev]);
     });
 
-    return () => { socket.off("new-group"); };
-  }, []);
+    return () => {
+      socket.off("new-group");
+    };
+  }, [page]);
 
-  if (!valid)
-    return (
-      <div className="min-h-screen bg-[#131b29] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="w-8 h-8 rounded-full border-2 border-[rgba(255,185,0,0.15)] border-t-[#ffb900]"
-          />
-          <span className="text-[12px] text-[rgba(255,185,0,0.4)] uppercase tracking-[0.12em]">
-            Đang tải...
-          </span>
-        </div>
-      </div>
-    );
 
   return (
     <div className="min-h-screen bg-[#131b29]">
@@ -62,8 +49,8 @@ const HomeDashboard = () => {
         </Link>
       </HeaderDashboard>
 
-      <div className="p-5">
-        <GroupSection items={group} />
+      <div className="py-5">
+        <GroupSection items={group} setPage={setPage} showMore={showMore} />
       </div>
 
       <Outlet />
@@ -71,17 +58,17 @@ const HomeDashboard = () => {
   );
 };
 
-type GroupSectionProps = { items: Group[] };
+type GroupSectionProps = { items: Group[], setPage: React.Dispatch<React.SetStateAction<{ limit: number, page: number }>>, showMore: boolean };
 
-const GroupSection: React.FC<GroupSectionProps> = ({ items }) => {
+const GroupSection: React.FC<GroupSectionProps> = ({ items, setPage, showMore }) => {
   if (!items?.length)
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-3">
         <div className="w-12 h-12 rounded-full bg-[rgba(255,185,0,0.06)] border border-[rgba(255,185,0,0.12)] flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,185,0,0.4)" strokeWidth="1.5">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
         </div>
         <p className="text-[13px] text-white/25 italic">Chưa có group nào.</p>
@@ -104,7 +91,7 @@ const GroupSection: React.FC<GroupSectionProps> = ({ items }) => {
         <div className="flex-1 h-px bg-[rgba(255,185,0,0.08)]" />
       </div>
 
-      <div className="w-full grid grid-cols-12 gap-4">
+      <div className="w-full grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4  max-h-full overflow-y-auto gap-4">
         {items.map((item, index) => (
           <Items
             key={item._id}
@@ -118,6 +105,16 @@ const GroupSection: React.FC<GroupSectionProps> = ({ items }) => {
           />
         ))}
       </div>
+      {showMore && <div className="flex justify-center mt-2">
+        <button
+          onClick={() => {
+            if (!showMore) return;
+            setPage((prev) => ({ limit: prev.limit, page: prev.page + 1 }));
+          }}
+          className="text-[12px] border py-1 px-5 rounded-4xl cursor-pointer hover:bg-[#ffb900]  text-[#ffb900] hover:text-white transition-colors">
+          Xem thêm
+        </button>
+      </div>}
     </div>
   );
 };

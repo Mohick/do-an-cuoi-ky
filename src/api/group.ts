@@ -12,8 +12,8 @@ import type { PropsCreateGroup } from "./props/group/props-create";
 const createGroupAPI = async (body: PropsCreateGroup) => {
     return await postAPIMultipart(`/api/group/create`, body);
 }
-const getGroupAPI = async () => {
-    return await getAPIJson(`/api/group`);
+const getGroupAPI = async ({ page, limit }: { page: number, limit: number }) => {
+    return await getAPIJson(`/api/group?page=${page}&limit=${limit}`);
 }
 const getRoleGroupAPI = async (id: string, socketID: string) => {
     return await getAPIJson(`/api/group/${id}?socketID=${socketID}`);

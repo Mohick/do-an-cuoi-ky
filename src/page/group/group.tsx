@@ -88,13 +88,12 @@ const LayoutGroup = () => {
         }
     }, [id_group])
 
-    if (!listRole[id_group as string]) return <div>Loading...</div>
     return (
-        <div className={`grid grid-cols-12 min-h-screen gap-2 bg-[#131b29] text-white p-5 `}>
-            <div className="grid col-span-2">
+        <div className={`grid grid-cols-12 min-h-screen max-h-screen h-screen overflow-hidden gap-2 bg-[#131b29] text-white p-5 `}>
+            <div className="grid col-span-12 lg:col-span-2">
                 <SideBarLayout listSideBar={listSideBar} name="Group" />
             </div>
-            <main className="col-span-10  p-6">
+            <main className="col-span-12 lg:col-span-10 h-full overflow-y-auto p-6">
                 <AnimatePresence>
                     <Outlet context={responsive.Role} />
                 </AnimatePresence>

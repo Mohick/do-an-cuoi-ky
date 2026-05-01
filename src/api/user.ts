@@ -34,4 +34,7 @@ const findUserByEmailAPI = async (email: string, id_group: string) => {
 const updateAccountAPI = async (body: any) => {
     return await patchAPIMultipart(`/api/user/update-account`, body);
 }
-export { registerAPI, loginAPI, autoLoginAPI, verifyEmailAPI, checkVerifyAPI, findUserByEmailAPI, updateAccountAPI }
+const updateBioAPI = async (body: any) => {
+    return await patchAPIJson(`/api/user/update-bio`, body);
+}
+export { updateBioAPI, registerAPI, loginAPI, autoLoginAPI, verifyEmailAPI, checkVerifyAPI, findUserByEmailAPI, updateAccountAPI }

@@ -26,19 +26,19 @@ export function Header() {
                 </div>
                 <motion.div className={`lg:relative absolute lg:h-full top-full left-0  w-full bg-[#121828] overflow-hidden transform duration-500 ${open ? 'block h-screen' : ' h-0'}`}>
                     <LayoutApp className="lg:max-w-[100%]">
-                        <ul className="text-white uppercase block lg:flex justify-end gap-3">
-                            <li>
-                                <Link className="py-1 block text-gray-200 font-bold hover:text-white" to={'/docs'}>
+                        <ul className="text-white uppercase mt-2 block lg:flex justify-end gap-3">
+                            <li className="border-b-2 lg:border-0">
+                                <Link className=" block text-center py-2 text-gray-200 font-bold hover:text-white" to={'/docs'}>
                                     Tài Liệu
                                 </Link>
                             </li>
-                            <li>
-                                <Link className="py-1 block text-gray-200 font-bold hover:text-white" to={'/docs'}>
+                            <li className="border-b-2 lg:border-0">
+                                <Link className=" block text-center py-2 text-gray-200 font-bold hover:text-white" to={'/docs'}>
                                     Giới thiệu
                                 </Link>
                             </li>
-                            <li>
-                                <Link className="py-1 block text-gray-200 font-bold hover:text-white" to={'/auth'}>
+                            <li className="border-b-2 lg:border-0">
+                                <Link className=" block text-center py-2 text-gray-200 font-bold hover:text-white" to={'/auth'}>
                                     Bắt đầu ngay
                                 </Link>
                             </li>

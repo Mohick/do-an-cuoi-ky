@@ -1,8 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { CloseOutlined } from "@ant-design/icons";
-import { User, UserCheck, UserPlus } from "lucide-react";
+import { X, User, UserCheck, UserPlus, Search, UserRoundPlus } from "lucide-react";
 import { findUserByEmailAPI } from "../../../api/user";
 import { handleAddMember } from "./handle-add-member";
 
@@ -29,108 +28,118 @@ const ModelsAddMember = () => {
   const [result, setResult] = useState<SearchResult | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // 🧠 Gọi API tìm user theo email (có debounce)
   useEffect(() => {
-    if (!email.trim()) {
-      setResult(null);
-      setLoading(false);
-      return;
-    }
-
+    if (!email.trim()) { setResult(null); setLoading(false); return; }
     setLoading(true);
     const timer = setTimeout(() => {
       findUserByEmailAPI(email, id_group as string)
         .then((res: any) => setResult(res.data))
-        .catch(() => {
-          setResult({ valid: false, message: "Lỗi: Không tìm thấy người dùng." });
-        })
+        .catch(() => setResult({ valid: false, message: "Không tìm thấy người dùng." }))
         .finally(() => setLoading(false));
     }, 800);
-
     return () => clearTimeout(timer);
   }, [email, id_group]);
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <motion.div
-        initial={{ opacity: 0, y: -20, scale: 0.95 }}
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -20, scale: 0.95 }}
-        className="bg-gray-900 border border-gray-700 rounded-2xl shadow-xl w-[420px] p-5 text-white"
+        exit={{ opacity: 0, y: 24, scale: 0.97 }}
+        transition={{ duration: 0.28, ease: [0.22, 0.68, 0, 1.1] }}
+        className="relative w-full max-w-sm bg-[#131b29] border border-[rgba(255,185,0,0.12)] rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden"
       >
+        {/* Accent bar */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#b37d00] to-[#ffb900]" />
+
         {/* Header */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Thêm thành viên</h2>
-          <CloseOutlined
+        <div className="px-5 pt-5 pb-4 border-b border-[rgba(255,185,0,0.08)] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-[8px] bg-[rgba(255,185,0,0.1)] border border-[rgba(255,185,0,0.2)] flex items-center justify-center">
+              <UserRoundPlus size={14} className="text-[#ffb900]" />
+            </div>
+            <div>
+              <h2 className="text-[14px] font-semibold text-[#f0f0f0]">Thêm thành viên</h2>
+              <p className="text-[10px] text-white/25 mt-0.5">Tìm kiếm qua email</p>
+            </div>
+          </div>
+          <button
             onClick={() => navigate(backPage)}
-            className="cursor-pointer text-gray-400 hover:text-white transition"
-          />
+            className="w-7 h-7 rounded-full border border-[rgba(255,185,0,0.2)] bg-[rgba(255,185,0,0.06)] text-[#ffb900] flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
+          >
+            <X size={13} />
+          </button>
         </div>
 
-        {/* Ô nhập email */}
-        <div className="flex flex-col gap-2">
-          <label className="font-medium text-sm text-gray-300">Tìm theo Email</label>
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            placeholder="Nhập email người dùng..."
-            className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            autoFocus
-          />
-        </div>
+        {/* Body */}
+        <div className="p-5 space-y-4">
+          {/* Input */}
+          <div>
+            <label className="block text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)] mb-2">
+              Email người dùng
+            </label>
+            <div className="relative">
+              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" />
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                placeholder="example@email.com"
+                autoFocus
+                className="w-full bg-[#1c2840] border border-[rgba(255,255,255,0.07)] rounded-[10px]
+                  pl-9 pr-4 py-[10px] text-[13px] text-[#e0e0e0] placeholder:text-white/20
+                  outline-none focus:border-[rgba(255,185,0,0.35)] focus:bg-[#1e2d47]
+                  transition-colors duration-200"
+              />
+              {/* Spinner inside input */}
+              {loading && (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-[rgba(255,185,0,0.15)] border-t-[#ffb900]"
+                />
+              )}
+            </div>
+          </div>
 
-        {/* Kết quả */}
-        <div className="mt-4 min-h-[80px]">
-          <AnimatePresence mode="wait">
-            {/* Loading */}
-            {loading && (
-              <motion.p
-                key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center text-gray-400 text-sm py-2"
-              >
-                🔍 Đang tìm kiếm...
-              </motion.p>
-            )}
+          {/* Results */}
+          <div className="min-h-[72px]">
+            <AnimatePresence mode="wait">
+              {/* Empty state */}
+              {!email && (
+                <motion.p key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="text-[12px] text-white/20 italic text-center py-4">
+                  Nhập email để tìm kiếm thành viên
+                </motion.p>
+              )}
 
-            {/* Không hợp lệ */}
-            {!loading && email && result && !result.valid && (
-              <motion.p
-                key="notfound"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center text-gray-400 text-sm py-2"
-              >
-                ❌ {result.message || "Không tìm thấy người dùng"}
-              </motion.p>
-            )}
+              {/* Not found */}
+              {!loading && email && result && !result.valid && (
+                <motion.div key="notfound" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="bg-[rgba(239,68,68,0.06)] border border-[rgba(239,68,68,0.12)] rounded-[10px] px-4 py-3 text-center">
+                  <p className="text-[12px] text-red-400/70">
+                    {result.message || "Không tìm thấy người dùng"}
+                  </p>
+                </motion.div>
+              )}
 
-            {/* Hợp lệ */}
-            {!loading && result && result.valid && result.user && (
-              <motion.div
-                key="found"
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                className="bg-gray-800 border border-gray-700 rounded-lg max-h-48 overflow-y-auto"
-              >
-                <div
-                  key={result.user._id || result.user.id}
-                  className="flex items-center justify-between px-3 py-2"
+              {/* Found */}
+              {!loading && result?.valid && result.user && (
+                <motion.div key="found" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="bg-[#1a1a1a] border border-[rgba(255,255,255,0.05)] rounded-[12px] px-4 py-3 flex items-center justify-between gap-3"
                 >
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-gray-400" />
-                    <div>
-                      <p className="text-sm">{result.user.username}</p>
-                      <p className="text-xs text-gray-400">{result.user.email}</p>
+                  {/* User info */}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-[rgba(255,185,0,0.08)] border border-[rgba(255,185,0,0.15)] flex items-center justify-center flex-shrink-0">
+                      <User size={14} className="text-[#ffb900]/60" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-medium text-[#e0e0e0] truncate">{result.user.username}</p>
+                      <p className="text-[11px] text-white/30 truncate">{result.user.email}</p>
                     </div>
                   </div>
 
-                  {/* Nút mời / đã mời */}
+                  {/* Action */}
                   <AnimatePresence mode="wait" initial={false}>
                     {result.userInGroup ? (
                       <motion.span
@@ -138,10 +147,11 @@ const ModelsAddMember = () => {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
-                        className="flex items-center gap-1.5 text-xs text-yellow-400 px-3 py-1 bg-yellow-900/50 rounded-lg border border-yellow-700"
+                        className="flex items-center gap-1.5 text-[10px] font-medium text-[#ffb900]/70
+                          bg-[rgba(255,185,0,0.08)] border border-[rgba(255,185,0,0.18)]
+                          px-3 py-[5px] rounded-full flex-shrink-0"
                       >
-                        <UserCheck className="w-3.5 h-3.5" />
-                        Đã mời
+                        <UserCheck size={11} /> Đã mời
                       </motion.span>
                     ) : (
                       <motion.button
@@ -151,31 +161,28 @@ const ModelsAddMember = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
                         onClick={async () => {
-                          const isSuccess = await handleAddMember({
+                          const ok = await handleAddMember({
                             id_group: id_group || "",
                             userID: result.user?._id || "",
-                            email: `${result.user?.email}` || "",
-                            groupName: "đẹp trai" ,
+                            email: result.user?.email || "",
+                            groupName: "đẹp trai",
                             username: result.user?.username || "",
                           });
-
-                          if (isSuccess) {
-                            setResult((prev) =>
-                              prev ? { ...prev, userInGroup: true } : prev
-                            );
-                          }
+                          if (ok) setResult((prev) => prev ? { ...prev, userInGroup: true } : prev);
                         }}
-                        className="flex items-center gap-1.5 bg-green-600 hover:bg-green-500 text-xs px-3 py-1 rounded-lg transition"
+                        className="flex items-center gap-1.5 text-[10px] font-medium text-green-400
+                          bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.2)]
+                          px-3 py-[5px] rounded-full flex-shrink-0
+                          hover:bg-[rgba(34,197,94,0.18)] transition-colors cursor-pointer"
                       >
-                        <UserPlus className="w-3.5 h-3.5" />
-                        Gửi lời mời
+                        <UserPlus size={11} /> Gửi lời mời
                       </motion.button>
                     )}
                   </AnimatePresence>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </motion.div>
     </div>

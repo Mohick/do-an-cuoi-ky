@@ -1,74 +1,86 @@
 import HeaderDashboard from "../../../components/header";
 import { ListMemberInGroups } from "./list-members";
 import { motion } from "framer-motion";
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit2, Trash2, LogOut, Settings } from "lucide-react";
 import React from "react";
 import { useRoleAccount } from "../../../hooks/role";
 import { Link, useParams } from "react-router-dom";
 
-// --- Component hiển thị tên group + nút chỉnh sửa ---
 interface GroupHeaderProps {
-    groupName: string;
-    onEdit?: () => void;
+  groupName: string;
 }
 
-const GroupHeader: React.FC<GroupHeaderProps> = ({ groupName, onEdit }) => {
-    return (
-        <Link to={`edit-group`} className="flex items-center justify-between bg-gray-900/50 border border-gray-700 p-4 rounded-2xl shadow-md mb-4">
-            <h2 className="text-xl font-semibold text-white">{groupName}</h2>
-            <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={onEdit}
-                className="flex items-center gap-1 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg transition"
-            >
-                <Edit2 className="w-4 h-4" /> Chỉnh sửa
-            </motion.button>
-        </Link>
-    );
+const GroupHeader: React.FC<GroupHeaderProps> = ({ groupName }) => {
+  return (
+    <Link to="edit-group" className="block">
+      <div className="relative bg-[#141414] border border-[rgba(255,185,0,0.12)] rounded-[14px] px-4 py-3 flex items-center justify-between overflow-hidden hover:border-[rgba(255,185,0,0.25)] transition-colors group">
+        {/* Accent bar */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[14px] bg-gradient-to-r from-[#b37d00] to-[#ffb900]" />
+
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-[8px] bg-[rgba(255,185,0,0.08)] border border-[rgba(255,185,0,0.15)] flex items-center justify-center">
+            <Settings size={14} className="text-[#ffb900]" />
+          </div>
+          <h2 className="text-[14px] font-semibold text-[#f0f0f0]">{groupName}</h2>
+        </div>
+
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-1.5 bg-[rgba(255,185,0,0.1)] border border-[rgba(255,185,0,0.2)] text-[#ffb900] text-[12px] font-medium px-3 py-[6px] rounded-[8px] transition-colors group-hover:bg-[rgba(255,185,0,0.16)]"
+        >
+          <Edit2 size={12} />
+          Chỉnh sửa
+        </motion.div>
+      </div>
+    </Link>
+  );
 };
 
-// --- Page Setting ---
 const Setting = () => {
-    const { listRole } = useRoleAccount();
-    const { id_group } = useParams();
-    const userRole = listRole?.[id_group || ""] || "leader";
+  const { listRole } = useRoleAccount();
+  const { id_group } = useParams();
+  const userRole = listRole?.[id_group || ""] || "leader";
+  const isLeader = userRole === "leader";
 
-    return (
-        <div className="space-y-6">
-            <HeaderDashboard title="Cài đặt" />
-            <br className="h-5" />
+  return (
+    <div className="min-h-screen bg-[#131b29]">
+      <HeaderDashboard title="Cài đặt" />
 
-            {userRole === "leader" && <GroupHeader
-                groupName="Tên nhóm của bạn"
-            />}
+      <div className="p-5 space-y-4">
+        {/* Group header — chỉ leader */}
+        {isLeader && <GroupHeader groupName="Tên nhóm của bạn" />}
 
-            <ListMemberInGroups />
+        {/* Member list */}
+        <ListMemberInGroups />
 
-            {/* Nút xóa group ở cuối */}
-            {userRole === "leader" ? <div className="flex justify-end">
-                <Link to={'delete'}>
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex items-center gap-1 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-bold transition"
-                    >
-                        <Trash2 className="w-4 h-4" /> Xóa group
-                    </motion.button>
-                </Link>
-            </div> : <div className="flex justify-end">
-                <Link to={'leave'}>
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex items-center gap-1 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg font-bold transition"
-                    >
-                        <Trash2 className="w-4 h-4" /> Rời nhóm
-                    </motion.button>
-                </Link>
-            </div>}
+        {/* Danger zone */}
+        <div className="bg-[#141414] border border-[rgba(239,68,68,0.12)] rounded-[14px] px-4 py-3 flex items-center justify-between">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[12px] font-medium text-red-400/80">
+              {isLeader ? "Xóa nhóm" : "Rời nhóm"}
+            </span>
+            <span className="text-[11px] text-white/25">
+              {isLeader
+                ? "Hành động này không thể hoàn tác."
+                : "Bạn sẽ không còn truy cập vào nhóm này."}
+            </span>
+          </div>
+
+          <Link to={isLeader ? "delete" : "leave"}>
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              className="flex items-center gap-1.5 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] text-red-400 text-[12px] font-medium px-3 py-[6px] rounded-[8px] hover:bg-[rgba(239,68,68,0.18)] transition-colors cursor-pointer"
+            >
+              {isLeader ? <Trash2 size={12} /> : <LogOut size={12} />}
+              {isLeader ? "Xóa group" : "Rời nhóm"}
+            </motion.button>
+          </Link>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Setting;
