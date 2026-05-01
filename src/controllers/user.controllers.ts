@@ -1,9 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
-import { cloudinary } from "../third-party/upload-images/multer";
-import fs from "fs/promises";
 import jwt from "jsonwebtoken";
 import userModels from "../models/user/user.models";
 import GroupService from "../models/group/group.models";
+import { uploadImage } from "../third-party/upload-images/multer";
+import type { MulterFile } from "../unit/type_project/multerfile.type";
 class UserControllers {
     private _userModel = userModels;
     private _groupService = GroupService;
@@ -111,10 +111,7 @@ class UserControllers {
             if (!userId || !avatarPath) {
                 return res.status(400).json({ valid: false, message: "Thiếu userId hoặc file ảnh" });
             }
-            const result = await cloudinary.uploader.upload(avatarPath, {
-                folder: "avatars"
-            });
-            fs.unlink(avatarPath);
+
 
             const user = {
 
@@ -153,36 +150,26 @@ class UserControllers {
         try {
             const { email, username, password } = req.body;
             const id = req.userID;
-            const fileImg = (req.files as any)[0];
-
-            const fileBuffer = await fs.readFile(fileImg.path);
-            const form = new FormData();
-            form.append('file', new Blob([fileBuffer], { type: fileImg.mimetype }), fileImg.originalname);
-            form.append('upload_preset', process.env.CLOUDINARY_PRESET as string);
-            form.append('public_id', `avatars/${Date.now()}`);
-
-            const uploadRes = await fetch(
-                `https://api.cloudinary.com/v1_1/drzmyhioi/image/upload`,
-                { method: 'POST', body: form }
-            );
-            const uploadResult = await uploadRes.json() as any;
-
-            if (uploadResult.error) {
-                throw new Error(uploadResult.error.message);
-            }
-
-            await fs.unlink(fileImg.path);
-
+            const uploadResult = await uploadImage(req.files as MulterFile[]);
             const avatar = {
                 public_id: uploadResult.public_id,
                 url: uploadResult.secure_url
             };
             const user = { email, username, password, avatar };
             req.body.avatar = uploadResult.secure_url;
-
             const updateUser = await this._userModel.updateUser(id as string, user);
             res.status(updateUser.valid ? 200 : 400).json(updateUser);
-
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ valid: false, message: (error as Error).message });
+        }
+    }
+    public updateBio = async (req: Request, res: Response, _next: NextFunction) => {
+        try {
+            const { bio } = req.body;
+            const id = req.userID;
+            const updateBio = await this._userModel.updateBio(id as string, bio);
+            res.status(updateBio.valid ? 200 : 400).json(updateBio);
         } catch (error) {
             console.log(error);
             res.status(500).json({ valid: false, message: (error as Error).message });

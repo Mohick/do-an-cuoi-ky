@@ -13,6 +13,9 @@ class TaskController {
         try {
             const creatorId = req.userID;
             const { id_group } = req.body;
+                  console.log(req.body);
+
+            
             req.body.priority = req.body.priority ? req.body.priority.toLowerCase() : "thấp";
             if (!creatorId || !id_group) {
                 res.status(401).json({ valid: false, message: "Yêu cầu xác thực và cung cấp vai trò." });
@@ -83,7 +86,7 @@ class TaskController {
     }
     public deleteTask = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { id } = req.params;
+            const { id_task } = req.params;
             const { id_group } = req.query;
             const userId = req.userID;
             const isLeader = await this.groupService.getRoleGroup(id_group as string, userId as string);
@@ -91,8 +94,8 @@ class TaskController {
                 res.status(401).json({ valid: false, message: "Yêu cầu xác thực và cung cấp vai trò." });
                 return;
             }
-            const result = await this.taskService.delTask(id);
-            getIO().to(`${id_group}`).emit("has-del-task",`${id}`)
+            const result = await this.taskService.delTask(id_task);
+            getIO().to(`${id_group}`).emit("has-del-task",`${id_task}`)
             res.status(result.valid ? 200 : 400).json(result);
         } catch (error: any) {
             console.error("LỖI CONTROLLER KHI LẤY MY TASK:", error);
@@ -225,11 +228,9 @@ class TaskController {
     public commentInTask = async (req: Request, res: Response): Promise<void> => {
         try {
             const { userID, id_task, comment, id_group } = req.body;
-
             const result = await this.taskService.commentInTask(id_task, userID, comment);
             getIO().to(id_group).emit('send-comment', result.newComment);
            
-            
             res.status(result.valid ? 201 : 400).json(result);
         } catch (error: any) {
             console.error("LỖI KHI LẤY GROUP:", error);

@@ -1,4 +1,4 @@
-import { abort } from "process";
+
 import { storeRedis } from "../../third-party/redis/redis";
 import { templateEmailVerifyAccount } from "../../third-party/send-email/template-send-verify-email";
 import SchemaUser from "./user.schema";
@@ -103,6 +103,15 @@ class UserModels {
             return { valid: false, message: error.message || "Database error" };
         }
     }
+    async updateBio(userId: string, bio: string): Promise<{ valid: boolean; message?: string }> {
+    try {
+        const user = await SchemaUser.findOneAndUpdate({ _id: userId }, { bio }, { new: true });
+        if (!user) return { valid: false, message: "Không tìm thấy user" };
+        return { valid: true, message: "Thành công" };
+    } catch (error: any) {
+        return { valid: false, message: error.message || "Database error" };
+    }
+}
 }
 
 export default new UserModels();

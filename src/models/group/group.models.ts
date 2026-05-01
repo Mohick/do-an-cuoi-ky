@@ -1,24 +1,28 @@
 import GroupModel from './group.schema.ts'; // Import Mongoose model của bạn
-import type { IGroup, ICreateGroupDTO } from './group.interface.ts'; // Import interfaces
-import type { Type } from 'typescript';
 import type mongoose from 'mongoose';
 import Task from '../task/task.schema.ts';
+import type { ICreateGroupDTO } from '../../unit/type_project/group/icreate_group_dto.type.ts';
+import type { ICreateGroupResponse } from '../../unit/type_project/group/response_create_group.type.ts';
+import type { IGroup, IGroupMember } from '../../unit/type_project/group/schema.type.ts';
+
+
 
 class GroupService {
     private groupModel = GroupModel;
     private taskModel = Task;
-    public async create(groupData: ICreateGroupDTO): Promise<{ valid: boolean; message: string, group?: any }> {
+    public async create(groupData: ICreateGroupDTO): Promise<ICreateGroupResponse> {
         try {
-            const group = (await this.groupModel.create(groupData))
-            const newGroup = await group.populate('creator', 'username email avatar');
-            return { valid: true, message: 'Tạo group thành công', group: newGroup };
+            const group = (await this.groupModel.create(groupData)) as unknown as IGroup;
+            return { valid: true, message: 'Tạo group thành công', group: group };
         } catch (error: any) {
             console.error("LỖI KHI TẠO GROUP:", error);
             return { valid: false, message: error.message || 'Lỗi không xác định từ database.' };
         }
     }
-    public async findGroupsByUserId(userId: string): Promise<{ valid: boolean; groups: IGroup[] | any; message: string }> {
+    public async findGroupsByUserId(userId: string, limit: number, page: number): Promise<{ valid: boolean; groups: IGroup[]; message: string, hasMore?: boolean }> {
         try {
+            const limitNum = Number(limit);
+            const pageNum = Number(page);
             const groups = await this.groupModel
                 .find({
                     members: {
@@ -27,11 +31,20 @@ class GroupService {
                             joined: true
                         }
                     }
-                },)
-                .sort({ createdAt: -1 }).populate('creator', 'username email avatar');
-           
-            return { valid: true, groups, message: 'Lấy danh sách group thành công' };
-        } catch (error: any) {
+                })
+                .limit(limitNum + 1)
+                .skip((pageNum - 1) * limitNum)
+                .sort({ deadline: 1 })
+                .populate('creator', 'username email avatar') as unknown as IGroup[];
+            const hasMore = groups.length > limitNum;
+            const finalGroups = hasMore ? groups.slice(0, limitNum) : groups;
+            return {
+                valid: true,
+                groups: finalGroups,
+                message: 'Lấy danh sách group thành công',
+                hasMore: hasMore
+            };
+        } catch (error) {
             console.error("LỖI KHI TÌM GROUP:", error);
             return { valid: false, groups: [], message: 'Lỗi server khi lấy danh sách group.' };
         }
@@ -73,28 +86,13 @@ class GroupService {
             return { valid: false, message: 'Lỗi server khi xóa group.' };
         }
     }
-    public async addMember(groupId: string, userID: string): Promise<{ valid: boolean; message: string }> {
-        try {
-            const group = await this.groupModel.findById(groupId);
-            if (!group) {
-                return { valid: false, message: 'Không tìm thấy group.' };
-            }
-            group.members.push({ user: userID, role: "member" });
-            await group.save();
-            return { valid: true, message: 'Them member thanh cong' };
-        } catch (error: any) {
-            console.error("LỖI KHI THEM MEMBER:", error);
-            return { valid: false, message: 'Lỗi server khi them member.' };
-        }
-    }
     public async getUserRoleInGroup(groupId: string, userID: string): Promise<'leader' | 'member' | 'confirmer' | ""> {
         try {
-            const group = await this.groupModel.findById(groupId, 'members.user members.role').lean();
+            const group = await this.groupModel.findById(groupId, 'members.user members.role').lean() as unknown as IGroup;
             if (!group) {
                 return "";
             }
-            const member = group.members.find((m: any) => m.user.equals(userID));
-
+            const member = group.members.find((m) => m.user.equals(userID));
             if (!member) {
                 return "";
             }
@@ -104,42 +102,53 @@ class GroupService {
             return "";
         }
     }
-    public async changeRoleLeader(groupId: string, userID: string, idUserChangeRole: mongoose.Types.ObjectId): Promise<{ valid: boolean; message: string }> {
+    public async addMember(groupId: string, userID: string): Promise<{ valid: boolean; message: string }> {
         try {
-            // 1. Authorization and Group Check
-            const getUserRoleInGroup = await this.getUserRoleInGroup(groupId, `${userID}`);
-            if (getUserRoleInGroup !== 'leader') {
-                return { valid: false, message: 'Chi leader moi co quyen doi vai trò' };
-            }
             const group = await this.groupModel.findById(groupId);
             if (!group) {
                 return { valid: false, message: 'Không tìm thấy group.' };
             }
-
-            // 2. Find the member to be promoted (the new leader)
-            const newLeader = group.members.find((m: any) => m.user.equals(idUserChangeRole));
-
+            let hasJoin = false;
+            group.members.forEach((member) => {
+                if (member._id.equals(userID)) {
+                    hasJoin = true;
+                }
+            })
+            if (hasJoin) {
+                return { valid: false, message: 'User đa học group' };
+            }
+            group.members.push({ user: userID, role: "member" });
+            await group.save();
+            return { valid: true, message: 'Them member thanh cong' };
+        } catch (error: any) {
+            console.error("LỖI KHI THEM MEMBER:", error);
+            return { valid: false, message: 'Lỗi server khi them member.' };
+        }
+    }
+    public async changeRoleLeader(groupId: string, userID: string, idUserChangeRole: mongoose.Types.ObjectId): Promise<{ valid: boolean; message: string }> {
+        try {
+            const getUserRoleInGroup = await this.getUserRoleInGroup(groupId, `${userID}`);
+            if (getUserRoleInGroup !== 'leader') {
+                return { valid: false, message: 'Chi leader moi co quyen doi vai trò' };
+            }
+            const group = await this.groupModel.findById(groupId) as unknown as IGroup;
+            if (!group) {
+                return { valid: false, message: 'Không tìm thấy group.' };
+            }
+            const newLeader = group.members.find((m) => m.user.equals(idUserChangeRole));
             if (!newLeader) {
                 return { valid: false, message: 'Không tìm thấy user trong group.' };
             }
-
-            // 3. Find the CURRENT leader and demote them to 'member'
-            // We use find() to get the current leader object
-            const currentLeader = group.members.find((m: any) => m.role === 'leader') as any;
+            const currentLeader = group.members.find((m) => m.role === 'leader');
 
             if (currentLeader) {
-                // Check to prevent self-demotion if they are promoting themselves (though usually not necessary)
                 if (!currentLeader.user.equals(idUserChangeRole)) {
-                    currentLeader.role = 'member'; // ⬅️ DEMOTE THE OLD LEADER
+                    currentLeader.role = 'member';
                 }
             }
-
-            // 4. Promote the designated user to 'leader'
-            newLeader.role = 'leader'; // ⬅️ PROMOTE THE NEW LEADER
+            newLeader.role = 'leader';
             group.creator = idUserChangeRole
-            // 5. Save the changes to the database
             await group.save();
-
             return { valid: true, message: 'Đổi vai trò thành công' };
         } catch (error: any) {
             console.error("LỖI KHI ĐỔI VAI TRÒ:", error);
@@ -152,12 +161,12 @@ class GroupService {
             if (getUserRoleInGroup !== 'leader') {
                 return { valid: false, message: 'Chi leader moi co quyen xoa member' }
             }
-            const group = await this.groupModel.findById(groupId);
+            const group = await this.groupModel.findById(groupId) as unknown as IGroup;
             if (!group) {
                 return { valid: false, message: 'Không tìm thấy group.' };
             }
-            const getDel = group.members.filter((m: any) => !m.user.equals(idUserDelete));
-            group.members = getDel as any;
+            const getDel = group.members.filter((m) => !m.user.equals(idUserDelete));
+            group.members = getDel;
             await group.save();
             return { valid: true, message: 'Xoa member thanh cong' };
         } catch (error: any) {
@@ -171,11 +180,11 @@ class GroupService {
             if (getUserRoleInGroup !== 'leader') {
                 return { valid: false, message: 'Chi leader moi co quyen doi vai trò' };
             }
-            const group = await this.groupModel.findById(groupId);
+            const group = await this.groupModel.findById(groupId) as unknown as IGroup;
             if (!group) {
                 return { valid: false, message: 'Không tìm thấy group.' };
             }
-            const member = group.members.find((m: any) => m.user.equals(idUserChangeRole));
+            const member = group.members.find((m) => m.user.equals(idUserChangeRole));
             if (!member) {
                 return { valid: false, message: 'Không tìm thấy user trong group.' };
             }
@@ -193,11 +202,11 @@ class GroupService {
             if (getUserRoleInGroup !== 'leader') {
                 return { valid: false, message: 'Chi leader moi co quyen doi vai trò' };
             }
-            const group = await this.groupModel.findById(groupId);
+            const group = await this.groupModel.findById(groupId) as unknown as IGroup;
             if (!group) {
                 return { valid: false, message: 'Không tìm thấy group.' };
             }
-            const member = group.members.find((m: any) => m.user.equals(idUserChangeRole));
+            const member = group.members.find((m) => m.user.equals(idUserChangeRole));
             if (!member) {
                 return { valid: false, message: 'Không tìm thấy user trong group.' };
             }
@@ -237,17 +246,17 @@ class GroupService {
     }
     public async ActiveJoinGroup(groupId: string, idUserInvite: string): Promise<{ valid: boolean; message: string }> {
         try {
-            const group = await this.groupModel.findById(groupId);
+            const group = await this.groupModel.findById(groupId) as unknown as IGroup;
             if (!group) {
                 return { valid: false, message: 'Không tìm thấy group.' };
             }
-            const getDel = group.members.map((m: any) => {
+            const getDel = group.members.map((m) => {
                 if (m.user.equals(idUserInvite)) {
                     m.joined = true;
                 }
                 return m;
             });
-            group.members = getDel as any;
+            group.members = getDel as IGroupMember[];
             await group.save();
             return { valid: true, message: 'Active thanh cong' };
         } catch (error: any) {
@@ -397,7 +406,19 @@ class GroupService {
             return { valid: false, message: 'Lỗi server khi xóa group.' };
         }
     }
-
+    public updateGroup = async (idGroup: string, userID: string, infoUpdate: any) => {
+        try {
+            const getUserRoleInGroup = await this.getUserRoleInGroup(`${idGroup}`, userID);
+            if (getUserRoleInGroup !== 'leader') {
+                return { valid: false, message: 'Chi leader moi co quyen xoa group' }
+            }
+            const result = await this.groupModel.findByIdAndUpdate({ _id: idGroup }, infoUpdate);
+            return { valid: true, message: 'Cập nhật group thành cong' };
+        } catch (error: any) {
+            console.error("LỖI KHI CÂP NHẤT GROUP:", error);
+            return { valid: false, message: 'Lỗi server khi cập nhật group.' };
+        }
+    }
 }
 
 export default new GroupService();
