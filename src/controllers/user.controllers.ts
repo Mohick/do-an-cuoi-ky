@@ -78,7 +78,9 @@ class UserControllers {
                 res.status(200).json(JSON.parse(getUser));
             } else {
                 const user = await this._userModel.findUserById(id as string);
-                storeRedis.set(id, JSON.stringify(user))
+                storeRedis.set(id, JSON.stringify(user), {
+                    EX: 10 * 60
+                })
                 res.status(200).json(user);
             }
 
@@ -99,10 +101,15 @@ class UserControllers {
     }
     checkVerifyEmail = async (req: Request, res: Response, _next: NextFunction) => {
         try {
-            const id = req.userID;
+            const id = req.userID as string;
             const { key } = req.body;
 
-            const checkVerifyEmail = await this._userModel.hasVerifyEmail(key, id as string);
+            const checkVerifyEmail = await this._userModel.hasVerifyEmail(id as string);
+            const user = await this._userModel.findUserById(id as string);
+
+            storeRedis.set(id, JSON.stringify(user), {
+                EX: 10 * 60
+            })
             return checkVerifyEmail.valid
                 ? res.status(200).json({ valid: true, message: "Thành Công" })
                 : res.status(400).json({ valid: false, message: checkVerifyEmail.message });

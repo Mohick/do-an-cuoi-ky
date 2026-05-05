@@ -42,43 +42,26 @@ class UserModels {
             return { valid: false, message: error.message || "Database error" };
         }
     }
-    async updateAvatar(userId: string, avatar: string):
-        Promise<{ valid: boolean; message?: string }> {
-        try {
-            const user = await SchemaUser.findOneAndUpdate({ _id: userId }, { avatar }, { new: true });
-            if (!user) return { valid: false, message: "Không tìm thấy user" };
-            return { valid: true, message: "Thành công" };
-        } catch (error: any) {
-            return { valid: false, message: error.message || "Database error" };
-        }
-    }
     async setVerifyEmail(userId: string): Promise<{ valid: boolean; message?: string }> {
         try {
 
             const key = btoa(userId);
             const url = process.env.CLI_URL + '/verify-email/' + key;
-
-
-            const getKey = await storeRedis.get(key);
-            if (!getKey) {
-                await storeRedis.set(key, "Chờ duyệt email", { EX: 300 });
+            console.log(url);
+            
                 const user = await SchemaUser.findById(userId);
                 if (user) {
                     await templateEmailVerifyAccount(user?.email || "", url);
                 }
                 return { valid: true, message: "Thành công" };
-            }
-            return { valid: false, message: "Cookie đã đc gửi" };
+            
         } catch (error: any) {
             return { valid: false, message: error.message || "Redis error khi set token" };
         }
     }
 
-    async hasVerifyEmail(key: string, userID: string): Promise<{ valid: boolean; message?: string }> {
+    async hasVerifyEmail( userID: string): Promise<{ valid: boolean; message?: string }> {
         try {
-            const getKey = await storeRedis.get(key);
-            if (!getKey) return { valid: false, message: "Token không tồn tại hoặc đã hết hạn" };
-            await storeRedis.del(key);
             await SchemaUser.updateOne({ _id: userID }, { verify: true });
             return { valid: true, message: "Thành công" };
         } catch (error: any) {
