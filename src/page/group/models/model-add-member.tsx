@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { X, User, UserCheck, UserPlus, Search, UserRoundPlus } from "lucide-react";
@@ -23,7 +23,7 @@ const ModelsAddMember = () => {
   const { id_group } = useParams();
   const navigate = useNavigate();
   const backPage = `/group/${id_group}/setting`;
-
+  const outletContext = useOutletContext() as any
   const [email, setEmail] = useState("");
   const [result, setResult] = useState<SearchResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -169,6 +169,8 @@ const ModelsAddMember = () => {
                             username: result.user?.username || "",
                           });
                           if (ok) setResult((prev) => prev ? { ...prev, userInGroup: true } : prev);
+                          outletContext["activeMember"]['active']((prev: any) => [...prev, result.user]);
+
                         }}
                         className="flex items-center gap-1.5 text-[10px] font-medium text-green-400
                           bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.2)]

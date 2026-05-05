@@ -83,14 +83,14 @@ const FullViewsTask = () => {
   // --- 4. HÀM XỬ LÝ SUBMIT COMMENT ---
   const onSubmitComment = (formData: CommentFormType) => {
     if (!formData.commentMsg.trim()) return; // Chặn gửi tin nhắn toàn dấu cách
-    
-    getCommentInTaskAPI({ 
-      id_task: item._id, 
-      comment: formData.commentMsg, 
-      userID: data?.data.user._id || "", 
-      id_group: id_group || "" 
+
+    getCommentInTaskAPI({
+      id_task: item._id,
+      comment: formData.commentMsg,
+      userID: data?.data.user._id || "",
+      id_group: id_group || ""
     });
-    
+
     reset(); // Clear input sau khi gửi
   };
 
@@ -128,6 +128,7 @@ const FullViewsTask = () => {
             <InfoCard label="Người nhận"><span className="flex items-center gap-1.5"><UserOutlined className="text-green-500/60 text-[12px]" />{item.implementer?.username ?? "Chưa có"}</span></InfoCard>
             <InfoCard label="Deadline"><span className="flex items-center gap-1.5 text-[#ffb900]"><ClockCircleOutlined className="text-[12px]" />{deadline}</span></InfoCard>
             <InfoCard label="Trạng thái"><span className={`inline-flex items-center gap-[5px] px-[10px] py-[3px] rounded-full text-[10px] font-medium tracking-[0.1em] uppercase ${cfg.badge}`}><span className="w-[5px] h-[5px] rounded-full bg-current opacity-70" />{cfg.label}</span></InfoCard>
+           <InfoCard label="Người kiểm duyệt"><span className="flex items-center gap-1.5"><UserOutlined className="text-green-500/60 text-[12px]" />{item.confirmer?.username ?? "Chưa có"}</span></InfoCard>
           </div>
 
           {/* Mô tả & Link (Giữ nguyên) */}
@@ -171,13 +172,13 @@ const FullViewsTask = () => {
             </div>
 
             {/* --- 5. TÍCH HỢP FORM VÀO INPUT COMMENT --- */}
-            <form 
-              onSubmit={handleSubmit(onSubmitComment)} 
+            <form
+              onSubmit={handleSubmit(onSubmitComment)}
               className="flex flex-col gap-1 mt-2"
             >
               <div className={`flex items-center gap-2 bg-[#1a1a1a] border rounded-[10px] px-[10px] py-[6px] transition-colors
                 ${errors.commentMsg ? "border-red-500/50" : "border-[rgba(255,185,0,0.15)] focus-within:border-[rgba(255,185,0,0.4)]"}`}>
-                
+
                 <input
                   type="text"
                   placeholder="Nhập bình luận..."
@@ -190,19 +191,19 @@ const FullViewsTask = () => {
                   })}
                   className="flex-1 bg-transparent border-none outline-none text-[13px] text-[#e0e0e0] placeholder:text-white/25"
                 />
-                
+
                 <button
                   type="submit"
                   disabled={!isValid}
                   className={`w-7 h-7 rounded-[7px] flex items-center justify-center transition-all
-                    ${isValid 
-                      ? "bg-[rgba(255,185,0,0.12)] border border-[rgba(255,185,0,0.2)] text-[#ffb900] cursor-pointer hover:bg-[rgba(255,185,0,0.2)]" 
+                    ${isValid
+                      ? "bg-[rgba(255,185,0,0.12)] border border-[rgba(255,185,0,0.2)] text-[#ffb900] cursor-pointer hover:bg-[rgba(255,185,0,0.2)]"
                       : "bg-white/5 text-white/20 cursor-not-allowed"}`}
                 >
                   <SendOutlined style={{ fontSize: 12 }} />
                 </button>
               </div>
-              
+
               {/* Hiển thị lỗi nếu có */}
               {errors.commentMsg && (
                 <span className="text-[10px] text-red-400/80 px-1">{errors.commentMsg.message}</span>

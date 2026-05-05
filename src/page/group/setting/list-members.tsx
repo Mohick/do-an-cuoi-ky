@@ -63,21 +63,14 @@ const ListMemberInGroups = () => {
       <motion.div
         key={item._id}
         variants={itemVariants}
-        className="flex items-center justify-between bg-[#1a1a1a] border border-[rgba(255,255,255,0.05)] px-3 py-[10px] rounded-[10px] hover:border-[rgba(255,185,0,0.12)] transition-colors duration-200"
+        className="flex p-1 items-center justify-between bg-[#1a1a1a] border border-[rgba(255,255,255,0.05)] px-3 py-[10px] rounded-[10px] hover:border-[rgba(255,185,0,0.12)] transition-colors duration-200"
       >
         {/* Left */}
         <div className="flex items-center gap-3 min-w-0">
           {/* Avatar */}
           <div className="relative flex-shrink-0">
-            <img
-              src={item.avatar}
-              loading="lazy"
-              className="w-8 h-8 rounded-full object-cover border border-[rgba(255,255,255,0.08)]"
-              alt={item.username}
-              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-            />
             {effectiveRole === "leader" && (
-              <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[rgba(255,185,0,0.15)] border border-[rgba(255,185,0,0.3)] flex items-center justify-center">
+              <div className=" -top-1 -right-1 w-4 h-4 rounded-full bg-[rgba(255,185,0,0.15)] border border-[rgba(255,185,0,0.3)] flex items-center justify-center">
                 <Crown size={8} className="text-[#ffb900]" />
               </div>
             )}
@@ -94,8 +87,6 @@ const ListMemberInGroups = () => {
             <p className="text-[11px] text-white/25 truncate mt-0.5">{item.email}</p>
           </div>
         </div>
-
-        {/* Action menu — leader only, non-leader targets */}
         {userRole === "leader" && item.role !== "leader" && (
           <div className="relative group flex-shrink-0 ml-2">
             <div className="w-7 h-7 rounded-[7px] border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.03)] flex items-center justify-center cursor-pointer hover:border-[rgba(255,185,0,0.2)] hover:bg-[rgba(255,185,0,0.05)] transition-colors">
@@ -131,7 +122,11 @@ const ListMemberInGroups = () => {
                 </li>
                 <div className="my-1 border-t border-[rgba(255,255,255,0.06)]" />
                 <li
-                  onClick={() => { updateKickMemberAPI({ id_group: id_group as string, userID: item._id }); }}
+                  onClick={async () => {
+                    updateKickMemberAPI({ id_group: id_group as string, userID: item._id });
+                     setJoinedMembers(joinedMembers.filter((m) => m._id !== item._id));
+                     setNotJoinedMembers(notJoinedMembers.filter((m) => m._id !== item._id));
+                  }}
                   className="flex items-center gap-2 px-3 py-[7px] rounded-[8px] text-[12px] text-red-400/80 hover:bg-[rgba(239,68,68,0.08)] cursor-pointer transition-colors"
                 >
                   <Trash2 size={13} className="text-red-400" /> Xóa thành viên
@@ -145,6 +140,7 @@ const ListMemberInGroups = () => {
   };
 
   const renderMemberList = (list: Member[], title: string, isPending = false) => (
+
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -192,7 +188,7 @@ const ListMemberInGroups = () => {
           variants={listVariants}
           initial="hidden"
           animate="show"
-          className="space-y-[6px] max-h-80 overflow-y-auto pr-1
+          className="space-y-[6px] max-h-80 overflow-y-auto p-1
             [&::-webkit-scrollbar]:w-[3px]
             [&::-webkit-scrollbar-track]:bg-transparent
             [&::-webkit-scrollbar-thumb]:bg-[rgba(255,185,0,0.15)]
@@ -211,7 +207,11 @@ const ListMemberInGroups = () => {
     <div className="space-y-4">
       {renderMemberList(joinedMembers, "Danh sách thành viên")}
       {renderMemberList(notJoinedMembers, "Đang đợi chấp nhận", true)}
-      <Outlet />
+      <Outlet context={{
+        activeMember: {
+          active: setNotJoinedMembers
+        }
+      }} />
     </div>
   );
 };

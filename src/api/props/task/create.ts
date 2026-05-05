@@ -45,6 +45,10 @@ export interface PropsViewsTask {
     updatedAt: string; // Thay đổi từ Date sang string (để khớp JSON)
     __v?: number;
     priority: 'Thấp' | 'Trung bình' | 'Cao';
+    confirmer?: {
+        _id: string;
+        username: string;
+    };
 }
 
 

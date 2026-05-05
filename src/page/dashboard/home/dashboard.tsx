@@ -30,7 +30,8 @@ const HomeDashboard = () => {
     };
   }, [page]);
 
-
+  console.log(group);
+  
   return (
     <div className="min-h-screen bg-[#131b29]">
       <HeaderDashboard title="Trang Chủ">

@@ -19,6 +19,7 @@ const useAccount = (): UseQueryResult<PropsAccount> => {
         }
       }
     },
+    
     gcTime: 60 * 1000
   })
 }

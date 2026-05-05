@@ -36,6 +36,7 @@ export default function Router() {
     useEffect(() => {
         socket.connect()
     }, [])
+    
     return (
         <Suspense fallback={<LoadingApp />}>
             <Routes>
