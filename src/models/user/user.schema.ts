@@ -29,7 +29,7 @@ const userSchema = new Schema({
             }
         },
         default: {
-            url: 'https://res.cloudinary.com/deiuv1q6x/image/upload/v1777019097/uploads/nawqyk3wxcnp9161r8ol.jpg',
+            url: process.env.BASE_URL + '/default_avatar.png',
             public_id: ''
         }
     },

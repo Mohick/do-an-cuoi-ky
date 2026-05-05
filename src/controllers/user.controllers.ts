@@ -2,8 +2,9 @@ import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import userModels from "../models/user/user.models";
 import GroupService from "../models/group/group.models";
-import { uploadImage } from "../third-party/upload-images/multer";
+import { destroyImage, uploadImage } from "../third-party/upload-images/multer";
 import type { MulterFile } from "../unit/type_project/multerfile.type";
+import { storeRedis } from "../third-party/redis/redis";
 class UserControllers {
     private _userModel = userModels;
     private _groupService = GroupService;
@@ -71,11 +72,16 @@ class UserControllers {
     }
     autoLogin = async (req: Request, res: Response, _next: NextFunction) => {
         try {
-            const id = req.userID;
+            const id = req.userID as string;
+            const getUser = await storeRedis.get(id)
+            if (getUser) {
+                res.status(200).json(JSON.parse(getUser));
+            } else {
+                const user = await this._userModel.findUserById(id as string);
+                storeRedis.set(id, JSON.stringify(user))
+                res.status(200).json(user);
+            }
 
-            const user = await this._userModel.findUserById(id as string);
-
-            res.status(200).json(user);
         } catch (error) {
             res.status(500).json({ valid: false, message: (error as Error).message });
         }
@@ -104,31 +110,6 @@ class UserControllers {
             res.status(500).json({ valid: false, message: (error as Error).message });
         }
     }
-    updateAvatar = async (req: Request, res: Response, _next: NextFunction) => {
-        try {
-            const { userId } = req.body;
-            const avatarPath = req.file?.path;
-            if (!userId || !avatarPath) {
-                return res.status(400).json({ valid: false, message: "Thiếu userId hoặc file ảnh" });
-            }
-
-
-            const user = {
-
-            }
-            const updated = await this._userModel.updateUser(userId, user);
-            return updated.valid
-                ? res.status(200).json({ valid: true, message: "Thành Công" })
-                : res.status(400).json({ valid: false, message: updated.message });
-
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({
-                valid: false,
-                message: (error as Error).message
-            });
-        }
-    }
     findUserByEmail = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const { email, id_group } = req.query;
@@ -150,15 +131,24 @@ class UserControllers {
         try {
             const { email, username, password } = req.body;
             const id = req.userID;
-            const uploadResult = await uploadImage(req.files as MulterFile[]);
-            const avatar = {
-                public_id: uploadResult.public_id,
-                url: uploadResult.secure_url
-            };
-            const user = { email, username, password, avatar };
-            req.body.avatar = uploadResult.secure_url;
-            const updateUser = await this._userModel.updateUser(id as string, user);
-            res.status(updateUser.valid ? 200 : 400).json(updateUser);
+            if (req.files?.length) {
+                const uploadResult = await uploadImage(req.files as MulterFile[]);
+                const avatar = {
+                    public_id: uploadResult.public_id,
+                    url: uploadResult.secure_url
+                };
+                const user = { email, username, password, avatar };
+
+                const updateUser = await this._userModel.updateUser(id as string, user);
+                if (updateUser.avatar_public_id?.trim().length) {
+                    destroyImage(updateUser.avatar_public_id as string);
+                }
+                res.status(updateUser.valid ? 200 : 400).json(updateUser);
+            } else {
+                const user = { email, username, password };
+                const updateUser = await this._userModel.updateUser(id as string, user);
+                res.status(updateUser.valid ? 200 : 400).json(updateUser);
+            }
         } catch (error) {
             console.log(error);
             res.status(500).json({ valid: false, message: (error as Error).message });

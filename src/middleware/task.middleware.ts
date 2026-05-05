@@ -21,9 +21,9 @@ class TaskMiddleware {
         if (!this.regexNameTask.test(task_name)) {
             return res.status(400).json({ valid: false, message: "Tên task không hợp lệ hoặc chứa ký tự cấm" });
         }
-        if (!this.regexUrl.test(url)) {
-            return res.status(400).json({ valid: false, message: "Url của task không hợp lệ hoặc chúa ký tự cấm" });
-        }
+       if(url.trim() !== "" && !this.regexUrl.test(url)) {
+            return res.status(400).json({ valid: false, message: "URL của task không hợp lệ hoặc chuae ký tự cấm" });
+       }
         if (!this.regexDescription.test(description)) {
             return res.status(400).json({ valid: false, message: "Mota của task không hợp lệ hoặc chúa ký tự cấm" });
         }

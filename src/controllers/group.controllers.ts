@@ -4,7 +4,7 @@ import { templateEmailJoinGroup } from "../third-party/send-email/template-send-
 import { storeRedis } from "../third-party/redis/redis.ts";
 import TaskService from "../models/task/task.models.ts";
 import { getIO } from "../third-party/socket/socket.ts";
-import { uploadImage } from "../third-party/upload-images/multer.ts";
+import { destroyImage, uploadImage } from "../third-party/upload-images/multer.ts";
 import type { MulterFile } from "../unit/type_project/multerfile.type.ts";
 import type { ICreateGroupDTO } from "../unit/type_project/group/icreate_group_dto.type.ts";
 import type { IGroup } from "../unit/type_project/group/schema.type.ts";
@@ -61,7 +61,7 @@ class GroupController {
             const userId = req.userID as string;
             const { limit, page } = req.query;
             const result = await this.groupService.findGroupsByUserId(userId, parseInt(limit as string), parseInt(page as string));
-            result.groups = result.groups.map((group: IGroup) => {
+            result.groups = result.groups.map((group: IGroup) => { 
                 return {
                     ...group.toObject(),
                     image: `${group.image.url}`
@@ -104,8 +104,7 @@ class GroupController {
                 return;
             }
             const redisKey = `${id_group}:${userID}`;
-            const urlCheck = `${process.env.CLI_URL}/join-group?id_verify=${encodeURIComponent(redisKey)}`;
-            await storeRedis.set(redisKey, JSON.stringify({ id_group, userID }), { EX: 300 });
+            const urlCheck = `${process.env.CLI_URL}/join-group?id_verify=${redisKey}`;
             await templateEmailJoinGroup(email, urlCheck, username, groupName);
             res.status(201).json({
                 valid: true,
@@ -120,16 +119,8 @@ class GroupController {
     verifyJoinGroup = async (req: Request, res: Response): Promise<void> => {
         try {
             const { id_verify } = req.body;
-            const cache = await storeRedis.get(id_verify);
-            if (!cache) {
-                res.status(400).json({ valid: false, message: "Mã xác thực không hợp lệ hoặc đã hết hạn." });
-                return;
-            }
-            const { id_group, userID } = JSON.parse(cache);
+            const [id_group, userID] = id_verify.split(":");
             const result = await this.groupService.ActiveJoinGroup(id_group, userID);
-            if (result.valid) {
-                await storeRedis.del(id_verify);
-            }
             res.status(result.valid ? 201 : 400).json(result);
         } catch (error: any) {
             console.error("LỖI KHI XÁC MINH THAM GIA NHÓM:", error);
@@ -243,6 +234,7 @@ class GroupController {
             const userID = req.userID;
             const { id_group } = req.params;
             const result = await this.groupService.deleteGroup(id_group, `${userID}`);
+            destroyImage(result.img_public_id as string);
             res.status(result.valid ? 201 : 400).json(result);
         } catch (error: any) {
             console.error("LỖI KHI XOA NHÓM:", error);

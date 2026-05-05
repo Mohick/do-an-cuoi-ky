@@ -17,7 +17,8 @@ const allowedOrigins = [
   process.env.PROD_CLIENT_URL,
 ].filter(Boolean);
 
-
+const isURL = process.env.BASE_URL + '/default-avatar.png'
+    console.log(isURL);
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -38,6 +39,8 @@ const client = createClient();
 client.on('error', err => console.log('Redis Client Error', err));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('./public'));
+
 connectDB();
 connectRedis();
 router(app);

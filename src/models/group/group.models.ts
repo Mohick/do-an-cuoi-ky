@@ -13,7 +13,7 @@ class GroupService {
     public async create(groupData: ICreateGroupDTO): Promise<ICreateGroupResponse> {
         try {
             const group = (await this.groupModel.create(groupData)) as unknown as IGroup;
-            return { valid: true, message: 'Tạo group thành công', group: group };
+            return { valid: true, message: 'Tạo group thành công', group: group.toObject() };
         } catch (error: any) {
             console.error("LỖI KHI TẠO GROUP:", error);
             return { valid: false, message: error.message || 'Lỗi không xác định từ database.' };
@@ -322,11 +322,16 @@ class GroupService {
                 }
                 const listMember = group.members.reduce((list: any, member: any) => {
                     const acc = {} as any;
-                    acc.role = member.role;
-                    acc._id = member.user._id;
-                    acc.username = member.user.username;
-                    acc.email = member.user.email;
-                    list.push(acc);
+                    if (member.joined === true) {
+                        console.log(member);
+                        
+                        acc.role = member.role;
+                        acc._id = member.user._id;
+                        acc.username = member.user.username;
+                        acc.email = member.user.email;
+                        list.push(acc);
+                        return list;
+                    }
                     return list;
                 }, []);
                 const countTask = {} as { [key: string]: number };
@@ -397,10 +402,12 @@ class GroupService {
                 return { valid: false, message: 'Chi leader moi co quyen xoa group' }
             }
             const deletedGroup = await this.groupModel.findByIdAndDelete(groupId);
+            console.log(deletedGroup);
+            
             if (!deletedGroup) {
                 return { valid: false, message: 'Không tìm thấy group để xóa.' };
             }
-            return { valid: true, message: 'Xóa group thành công.' };
+            return { valid: true, message: 'Xóa group thành công.',img_public_id:deletedGroup.image?.public_id };
         } catch (error: any) {
             console.error("LỖI KHI XÓA GROUP:", error);
             return { valid: false, message: 'Lỗi server khi xóa group.' };

@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 
 class GroupMiddleware {
     private static regexNameProject = /^(?!(?:[\s\S]*<script|[\s\S]*javascript:|[\s\S]*on\w+=))(?!(?:\s*\S+\s+){50,})[\s\S]*$/i;
+    private static _regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     static validateCreate = (req: Request, res: Response, next: NextFunction) => {
         const { name_project, deadline } = req.body;
         const deadlineTime = new Date(deadline).getTime();
@@ -42,9 +43,11 @@ class GroupMiddleware {
         else res.status(400).json({ valid: false, message: "ID người dung khong hop le" })
     }
     static validateInviteJoinGroup = (req: Request, res: Response, next: NextFunction) => {
-        const { id_group } = req.params;
-        const { userID } = req.body;
-        if (mongoose.Types.ObjectId.isValid(id_group) && mongoose.Types.ObjectId.isValid(userID)) { next() }
+        const { email,groupName,userID,username,id_group } = req.body;
+        
+        if (mongoose.Types.ObjectId.isValid(id_group) && mongoose.Types.ObjectId.isValid(userID)&& 
+        this._regexEmail.test(email) && groupName.trim() && username.trim()
+        ) { next() }
         else res.status(400).json({ valid: false, message: "ID người dung khong hop le" })
     }
     static validateVerifyJoinGroup = (req: Request, res: Response, next: NextFunction) => {

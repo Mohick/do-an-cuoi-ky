@@ -8,7 +8,6 @@ export interface IComment extends Document {
     createdAt: Date;
 }
 
-// Interface chính cho một Task document
 export interface ITask extends Document {
     task_name: string;
     creator: Schema.Types.ObjectId;

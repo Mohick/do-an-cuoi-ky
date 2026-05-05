@@ -94,24 +94,29 @@ class UserModels {
             return { valid: false, message: error.message || "Database error" };
         }
     }
-    async updateUser(userId: string, data: any): Promise<{ valid: boolean; message?: string }> {
+    async updateUser(userId: string, data: any): Promise<{ valid: boolean; message?: string, avatar_public_id?: string }> {
         try {
-            const user = await SchemaUser.findOneAndUpdate({ _id: userId }, data, { new: true });
+            const user = await SchemaUser.findById({ _id: userId });
+            await SchemaUser.updateOne({ _id: userId }, data);
+            const oldURLImg = user?.avatar.public_id as string;
+            console.log(oldURLImg,"_", data.avatar.public_id, "_", "groups/1777952530395");
+
+            if (!user) return { valid: false, message: "Không tìm thấy user" };
+
+            return { valid: true, message: "Thành công", avatar_public_id: oldURLImg as string };
+        } catch (error: any) {
+            return { valid: false, message: error.message || "Database error" };
+        }
+    }
+    async updateBio(userId: string, bio: string): Promise<{ valid: boolean; message?: string }> {
+        try {
+            const user = await SchemaUser.findOneAndUpdate({ _id: userId }, { bio }, { new: true });
             if (!user) return { valid: false, message: "Không tìm thấy user" };
             return { valid: true, message: "Thành công" };
         } catch (error: any) {
             return { valid: false, message: error.message || "Database error" };
         }
     }
-    async updateBio(userId: string, bio: string): Promise<{ valid: boolean; message?: string }> {
-    try {
-        const user = await SchemaUser.findOneAndUpdate({ _id: userId }, { bio }, { new: true });
-        if (!user) return { valid: false, message: "Không tìm thấy user" };
-        return { valid: true, message: "Thành công" };
-    } catch (error: any) {
-        return { valid: false, message: error.message || "Database error" };
-    }
-}
 }
 
 export default new UserModels();

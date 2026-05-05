@@ -100,6 +100,7 @@ class TaskService {
                 .populate('creator', 'username email avatar')
                 .populate('implementer', 'username email avatar')
                 .populate('comments.user', 'username')
+                .populate('confirmer', 'username email avatar')
                 .sort({ updatedAt: 'desc' });
             return { valid: true, tasks, message: 'Lấy danh sách task đang chờ duyệt.' };
         } catch (error: any) {
