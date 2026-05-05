@@ -36,7 +36,7 @@ export default function Router() {
     useEffect(() => {
         socket.connect()
     }, [])
-    
+
     return (
         <Suspense fallback={<LoadingApp />}>
             <Routes>
@@ -83,8 +83,8 @@ export default function Router() {
                                 <Route path="/join-group" element={<JoinGroup />} />
                             </>
                         }
-                        {!data?.data.user.verify && <Route path="verify-email" element={<VerifyEmailPage />} />}
-                        {!data?.data.user.verify && <Route path="verify-email/:id" element={<CheckVerify />} />}
+                        <Route path="verify-email" element={<VerifyEmailPage />} />
+                        <Route path="verify-email/:id" element={<CheckVerify />} />
                     </>
                 )
                 }

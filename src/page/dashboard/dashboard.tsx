@@ -16,11 +16,11 @@ const listSideBar: {
             link: '/dashboard',
             icon: <HomeOutlined />
         },
-        {
-            name: 'Thư viện',
-            link: '/library',
-            icon: <HomeOutlined />
-        },
+        // {
+        //     name: 'Thư viện',
+        //     link: '/library',
+        //     icon: <HomeOutlined />
+        // },
         {
             name: "Tài khoản",
             link: "/dashboard/account",

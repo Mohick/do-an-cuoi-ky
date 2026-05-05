@@ -18,6 +18,8 @@ export default function VerifyEmailPage() {
       } else {
         verifyEmailAPI();
       }
+    }else{
+      navigate('/')
     }
   }, []);
 
