@@ -46,7 +46,7 @@ class UserModels {
                 const user = await SchemaUser.findById(userId);
                 if (user) {
                     const url = process.env.CLI_URL + '/verify-email/' + key;
-                    templateEmailVerifyAccount(user?.email || "", url);
+                    await templateEmailVerifyAccount(user?.email || "", url);
                     await storeRedis.set(key, "verify", { EX: 60 * 5 }); // 5 phút
                 }
             }
