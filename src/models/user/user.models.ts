@@ -39,14 +39,19 @@ class UserModels {
     }
     async setVerifyEmail(userId: string): Promise<{ valid: boolean; message?: string }> {
         try {
+            console.time();
+
             const key = btoa(userId + "verify");
             if (!await storeRedis.get(key)) {
-                const url = process.env.CLI_URL + '/verify-email/' + key;
-                await storeRedis.set(key, "verify", { EX: 60 * 5 }); // 5 phút
                 const user = await SchemaUser.findById(userId);
                 if (user) {
-                    await templateEmailVerifyAccount(user?.email || "", url);
+                    const url = process.env.CLI_URL + '/verify-email/' + key;
+                    templateEmailVerifyAccount(user?.email || "", url);
+                    await storeRedis.set(key, "verify", { EX: 60 * 5 }); // 5 phút
                 }
+            }
+            console.timeEnd();
+            if (await storeRedis.get(key)) {
                 return { valid: true, message: "Thành công" };
             } else {
                 return { valid: false, message: "Gửi verify thất bại" };
