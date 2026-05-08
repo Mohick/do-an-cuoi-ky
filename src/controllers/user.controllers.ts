@@ -18,6 +18,40 @@ class UserControllers {
             );
         };
     }
+    setUserFromRedis = async (id: string, userData: {
+        valid: boolean; message?: string;
+        user?: {
+            _id: string;
+            username: string;
+            email: string;
+            verify: boolean;
+            avatar: {
+                url: string;
+                public_id: string;
+            };
+            bio: string;
+            password?: string;
+
+        };
+    }) => {
+        userData.user!.password = "";
+        userData.user!.avatar = {
+            url: userData.user!.avatar.url,
+            public_id: ''
+        };
+        await storeRedis.set(id, JSON.stringify(userData), {
+            EX: 10 * 60
+        });
+    }
+    getsetUserFromRedis = async (id: string) => {
+
+        if (await storeRedis.get(id)) {
+            const userData = await storeRedis.get(id);
+            return JSON.parse(userData as string);
+        } else {
+            return null;
+        }
+    }
     create = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const { email, password, username } = req.body;
@@ -73,14 +107,12 @@ class UserControllers {
     autoLogin = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const id = req.userID as string;
-            const getUser = await storeRedis.get(id)
+            const getUser = await this.getsetUserFromRedis(id);
             if (getUser) {
-                res.status(200).json(JSON.parse(getUser));
+                res.status(200).json(getUser);
             } else {
-                const user = await this._userModel.findUserById(id as string);
-                storeRedis.set(id, JSON.stringify(user), {
-                    EX: 10 * 60
-                })
+                const user = await this._userModel.findUserById(id);
+                this.setUserFromRedis(id, user);
                 res.status(200).json(user);
             }
 
@@ -92,6 +124,7 @@ class UserControllers {
         try {
             const id = req.userID;
             const sent = await this._userModel.setVerifyEmail(id as string);
+
             return sent.valid
                 ? res.status(200).json(sent)
                 : res.status(400).json(sent);
@@ -103,13 +136,8 @@ class UserControllers {
         try {
             const id = req.userID as string;
             const { key } = req.body;
-
-            const checkVerifyEmail = await this._userModel.hasVerifyEmail(id as string);
-            const user = await this._userModel.findUserById(id as string);
-
-            storeRedis.set(id, JSON.stringify(user), {
-                EX: 10 * 60
-            })
+            const checkVerifyEmail = await this._userModel.hasVerifyEmail(id as string, key);
+            await this.setUserFromRedis(id, checkVerifyEmail);
             return checkVerifyEmail.valid
                 ? res.status(200).json({ valid: true, message: "Thành Công" })
                 : res.status(400).json({ valid: false, message: checkVerifyEmail.message });
@@ -136,24 +164,38 @@ class UserControllers {
 
     public updateUser = async (req: Request, res: Response, _next: NextFunction) => {
         try {
-            const { email, username, password } = req.body;
-            const id = req.userID;
+            const { username, password, newPassword } = req.body;
+            const id = req.userID as string;
             if (req.files?.length) {
                 const uploadResult = await uploadImage(req.files as MulterFile[]);
                 const avatar = {
                     public_id: uploadResult.public_id,
                     url: uploadResult.secure_url
                 };
-                const user = { email, username, password, avatar };
+                const user: { username?: string, password?: string, avatar?: { url: string, public_id: string }, newPassword?: string } = { username, password, avatar, newPassword };
 
                 const updateUser = await this._userModel.updateUser(id as string, user);
                 if (updateUser.avatar_public_id?.trim().length) {
                     destroyImage(updateUser.avatar_public_id as string);
                 }
+                if (updateUser.valid) {
+                    this.setUserFromRedis(id, {
+                        valid: updateUser.valid,
+                        message: updateUser.message,
+                        user: updateUser.user
+                    })
+                }
                 res.status(updateUser.valid ? 200 : 400).json(updateUser);
             } else {
-                const user = { email, username, password };
+                const user = { username, password, newPassword };
                 const updateUser = await this._userModel.updateUser(id as string, user);
+                if (updateUser.valid) {
+                    this.setUserFromRedis(id, {
+                        valid: updateUser.valid,
+                        message: updateUser.message,
+                        user: updateUser.user
+                    })
+                }
                 res.status(updateUser.valid ? 200 : 400).json(updateUser);
             }
         } catch (error) {
@@ -164,8 +206,15 @@ class UserControllers {
     public updateBio = async (req: Request, res: Response, _next: NextFunction) => {
         try {
             const { bio } = req.body;
-            const id = req.userID;
-            const updateBio = await this._userModel.updateBio(id as string, bio);
+            const id = req.userID as string;
+            const updateBio = await this._userModel.updateBio(id, bio);
+            if (updateBio.valid) {
+                this.setUserFromRedis(id, {
+                    valid: updateBio.valid,
+                    message: updateBio.message,
+                    user: updateBio.user
+                })
+            }
             res.status(updateBio.valid ? 200 : 400).json(updateBio);
         } catch (error) {
             console.log(error);
