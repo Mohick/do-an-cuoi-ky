@@ -10,6 +10,7 @@ export default function VerifyEmailPage() {
   const navigate = useNavigate();
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
+  const [countdown, setCountdown] = useState(300);
 
   useEffect(() => {
     if (!data?.blockcall) {
@@ -18,13 +19,20 @@ export default function VerifyEmailPage() {
       } else {
         verifyEmailAPI();
       }
-    }else{
-      navigate('/')
+    } else {
+      navigate('/');
     }
   }, []);
 
+  // Countdown timer on mount
+  useEffect(() => {
+    if (countdown <= 0) return;
+    const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [countdown]);
+
   const handleResend = async () => {
-    if (resending || resent) return;
+    if (resending || resent || countdown > 0) return;
     setResending(true);
     try {
       await verifyEmailAPI();
@@ -33,6 +41,8 @@ export default function VerifyEmailPage() {
       setResending(false);
     }
   };
+
+  const isDisabled = resending || resent || countdown > 0;
 
   return (
     <div className="min-h-screen bg-[#0d1520] flex items-center justify-center p-4">
@@ -91,15 +101,17 @@ export default function VerifyEmailPage() {
 
           {/* Resend */}
           <motion.button
-            whileHover={{ scale: resending || resent ? 1 : 1.03 }}
-            whileTap={{ scale: resending || resent ? 1 : 0.97 }}
+            whileHover={{ scale: isDisabled ? 1 : 1.03 }}
+            whileTap={{ scale: isDisabled ? 1 : 0.97 }}
             onClick={handleResend}
-            disabled={resending || resent}
+            disabled={isDisabled}
             className={`w-full flex items-center justify-center gap-2 py-[10px] rounded-[10px]
-              text-[12px] font-medium transition-all cursor-pointer
+              text-[12px] font-medium transition-all
               ${resent
                 ? "bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.2)] text-green-400/70 cursor-default"
-                : "bg-[rgba(255,185,0,0.08)] border border-[rgba(255,185,0,0.18)] text-[#ffb900]/70 hover:bg-[rgba(255,185,0,0.14)]"
+                : countdown > 0
+                  ? "bg-[rgba(255,185,0,0.04)] border border-[rgba(255,185,0,0.1)] text-[#ffb900]/30 cursor-not-allowed"
+                  : "bg-[rgba(255,185,0,0.08)] border border-[rgba(255,185,0,0.18)] text-[#ffb900]/70 hover:bg-[rgba(255,185,0,0.14)] cursor-pointer"
               } ${resending ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {resending ? (
@@ -113,6 +125,19 @@ export default function VerifyEmailPage() {
               </>
             ) : resent ? (
               "✓ Đã gửi lại email"
+            ) : countdown > 0 ? (
+              <>
+                <motion.span
+                  key={countdown}
+                  initial={{ opacity: 0.5 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-[11px] font-bold text-[#ffb900]/50 tabular-nums"
+                >
+                  {String(Math.floor(countdown / 60)).padStart(2, '0')}:{String(countdown % 60).padStart(2, '0')}
+                </motion.span>
+                Gửi lại email
+              </>
             ) : (
               <>
                 <RefreshCw size={13} />

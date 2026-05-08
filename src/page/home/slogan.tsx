@@ -22,7 +22,7 @@ export default function Slogan() {
                 <div className="flex flex-col md:flex-row gap-4 text-base md:text-3xl">
                     <Link to={"/auth"}>
                         <motion.button
-                            className="bg-white hover:border-white  hover:shadow-white shadow-md flex items-center gap-2 text-[#131b29] duration-300 hover:bg-[#131b29] hover:text-white py-2 px-4 rounded-md cursor-pointer border border-[#131b29] transition"
+                            className="bg-white  text-[#ffb900] hover:border-white  hover:shadow-white shadow-md flex items-center gap-2 duration-300 hover:bg-[#131b29] hover:text-white py-2 px-4 rounded-md cursor-pointer border border-[#131b29] transition"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.5 }}

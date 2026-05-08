@@ -26,7 +26,7 @@ function TitleHomePageCPN({ text, className = "" }: PropsTitleHomePage) {
           {line.split("").map((char, charIndex) => (
             <motion.span
               key={`${lineIndex}-${charIndex}`}
-              className={`inline-block ${lineIndex >= 1 ? "text-[#60a5fa]" : ""
+              className={`inline-block ${lineIndex >= 1 ? "text-[#ffb900]" : ""
                 }`}
               variants={fadeUpVariant(lineIndex * 0.5 + charIndex * 0.1)}
               initial="hidden"

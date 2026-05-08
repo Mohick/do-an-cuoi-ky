@@ -28,17 +28,7 @@ export function Header() {
                     <LayoutApp className="lg:max-w-[100%]">
                         <ul className="text-white uppercase mt-2 block lg:flex justify-end gap-3">
                             <li className="border-b-2 lg:border-0">
-                                {/* <Link className=" block text-center py-2 text-gray-200 font-bold hover:text-white" to={'/docs'}>
-                                    Tài Liệu
-                                </Link> */}
-                            </li>
-                            <li className="border-b-2 lg:border-0">
-                                {/* <Link className=" block text-center py-2 text-gray-200 font-bold hover:text-white" to={'/docs'}>
-                                    Giới thiệu
-                                </Link> */}
-                            </li>
-                            <li className="border-b-2 lg:border-0">
-                                <Link className=" block text-center py-2 text-gray-200 font-bold hover:text-white" to={'/auth'}>
+                                <Link className=" block text-center py-2 text-[#ffb900] font-bold hover:text-white" to={'/auth'}>
                                     Bắt đầu ngay
                                 </Link>
                             </li>

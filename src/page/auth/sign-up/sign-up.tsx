@@ -1,6 +1,6 @@
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import { useForm } from "react-hook-form";
-import HCaptcha from "@hcaptcha/react-hcaptcha";
+// import HCaptcha from "@hcaptcha/react-hcaptcha";
 import InputAuth from "../component/input";
 import ButtonAuth from "../component/button";
 import { handleSubmitRegister } from "./handle-submit";
@@ -39,7 +39,6 @@ export default function SignUp() {
   const {
     register,
     handleSubmit,
-    setValue,
     setError,
     formState: { errors },
     watch,
@@ -124,7 +123,7 @@ export default function SignUp() {
           placeholder="*********"
         />
 
-        {/* HCaptcha */}
+        {/* HCaptcha
         <HCaptcha
           sitekey={import.meta.env.VITE_HCAPTCHA_SITEKEY}
           size="normal"
@@ -142,7 +141,7 @@ export default function SignUp() {
         />
         {errors.captchaToken && (
           <p className="text-red-500">{errors.captchaToken.message}</p>
-        )}
+        )} */}
         <ButtonAuth text="Đăng ký" className="w-full cursor-pointer" />
 
       </form>

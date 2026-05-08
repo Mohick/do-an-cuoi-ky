@@ -1,3 +1,4 @@
+import type { NavigateFunction } from "react-router-dom";
 import { updateAccountAPI } from "../../../api/user"
 
 
@@ -7,17 +8,23 @@ import { updateAccountAPI } from "../../../api/user"
 
 
 
-const handleUpdate = (data: {
+const handleUpdate = async (data: {
     username: string;
-    email: string;
     password: string;
     newPassword: string;
     confirmPassword: string;
     image: FileList
-}) => {
-    console.log(data);
-    
-    updateAccountAPI(data)
+}, navigate: NavigateFunction) => {
+
+    try {
+        await updateAccountAPI(data);
+        navigate('/dashboard/account')
+        return true
+
+    } catch (error) {
+        console.error("Lỗi khi cập nhật tài khoản:", error);
+        return false
+    }
 
 }
 

@@ -1,11 +1,12 @@
-import { CloseCircleOutlined, MailOutlined, UserOutlined, KeyOutlined, ReloadOutlined, SaveOutlined } from "@ant-design/icons"
-import { Link, useOutletContext } from "react-router-dom"
+import { CloseCircleOutlined, UserOutlined, KeyOutlined, ReloadOutlined, SaveOutlined } from "@ant-design/icons"
+import { Link, useNavigate, useOutletContext } from "react-router-dom"
 import InputAuth from "../../auth/component/input"
 import { useState } from "react";
 import { useForm } from "react-hook-form"; // Import khứa này
 import type { UserInterface } from "./account";
 import { motion } from "framer-motion";
 import { handleUpdate } from "./handle_account.update";
+import { useAccount } from "../../../hooks/account";
 
 const getImg = (target: HTMLInputElement) => {
     const file = target.files?.[0] ?? null;
@@ -14,10 +15,12 @@ const getImg = (target: HTMLInputElement) => {
 }
 
 const EditAccount = () => {
- 
+
     const user: UserInterface = useOutletContext();
+    const { refetch } = useAccount();
     const [preview, setPreview] = useState<string>(user.avatar.url);
     const [file, setFile] = useState<File | null>(null);
+    const navigate = useNavigate();
     // 1. Khởi tạo Hook Form
     const {
         register,
@@ -34,11 +37,13 @@ const EditAccount = () => {
         }
     });
 
-    const onSubmit = (data: any) => {
+    const onSubmit = async (data: any) => {
         data.image = [file]
-    
-        
-        handleUpdate(data);
+        const validate = await handleUpdate(data, navigate);
+        if (validate) {
+            await refetch();
+
+        }
     };
 
     return (
@@ -58,7 +63,7 @@ const EditAccount = () => {
                     </Link>
                 </div>
 
-                <form onSubmit={handleSubmit(onSubmit)}  className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <div className="grid grid-cols-12 gap-6">
                         {/* Phần Avatar */}
                         <div className="col-span-12 flex justify-center">
@@ -94,28 +99,19 @@ const EditAccount = () => {
                                 {errors.username && <p className="text-red-400 text-xs mt-1">{errors.username.message}</p>}
                             </div>
 
-                            <div>
-                                <InputAuth
-                                    type="email"
-                                    Icon={MailOutlined}
-                                    label={{ text: "Email", className: "text-amber-50" }}
-                                    {...register("email", {
-                                        required: "Email là bắt buộc",
-                                        pattern: { value: /^\S+@\S+$/i, message: "Email không đúng định dạng" }
-                                    })}
-                                />
-                                {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>}
-                            </div>
-
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <InputAuth
                                         Icon={KeyOutlined}
                                         type="password"
-                                        label={{ text: "Mật khẩu cũ", className: "text-amber-50 text-xs" }}
+                                        label={{ text: "Mật khẩu cũ *", className: "text-amber-50 text-xs" }}
                                         placeholder="••••••••"
-                                        {...register("password")}
+                                        {...register("password", {
+                                            required: "Mật khẩu cũ là bắt buộc",
+                                            pattern: { value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, message: "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt" }
+                                        })}
                                     />
+                                    {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>}
                                 </div>
                                 <div>
                                     <InputAuth
@@ -123,7 +119,10 @@ const EditAccount = () => {
                                         type="password"
                                         label={{ text: "Mật khẩu mới", className: "text-amber-50 text-xs" }}
                                         placeholder="••••••••"
-                                        {...register("newPassword", { minLength: { value: 6, message: "Tối thiểu 6 ký tự" } })}
+                                        {...register("newPassword", {
+                                            minLength: { value: 8, message: "Tối thiểu 8 ký tự" },
+                                            pattern: { value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, message: "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt" }
+                                        })}
                                     />
                                     {errors.newPassword && <p className="text-red-400 text-xs mt-1">{errors.newPassword.message}</p>}
                                 </div>
