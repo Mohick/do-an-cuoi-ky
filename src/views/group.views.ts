@@ -97,5 +97,11 @@ routerGroup.delete(
     GroupMiddleware.validateIDGroup,
     GroupController.deleteGroup
 )
-
+routerGroup.patch(
+    '/update/group-info',
+    UserMiddleware.validateAutoLogin,
+    upload.array('image[]'),
+    GroupMiddleware.validateUpdateGroupInfo,
+    GroupController.updateGroup
+)
 export default routerGroup; 

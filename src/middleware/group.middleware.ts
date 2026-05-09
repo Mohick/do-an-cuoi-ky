@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 
 
 class GroupMiddleware {
-    private static regexNameProject = /^(?!(?:[\s\S]*<script|[\s\S]*javascript:|[\s\S]*on\w+=))(?!(?:\s*\S+\s+){50,})[\s\S]*$/i;
+    private static regexNameProject = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s|_]{4,50}$/u;
     private static _regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     static validateCreate = (req: Request, res: Response, next: NextFunction) => {
         const { name_project, deadline } = req.body;
@@ -43,10 +43,10 @@ class GroupMiddleware {
         else res.status(400).json({ valid: false, message: "ID người dung khong hop le" })
     }
     static validateInviteJoinGroup = (req: Request, res: Response, next: NextFunction) => {
-        const { email,groupName,userID,username,id_group } = req.body;
-        
-        if (mongoose.Types.ObjectId.isValid(id_group) && mongoose.Types.ObjectId.isValid(userID)&& 
-        this._regexEmail.test(email) && groupName.trim() && username.trim()
+        const { email, groupName, userID, username, id_group } = req.body;
+
+        if (mongoose.Types.ObjectId.isValid(id_group) && mongoose.Types.ObjectId.isValid(userID) &&
+            this._regexEmail.test(email) && groupName.trim() && username.trim()
         ) { next() }
         else res.status(400).json({ valid: false, message: "ID người dung khong hop le" })
     }
@@ -69,6 +69,28 @@ class GroupMiddleware {
         if (mongoose.Types.ObjectId.isValid(id_group)) { next() }
         else res.status(400).json({ valid: false, message: "ID task khong hop le" })
     }
+    static validateUpdateGroupInfo = async (req: Request, res: Response, next: NextFunction) => {
+        const { id_group, name_project, deadline } = req.body;
+        const deadlineTime = new Date(deadline).getTime();
+        const currentTime = Date.now();
+        const isNameInvalid = !this.regexNameProject.test(name_project);
+        const isDeadlineInvalid = isNaN(deadlineTime) || deadlineTime < currentTime;
+        console.log(name_project, deadlineTime, currentTime);
 
+        if (isNameInvalid || isDeadlineInvalid) {
+            const details = {
+                name_project: isNameInvalid ? "Tên dự án không hợp lệ hoặc chứa mã độc" : "",
+                deadline: isDeadlineInvalid ? "Deadline phải lớn hơn thời gian hiện tại" : "",
+            }
+            res.status(400).send({
+                valid: false,
+                message: "" + details.name_project + details.deadline,
+
+            });
+            return;
+        }
+        if (mongoose.Types.ObjectId.isValid(id_group)) { next() }
+        else res.status(400).json({ valid: false, message: "ID task khong hop le" })
+    }
 }
 export { GroupMiddleware }

@@ -8,7 +8,7 @@ declare module "express-serve-static-core" {
     }
 }
 class UserMiddleware {
-    private static _regexUsername = /^[a-zA-Z._]{4,20}$/;
+    private static _regexUsername = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s|_]{4,50}$/u;;
     private static _regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     private static _regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     static validateRegister = (req: Request, res: Response, next: NextFunction) => {
@@ -37,11 +37,6 @@ class UserMiddleware {
         try {
             const { authorization } = req.headers;
             const token = authorization?.split(" ")[1];
-            // const isToken = req.headers.cookie?.split(";");
-            // const getToken = isToken?.find(item => item.includes("token"));
-            // const token = getToken?.split("=")[1].trim();
-
-
             if (!token) {
                 throw new Error("Thiếu token");
             }

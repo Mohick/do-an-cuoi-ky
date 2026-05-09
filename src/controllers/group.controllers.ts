@@ -243,8 +243,21 @@ class GroupController {
     public updateGroup = async (req: Request, res: Response): Promise<void> => {
         try {
             const userID = req.userID;
-            const { id_group } = req.params;
-            const result = await this.groupService.updateGroup(id_group, `${userID}`, req.body);
+            const { id_group, name_project, deadline } = req.body;
+            const files = req.files as MulterFile[] | undefined;
+            if (files && files.length > 0) {
+                const uploadResult = await uploadImage(files);
+                req.body.image = {
+                    url: uploadResult.secure_url,
+                    public_id: uploadResult.public_id,
+                };
+            }
+            const db = {
+                projectName: name_project,
+                deadline,
+                image: req.body.image,
+            }
+            const result = await this.groupService.updateGroup(id_group, `${userID}`, db);
             res.status(result.valid ? 201 : 400).json(result);
         } catch (error: any) {
             console.error("LỖI KHI CÁNH BÁO NHÓM:", error);
