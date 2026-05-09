@@ -1,7 +1,5 @@
 import type { Request, Response } from "express";
 import GroupService from "../models/group/group.models.ts";
-import { templateEmailJoinGroup } from "../third-party/send-email/template-send-join-group.ts";
-import { storeRedis } from "../third-party/redis/redis.ts";
 import TaskService from "../models/task/task.models.ts";
 import { getIO } from "../third-party/socket/socket.ts";
 import { destroyImage, uploadImage } from "../third-party/upload-images/multer.ts";
@@ -9,6 +7,7 @@ import type { MulterFile } from "../unit/type_project/multerfile.type.ts";
 import type { ICreateGroupDTO } from "../unit/type_project/group/icreate_group_dto.type.ts";
 import type { IGroup } from "../unit/type_project/group/schema.type.ts";
 import type { ICreateGroupResponse } from "../unit/type_project/group/response_create_group.type.ts";
+import { sendGroupInvitationEmail } from "../third-party/emailjs/send_verify_join_group.ts";
 
 
 class GroupController {
@@ -61,7 +60,7 @@ class GroupController {
             const userId = req.userID as string;
             const { limit, page } = req.query;
             const result = await this.groupService.findGroupsByUserId(userId, parseInt(limit as string), parseInt(page as string));
-            result.groups = result.groups.map((group: IGroup) => { 
+            result.groups = result.groups.map((group: IGroup) => {
                 return {
                     ...group.toObject(),
                     image: `${group.image.url}`
@@ -105,7 +104,7 @@ class GroupController {
             }
             const redisKey = `${id_group}:${userID}`;
             const urlCheck = `${process.env.CLI_URL}/join-group?id_verify=${redisKey}`;
-            await templateEmailJoinGroup(email, urlCheck, username, groupName);
+            sendGroupInvitationEmail(email, username, groupName, urlCheck);
             res.status(201).json({
                 valid: true,
                 message: "Đã gửi lời mời tham gia nhóm thành công.",

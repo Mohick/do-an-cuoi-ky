@@ -1,6 +1,6 @@
 
+import { sendEmailVerifyAccount } from "../../third-party/emailjs/send_verify_account";
 import { storeRedis } from "../../third-party/redis/redis";
-import { templateEmailVerifyAccount } from "../../third-party/send-email/template-send-verify-email";
 import SchemaUser from "./user.schema";
 import bcrypt from "bcrypt";
 class UserModels {
@@ -39,19 +39,16 @@ class UserModels {
     }
     async setVerifyEmail(userId: string): Promise<{ valid: boolean; message?: string }> {
         try {
-            console.time();
-
             const key = btoa(userId + "verify");
             if (!await storeRedis.get(key)) {
                 const user = await SchemaUser.findById(userId);
                 if (user) {
                     const url = process.env.CLI_URL + '/verify-email/' + key;
-                    await templateEmailVerifyAccount(user?.email || "", url);
-                    await storeRedis.set(key, "verify", { EX: 60 * 5 }); // 5 phút
+                    sendEmailVerifyAccount(user?.email || "", url);
                 }
             }
-            console.timeEnd();
-            if (await storeRedis.get(key)) {
+            if (!await storeRedis.get(key)) {
+                await storeRedis.set(key, "verify", { EX: 60 * 5 }); // 5 phút
                 return { valid: true, message: "Thành công" };
             } else {
                 return { valid: false, message: "Gửi verify thất bại" };
