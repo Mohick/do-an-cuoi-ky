@@ -4,6 +4,7 @@ import Task from '../task/task.schema.ts';
 import type { ICreateGroupDTO } from '../../unit/type_project/group/icreate_group_dto.type.ts';
 import type { ICreateGroupResponse } from '../../unit/type_project/group/response_create_group.type.ts';
 import type { IGroup, IGroupMember } from '../../unit/type_project/group/schema.type.ts';
+import type { Types } from 'mongoose';
 
 
 
@@ -230,15 +231,16 @@ class GroupService {
             return { valid: false, members: [], message: 'Lỗi server khi tìm group.' };
         }
     }
-    public async inviteJoinGroup(groupId: string, idUserInvite: string): Promise<{ valid: boolean; message: string }> {
+    public async inviteJoinGroup(groupId: string, idUserInvite: string): Promise<{ valid: boolean; message: string, name_group?: string }> {
         try {
-            const group = await this.groupModel.findById(groupId);
+            const group = await this.groupModel.findById(groupId).populate('members.user', 'username avatar _id email').lean() as unknown as IGroup;
             if (!group) {
                 return { valid: false, message: 'Không tìm thấy group.' };
             }
             group.members.push({ user: idUserInvite, role: 'member' });
             await group.save();
-            return { valid: true, message: 'Invite thanh cong' };
+  
+            return { valid: true, message: 'Invite thanh cong', name_group: group.projectName };
         } catch (error: any) {
             console.error("LỖI KHI INVITE:", error);
             return { valid: false, message: 'Lỗi server khi invite.' };
@@ -324,7 +326,7 @@ class GroupService {
                     const acc = {} as any;
                     if (member.joined === true) {
                         console.log(member);
-                        
+
                         acc.role = member.role;
                         acc._id = member.user._id;
                         acc.username = member.user.username;
@@ -403,11 +405,11 @@ class GroupService {
             }
             const deletedGroup = await this.groupModel.findByIdAndDelete(groupId);
             console.log(deletedGroup);
-            
+
             if (!deletedGroup) {
                 return { valid: false, message: 'Không tìm thấy group để xóa.' };
             }
-            return { valid: true, message: 'Xóa group thành công.',img_public_id:deletedGroup.image?.public_id };
+            return { valid: true, message: 'Xóa group thành công.', img_public_id: deletedGroup.image?.public_id };
         } catch (error: any) {
             console.error("LỖI KHI XÓA GROUP:", error);
             return { valid: false, message: 'Lỗi server khi xóa group.' };

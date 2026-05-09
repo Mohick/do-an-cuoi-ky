@@ -104,7 +104,7 @@ class GroupController {
             }
             const redisKey = `${id_group}:${userID}`;
             const urlCheck = `${process.env.CLI_URL}/join-group?id_verify=${redisKey}`;
-            sendGroupInvitationEmail(email, username, groupName, urlCheck);
+            sendGroupInvitationEmail(email, username, result.name_group as string, urlCheck);
             res.status(201).json({
                 valid: true,
                 message: "Đã gửi lời mời tham gia nhóm thành công.",
