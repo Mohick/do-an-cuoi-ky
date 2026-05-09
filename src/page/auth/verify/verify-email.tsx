@@ -2,11 +2,11 @@ import { motion } from 'framer-motion';
 import { Mail, InboxIcon, RefreshCw } from 'lucide-react';
 import { useAccount } from '../../../hooks/account';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { verifyEmailAPI } from '../../../api/user';
 
-export default function VerifyEmailPage() {
-  const { data } = useAccount();
+const VerifyEmailPage = function () {
+const { data } = useAccount();
   const navigate = useNavigate();
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
@@ -150,3 +150,8 @@ export default function VerifyEmailPage() {
     </div>
   );
 }
+
+
+
+
+export default React.memo(VerifyEmailPage);
