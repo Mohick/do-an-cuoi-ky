@@ -30,6 +30,7 @@ import EditAccount from "./page/dashboard/account/edit_account.models"
 import Developing from "./ultils/dev-mode"
 import EditBio from "./page/dashboard/account/edit_bio.models"
 import LoadingApp from "./ultils/loading-app"
+import Logout from "./page/dashboard/account/logout.models"
 
 export default function Router() {
     const { data } = useAccount()
@@ -53,6 +54,7 @@ export default function Router() {
                                     <Route path="account" element={<AccountUser />} >
                                         <Route path="edit-account" element={<EditAccount />} />
                                         <Route path="edit-bio" element={<EditBio />} />
+                                        <Route path="logout" element={<Logout />} />
                                     </Route>
                                 </Route>
                                 <Route path="group/" element={<LayoutGroup />}>

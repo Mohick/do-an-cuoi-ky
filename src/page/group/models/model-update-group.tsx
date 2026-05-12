@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
-import { X, FolderEdit,  CalendarDays, ImagePlus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { X, FolderEdit, CalendarDays, ImagePlus } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { updateGroupAPI } from '../../../api/group';
 
 interface UpdateGroupInputs {
   user: string;
@@ -26,7 +27,7 @@ const ModelUpdateInfoGroup = () => {
     watch,
     formState: { errors, isSubmitting },
   } = useForm<UpdateGroupInputs>();
-
+  const { id_group } = useParams()
   const [preview, setPreview] = useState<string | null>(null);
   const file = watch("image");
 
@@ -41,8 +42,12 @@ const ModelUpdateInfoGroup = () => {
   }, [file]);
 
   const onSubmit = async (data: UpdateGroupInputs) => {
-    // handle update logic here
-    console.log(data);
+    await updateGroupAPI({
+      id_group: id_group as string, 
+      name_project: data.projectName,
+      deadline: data.endDate,
+      image: data.image ? Array.from(data.image) : undefined,
+    });
   };
 
   return (

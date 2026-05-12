@@ -2,7 +2,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
     MailOutlined,
     EditOutlined,
-    SettingOutlined
+    SettingOutlined,
+    LogoutOutlined
 } from '@ant-design/icons';
 import { useAccount } from '../../../hooks/account';
 import { Link, Outlet } from 'react-router-dom';
@@ -84,15 +85,27 @@ const AccountUser = () => {
                     </div>
                 </div>
 
-                <Link to={'edit-account'}>
-                    <motion.div
-                        whileHover={{ scale: 1.1, rotate: 15 }}
-                        whileTap={{ scale: 0.9 }}
-                        className='bg-amber-400 p-3 rounded-xl cursor-pointer shadow-lg shadow-amber-400/20'
-                    >
-                        <SettingOutlined className='text-xl text-black' />
-                    </motion.div>
-                </Link>
+                <div className="flex gap-4">
+                    <Link to={'edit-account'}>
+                        <motion.div
+                            whileHover={{ scale: 1.1, rotate: 15 }}
+                            whileTap={{ scale: 0.9 }}
+                            className='bg-amber-400 p-3 rounded-xl cursor-pointer shadow-lg shadow-amber-400/20'
+                        >
+                            <SettingOutlined className='text-xl text-black' />
+                        </motion.div>
+                    </Link>
+
+                    <Link to={'logout'}>
+                        <motion.div
+                            whileHover={{ scale: 1.1, rotate: -15 }}
+                            whileTap={{ scale: 0.9 }}
+                            className='bg-red-500/10 border border-red-500/50 p-3 rounded-xl cursor-pointer shadow-lg shadow-red-500/10'
+                        >
+                            <LogoutOutlined className='text-xl text-red-500' />
+                        </motion.div>
+                    </Link>
+                </div>
             </div>
 
             {/* BIO SECTION */}

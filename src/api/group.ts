@@ -1,6 +1,6 @@
 import { deleteAPIJson } from "./crud/delete";
 import { getAPIJson } from "./crud/get";
-import { patchAPIJson } from "./crud/patch";
+import { patchAPIJson, patchAPIMultipart } from "./crud/patch";
 import { postAPIMultipart } from "./crud/post";
 import type { PropsCreateGroup } from "./props/group/props-create";
 
@@ -55,4 +55,7 @@ const patchLeaveGroupAPI = async (body: { id_group: string }) => {
 const deleteGroupAPI = async (body: { id_group: string }) => {
     return await deleteAPIJson(`/api/group/delete/${body.id_group}`);
 }
-export { patchLeaveGroupAPI, deleteGroupAPI, createGroupAPI, getTopFiveMembersAPI, getManagerTaskAPI, updateKickMemberAPI, updateChangeRoleConfirmerAPI, updateChangeRoleMemberAPI, getGroupAPI, getRoleGroupAPI, updateGroupAddMemberAPI, updateVerifyJoinGroupAPI, getMemberHasJoinedGroupAPI, getMemberNotJoinedGroupAPI, updateChangeRoleLeaderAPI }
+const updateGroupAPI = async (body: { id_group: string, name_project: string, deadline: string, image?: File[] }) => {
+    return await patchAPIMultipart(`/api/group/update/group-info`, body);
+}
+export { updateGroupAPI, patchLeaveGroupAPI, deleteGroupAPI, createGroupAPI, getTopFiveMembersAPI, getManagerTaskAPI, updateKickMemberAPI, updateChangeRoleConfirmerAPI, updateChangeRoleMemberAPI, getGroupAPI, getRoleGroupAPI, updateGroupAddMemberAPI, updateVerifyJoinGroupAPI, getMemberHasJoinedGroupAPI, getMemberNotJoinedGroupAPI, updateChangeRoleLeaderAPI }
