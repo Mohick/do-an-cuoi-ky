@@ -13,8 +13,8 @@ class TaskController {
         try {
             const creatorId = req.userID;
             const { id_group } = req.body;
-                  console.log(req.body);
 
+            
             
             req.body.priority = req.body.priority ? req.body.priority.toLowerCase() : "thấp";
             if (!creatorId || !id_group) {
@@ -127,7 +127,7 @@ class TaskController {
         try {
             const userID = req.userID;
             const { id_task, id_group } = req.body;
-            const memberInGroups = await this.groupService.findGroupsByUserId(userID as string);
+            const memberInGroups = await this.groupService.getRoleGroup(id_group, userID as string);
             if (!memberInGroups.valid) {
                 res.status(401).json({ valid: false, message: "Yêu cầu xác thực và cung cấp vai trò." });
                 return;
@@ -209,7 +209,7 @@ class TaskController {
         try {
             const userID = req.userID;
             const { id_task, id_group } = req.body;
-            const memberInGroups = await this.groupService.findGroupsByUserId(userID as string);
+            const memberInGroups = await this.groupService.getRoleGroup(id_group, userID as string);
             if (!memberInGroups.valid) {
                 res.status(401).json({ valid: false, message: "Yêu cầu xác thực và cung cấp vai trò." });
                 return;

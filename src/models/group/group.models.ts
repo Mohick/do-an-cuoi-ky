@@ -111,7 +111,7 @@ class GroupService {
             }
             let hasJoin = false;
             group.members.forEach((member) => {
-                if (member._id.equals(userID)) {
+                if (member.user.equals(userID)) {
                     hasJoin = true;
                 }
             })
@@ -233,7 +233,7 @@ class GroupService {
     }
     public async inviteJoinGroup(groupId: string, idUserInvite: string): Promise<{ valid: boolean; message: string, name_group?: string }> {
         try {
-            const group = await this.groupModel.findById(groupId).populate('members.user', 'username avatar _id email').lean() as unknown as IGroup;
+            const group = await this.groupModel.findById(groupId) as unknown as IGroup;
             if (!group) {
                 return { valid: false, message: 'Không tìm thấy group.' };
             }
@@ -325,7 +325,6 @@ class GroupService {
                 const listMember = group.members.reduce((list: any, member: any) => {
                     const acc = {} as any;
                     if (member.joined === true) {
-                        console.log(member);
 
                         acc.role = member.role;
                         acc._id = member.user._id;
@@ -404,7 +403,6 @@ class GroupService {
                 return { valid: false, message: 'Chi leader moi co quyen xoa group' }
             }
             const deletedGroup = await this.groupModel.findByIdAndDelete(groupId);
-            console.log(deletedGroup);
 
             if (!deletedGroup) {
                 return { valid: false, message: 'Không tìm thấy group để xóa.' };

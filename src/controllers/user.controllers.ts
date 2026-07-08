@@ -122,7 +122,7 @@ class UserControllers {
       const id = req.userID as string;
       const getUser = await this.getsetUserFromRedis(id);
       if (getUser) {
-        res.status(200).json(getUser);
+        return res.status(200).json(getUser);
       } else {
         const user = await this._userModel.findUserById(id);
         this.setUserFromRedis(id, user);

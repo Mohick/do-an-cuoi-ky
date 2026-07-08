@@ -10,9 +10,11 @@ const uploadImage = async (
 ): Promise<CloudinaryUploadResponse | { valid: false; message: string }> => {
   const fileImg = files[0];
   if (fileImg.size > 1000000) {
+    await fs.unlink(fileImg.path);
     return { valid: false, message: "File size must be less than 1MB" };
   }
   if (fileImg.mimetype !== "image/jpeg" && fileImg.mimetype !== "image/png") {
+    await fs.unlink(fileImg.path);
     return {
       valid: false,
       message: "File type must be image/jpeg or image/png",

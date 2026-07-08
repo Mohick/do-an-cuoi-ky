@@ -261,6 +261,7 @@ class GroupController {
           valid: false,
           message: "Yêu cầu xác thực và cung cấp vai trò.",
         });
+        return;
       }
       const result = await this.taskService.getInfoTask(id_group);
 

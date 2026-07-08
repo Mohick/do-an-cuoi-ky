@@ -117,12 +117,12 @@ class TaskService {
         try {
             if (userRole === 'leader' || userRole === 'confirmer') {
                 if (payload) {
-                    this.taskModel.updateOne(
+                    await this.taskModel.updateOne(
                         { _id: taskId },
                         { $set: { status: 'completed', confirmer: userId } }
                     )
                 } else {
-                    this.taskModel.updateOne(
+                    await this.taskModel.updateOne(
                         { _id: taskId },
                         { $set: { status: 'handling' } }
                     )
@@ -146,7 +146,7 @@ class TaskService {
     }
     public claimtask = async (taskId: string, implementerId: string): Promise<{ valid: boolean; message: string, task?: any }> => {
         try {
-            const task = await this.taskModel.findOneAndUpdate({ _id: taskId }, { implementer: implementerId, status: 'handling' });
+            const task = await this.taskModel.findOneAndUpdate({ _id: taskId }, { implementer: implementerId, status: 'handling' }, { new: true });
             return { valid: true, message: 'Cap nhat task thanh cong', task };
         } catch (error: any) {
             console.error("LỖI KHI CẽP NHẤT TASK:", error);
@@ -155,7 +155,7 @@ class TaskService {
     }
     public sendRequireVeryTask = async (taskId: string): Promise<{ valid: boolean; message: string, task?: any }> => {
         try {
-            const task = await this.taskModel.findOneAndUpdate({ _id: taskId }, { status: 'pending' });
+            const task = await this.taskModel.findOneAndUpdate({ _id: taskId }, { status: 'pending' }, { new: true });
             return { valid: true, message: 'Cap nhat task thanh cong', task };
         } catch (error: any) {
             console.error("LỖI KHI CẽP NHẤT TASK:", error);
@@ -164,7 +164,7 @@ class TaskService {
     }
     public completeTask = async (taskId: string, confirmerId: string): Promise<{ valid: boolean; message: string, task?: any }> => {
         try {
-            const task = await this.taskModel.findOneAndUpdate({ _id: taskId }, { status: 'completed', confirmer: confirmerId });
+            const task = await this.taskModel.findOneAndUpdate({ _id: taskId }, { status: 'completed', confirmer: confirmerId }, { new: true });
             return { valid: true, message: 'Cap nhat task thanh cong', task };
         } catch (error: any) {
             console.error("LỖI KHI CẽP NHẤT TASK:", error);
@@ -173,7 +173,7 @@ class TaskService {
     }
     public rollbackTask = async (taskId: string): Promise<{ valid: boolean; task?: any; message: string }> => {
         try {
-            const task = await this.taskModel.findOneAndUpdate({ _id: taskId }, { status: 'pending' });
+            const task = await this.taskModel.findOneAndUpdate({ _id: taskId }, { status: 'pending' }, { new: true });
             return { valid: true, task: task, message: 'Cap nhat task thanh cong' };
         } catch (error: any) {
             console.error("LỖI KHI CẽP NHẤT TASK:", error);
@@ -182,7 +182,7 @@ class TaskService {
     }
     public rejectTask = async (taskId: string): Promise<{ valid: boolean; task?: any, message: string }> => {
         try {
-            const task = await this.taskModel.findOneAndUpdate({ _id: taskId }, { status: 'handling', confirmer: undefined });
+            const task = await this.taskModel.findOneAndUpdate({ _id: taskId }, { status: 'handling', confirmer: undefined }, { new: true });
             return { valid: true, task: task, message: 'Cap nhat task thanh cong' };
         } catch (error: any) {
             console.error("LỖI KHI CẽP NHẤT TASK:", error);
@@ -191,7 +191,7 @@ class TaskService {
     }
     public cancelTask = async (taskId: string): Promise<{ valid: boolean; message: string, task?: any }> => {
         try {
-            const task = await this.taskModel.findOneAndUpdate({ _id: taskId }, { status: 'waiting' });
+            const task = await this.taskModel.findOneAndUpdate({ _id: taskId }, { status: 'waiting' }, { new: true });
             return { valid: true, message: 'Cap nhat task thanh cong', task };
         } catch (error: any) {
             console.error("LỖI KHI CẽP NHẤT TASK:", error);
@@ -233,19 +233,6 @@ class TaskService {
         try {
             const objectIdUser = new mongoose.Types.ObjectId(userID);
 
-            // 1. Dùng toán tử $push để chỉ cập nhật mảng comments (hiệu suất cao hơn)
-            const updateResult = await this.taskModel.updateOne(
-                { _id: taskID }, // Tìm kiếm Task theo ID
-                {
-                    $push: {
-                        comments: {
-                            user: objectIdUser,
-                            message: comment,
-                        }
-                    }
-                }
-            );
-
             const task = await this.taskModel.findById(taskID);
 
             if (!task) {
@@ -253,14 +240,26 @@ class TaskService {
             }
             const shouldAlert = task.implementer && (objectIdUser.toString() !== task.implementer.toString());
 
-            task.comments.push({
-                user: objectIdUser,
-                message: comment,
-                alert: shouldAlert
-            });
+            // Dùng $push để thêm comment vào DB (chỉ 1 lần duy nhất)
+            await this.taskModel.updateOne(
+                { _id: taskID },
+                {
+                    $push: {
+                        comments: {
+                            user: objectIdUser,
+                            message: comment,
+                            alert: shouldAlert
+                        }
+                    }
+                }
+            );
 
-            await task.populate('comments.user', 'username avatar');
-            return { valid: true, message: "Thành công", newComment: task.comments[task.comments.length - 1] };
+            // Lấy lại task đã cập nhật để populate thông tin user
+            const updatedTask = await this.taskModel.findById(taskID).populate('comments.user', 'username avatar');
+            if (!updatedTask) {
+                return { valid: false, message: "Không tìm thấy nhiệm vụ." };
+            }
+            return { valid: true, message: "Thành công", newComment: updatedTask.comments[updatedTask.comments.length - 1] };
 
         } catch (error: any) {
             // Xử lý lỗi ObjectId không hợp lệ hoặc lỗi DB

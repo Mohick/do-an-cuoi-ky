@@ -1,14 +1,13 @@
 import dotenv from 'dotenv'
 dotenv.config()
-require('./src/third-party/upload-images/multer')
+import './src/third-party/upload-images/multer'
 import express from 'express';
 const app = express();
 import cors from 'cors';
 import http from 'http';
 import connectDB from './src/third-party/mongodb/connect';
 import { router } from './src/views/router.views';
-import { createClient } from 'redis'
-import { connectRedis, storeRedis } from './src/third-party/redis/redis';
+import { connectRedis } from './src/third-party/redis/redis';
 import { initSocket } from './src/third-party/socket/socket';
 
 const allowedOrigins = [
@@ -17,8 +16,7 @@ const allowedOrigins = [
   process.env.PROD_CLIENT_URL,
 ].filter(Boolean);
 
-const isURL = process.env.BASE_URL + '/default-avatar.png'
-    console.log(isURL);
+
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -35,8 +33,7 @@ app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
-const client = createClient();
-client.on('error', err => console.log('Redis Client Error', err));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./public'));
