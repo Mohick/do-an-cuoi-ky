@@ -223,6 +223,10 @@ class UserControllers {
       const id = req.userID as string;
       if (req.files?.length) {
         const uploadResult = await uploadImage(req.files as MulterFile[]);
+        if ((uploadResult as { valid?: boolean }).valid === false) {
+          res.status(400).json(uploadResult);
+          return;
+        }
         const avatar = {
           public_id: uploadResult.public_id,
           url: uploadResult.secure_url,
