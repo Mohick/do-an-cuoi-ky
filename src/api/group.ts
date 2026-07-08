@@ -47,7 +47,7 @@ const getManagerTaskAPI = async (body: { id_group: string }) => {
 }
 
 const getTopFiveMembersAPI = async (body: { id_group: string }) => {
-    return await getAPIJson(`api/group/get-top-five-members-better/${body.id_group}`);
+    return await getAPIJson(`/api/group/get-top-five-members-better/${body.id_group}`);
 }
 const patchLeaveGroupAPI = async (body: { id_group: string }) => {
     return await patchAPIJson(`/api/group/update/leave-group`, body);

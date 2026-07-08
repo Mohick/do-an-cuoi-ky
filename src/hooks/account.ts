@@ -9,7 +9,7 @@ const useAccount = (): UseQueryResult<PropsAccount> => {
       try {
         const res = await autoLoginAPI();
         if (res.data.cookies) {
-          localStorage.setItem("cookies", res.data.cookies);
+          localStorage.setItem("token", res.data.cookies);
         }
         return res as any;
       } catch (error) {

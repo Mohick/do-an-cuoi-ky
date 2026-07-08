@@ -3,12 +3,16 @@ import { useAlert } from "./alert.hook";
 import { CheckCircle, XCircle, AlertTriangle, Info } from "lucide-react";
 
 const AlertComponent: FC = () => {
-  const { listAlert, removeAlert } = useAlert() as  any
+  const { listAlert, removeAlert } = useAlert() as any;
 
   return (
-    <div className="fixed top-4 right-4 z-50 flex flex-col gap-3">
-      {listAlert.map((alert:any) => (
-        <AlertItem key={alert.id} alert={alert} onClose={() => removeAlert(alert.id)} />
+    <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-3">
+      {listAlert.map((alert: any) => (
+        <AlertItem
+          key={alert.id}
+          alert={alert}
+          onClose={() => removeAlert(alert.id)}
+        />
       ))}
     </div>
   );
@@ -66,15 +70,17 @@ const AlertItem = ({ alert, onClose }: any) => {
 
   return (
     <div
-      className={`relative overflow-hidden border-l-4 rounded-lg shadow-md p-4 w-72 transition-all duration-300 ${getAlertStyle(
-        alert.status
+      className={`relative z-[1000] overflow-hidden border-l-4 rounded-lg shadow-md p-4 w-72 transition-all duration-300 ${getAlertStyle(
+        alert.status,
       )}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-2">
           {getIcon(alert.status)}
           <div>
-            {alert.title && <p className="font-semibold text-sm">{alert.title}</p>}
+            {alert.title && (
+              <p className="font-semibold text-sm">{alert.title}</p>
+            )}
             <p className="text-sm">{alert.message}</p>
           </div>
         </div>
@@ -93,10 +99,10 @@ const AlertItem = ({ alert, onClose }: any) => {
             alert.status === "success"
               ? "bg-green-500"
               : alert.status === "error"
-              ? "bg-red-500"
-              : alert.status === "warning"
-              ? "bg-yellow-500"
-              : "bg-blue-500"
+                ? "bg-red-500"
+                : alert.status === "warning"
+                  ? "bg-yellow-500"
+                  : "bg-blue-500"
           } transition-all duration-100 linear`}
           style={{ width: `${progress}%` }}
         />
