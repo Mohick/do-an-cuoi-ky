@@ -8,50 +8,36 @@ const upload = multer({ dest: "uploads/" });
 const uploadImage = async (
   files: MulterFile[],
 ): Promise<CloudinaryUploadResponse | { valid: false; message: string }> => {
-  try {
-    const fileImg = files[0];
-    if (!fileImg) {
-      return { valid: false, message: "No file provided" };
-    }
-    if (fileImg.size > 1000000) {
-      return { valid: false, message: "File size must be less than 1MB" };
-    }
-    if (fileImg.mimetype !== "image/jpeg" && fileImg.mimetype !== "image/png") {
-      return {
-        valid: false,
-        message: "File type must be image/jpeg or image/png",
-      };
-    }
-    const fileBuffer = (await fs.readFile(fileImg.path)) as BlobPart;
-    const form = new FormData();
-    form.append(
-      "file",
-      new Blob([fileBuffer], { type: fileImg.mimetype }),
-      fileImg.originalname,
-    );
-    form.append("upload_preset", process.env.CLOUDINARY_PRESET as string);
-    form.append("public_id", `groups/${Date.now()}`);
-    const uploadRes = await fetch(
-      `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_NAME}/image/upload`,
-      { method: "POST", body: form },
-    );
-    const uploadResult = (await uploadRes.json()) as CloudinaryUploadResponse;
-    if (uploadResult.error) {
-      throw new Error(uploadResult.error.message);
-    }
-    return uploadResult;
-  } finally {
-    // Luôn luôn xóa file sau khi xử lý xong, kể cả thành công hay thất bại
-    if (files && files.length > 0) {
-      for (const file of files) {
-        try {
-          await fs.unlink(file.path);
-        } catch (error) {
-          console.error(`Không thể xóa file ${file.path}:`, error);
-        }
-      }
-    }
+  const fileImg = files[0];
+  if (fileImg.size > 1000000) {
+    return { valid: false, message: "File size must be less than 1MB" };
   }
+  if (fileImg.mimetype !== "image/jpeg" && fileImg.mimetype !== "image/png") {
+    return {
+      valid: false,
+      message: "File type must be image/jpeg or image/png",
+    };
+  }
+  const fileBuffer = (await fs.readFile(fileImg.path)) as BlobPart;
+  const form = new FormData();
+  form.append(
+    "file",
+    new Blob([fileBuffer], { type: fileImg.mimetype }),
+    fileImg.originalname,
+  );
+  form.append("upload_preset", process.env.CLOUDINARY_PRESET as string);
+  form.append("public_id", `groups/${Date.now()}`);
+  const uploadRes = await fetch(
+    `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_NAME}/image/upload`,
+    { method: "POST", body: form },
+  );
+  const uploadResult = (await uploadRes.json()) as CloudinaryUploadResponse;
+  if (uploadResult.error) {
+    throw new Error(uploadResult.error.message);
+  }
+
+  await fs.unlink(fileImg.path);
+  return uploadResult;
 };
 
 const destroyImage = async (public_id: string) => {
