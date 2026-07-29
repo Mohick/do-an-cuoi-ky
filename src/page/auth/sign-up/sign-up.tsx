@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import InputAuth from "../component/input";
 import ButtonAuth from "../component/button";
 import { handleSubmitRegister } from "./handle-submit";
-import type { PropsSubTitleHomePage } from "../../home/components/title-homepage/props-title-homepage";
 
 import { useState } from "react";
 
@@ -12,17 +11,17 @@ import { AnimatePresence } from "framer-motion";
 import AlertFailseSignUp from "./models/alert-failse";
 import AlertSuccessSignUp from "./models/alert-susscess";
 
-const textusername: PropsSubTitleHomePage = {
+const textusername = {
   text: "Họ Tên",
   className: "font-bold",
 };
 
-const textEmail: PropsSubTitleHomePage = {
+const textEmail = {
   text: "Email",
   className: "font-bold",
 };
 
-const textPassword: PropsSubTitleHomePage = {
+const textPassword = {
   text: "Mật khẩu",
   className: "font-bold",
 };
@@ -52,7 +51,9 @@ export default function SignUp() {
     <>
       <form
         className="flex flex-col space-y-2"
-        onSubmit={handleSubmit(async (data: any) => handleSubmitRegister(data, setError, setToggle, setAlertMessage))}
+        onSubmit={handleSubmit(async (data: any) =>
+          handleSubmitRegister(data, setError, setToggle, setAlertMessage),
+        )}
       >
         {/* username */}
         <InputAuth
@@ -143,14 +144,18 @@ export default function SignUp() {
           <p className="text-red-500">{errors.captchaToken.message}</p>
         )} */}
         <ButtonAuth text="Đăng ký" className="w-full cursor-pointer" />
-
       </form>
       <AnimatePresence>
-        {toggle && (
-          alertMessage ? <AlertSuccessSignUp
-            closeAlert={(valid: boolean) => setToggle(valid)}
-          /> : <AlertFailseSignUp closeAlert={(valid: boolean) => setToggle(valid)} />
-        )}
+        {toggle &&
+          (alertMessage ? (
+            <AlertSuccessSignUp
+              closeAlert={(valid: boolean) => setToggle(valid)}
+            />
+          ) : (
+            <AlertFailseSignUp
+              closeAlert={(valid: boolean) => setToggle(valid)}
+            />
+          ))}
       </AnimatePresence>
     </>
   );
