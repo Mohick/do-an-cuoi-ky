@@ -35,8 +35,8 @@ const TASK_CONFIG = [
     label: "Chưa làm",
     color: "rgba(255,185,0,0.75)",
     border: "#ffb900",
-    badge: "bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.22)]",
-    bar: "bg-[#ffb900]",
+    badge: "bg-primary/12 text-primary border border-primary/22",
+    bar: "bg-primary",
   },
   {
     key: "sizeTaskHandling" as keyof TaskData,
@@ -125,8 +125,8 @@ export default function CircleChart() {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-10">
         <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-7 h-7 rounded-full border-2 border-[rgba(255,185,0,0.15)] border-t-[#ffb900]" />
-        <p className="text-[12px] text-[rgba(255,185,0,0.4)] uppercase tracking-[0.12em]">Đang tải...</p>
+          className="w-7 h-7 rounded-full border-2 border-primary/15 border-t-primary" />
+        <p className="text-[12px] text-primary/40 uppercase tracking-[0.12em]">Đang tải...</p>
       </div>
     );
 
@@ -149,11 +149,11 @@ export default function CircleChart() {
     >
       {/* Header */}
       <div className="flex items-center gap-3 w-full">
-        <span className="text-[11px] uppercase tracking-[0.15em] text-[rgba(255,185,0,0.5)]">
+        <span className="text-[11px] uppercase tracking-[0.15em] text-primary/50">
           Trạng thái tác vụ
         </span>
-        <div className="flex-1 h-px bg-[rgba(255,185,0,0.08)]" />
-        <span className="text-[11px] bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.2)] rounded-full px-[9px] py-[2px]">
+        <div className="flex-1 h-px bg-primary/8" />
+        <span className="text-[11px] bg-primary/12 text-primary border border-primary/20 rounded-full px-[9px] py-[2px]">
           {total} tổng
         </span>
       </div>

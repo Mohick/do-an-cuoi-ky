@@ -34,7 +34,7 @@ type CommentFormType = {
 const statusConfig: { [key: string]: { badge: string; label: string; bar: string } } = {
   waiting: { badge: "bg-[rgba(120,120,130,0.15)] text-[#aaa] border border-[rgba(130,130,140,0.2)]", label: "Chờ", bar: "from-[#555] to-[#888]" },
   handling: { badge: "bg-[rgba(59,130,246,0.12)] text-blue-400 border border-[rgba(59,130,246,0.2)]", label: "Đang xử lý", bar: "from-[#2563eb] to-[#60a5fa]" },
-  pending: { badge: "bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.22)]", label: "Pending", bar: "from-[#b37d00] to-[#ffb900]" },
+  pending: { badge: "bg-primary/12 text-primary border border-primary/22", label: "Pending", bar: "from-primary-dark to-primary" },
   completed: { badge: "bg-[rgba(34,197,94,0.10)] text-green-400 border border-[rgba(34,197,94,0.2)]", label: "Hoàn thành", bar: "from-[#15803d] to-[#4ade80]" },
 };
 
@@ -101,21 +101,21 @@ const FullViewsTask = () => {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 48, scale: 0.97 }}
         transition={{ duration: 0.32, ease: [0.22, 0.68, 0, 1.1] }}
-        className="relative w-full max-w-3xl bg-[#111111] rounded-[18px] border border-[rgba(255,185,0,0.12)] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-3xl bg-[#111111] rounded-[18px] border border-primary/12 shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Header (Giữ nguyên) */}
-        <div className="relative bg-[#141414] border-b border-[rgba(255,185,0,0.1)] px-5 py-[18px] flex flex-col gap-2">
+        <div className="relative bg-[#141414] border-b border-primary/10 px-5 py-[18px] flex flex-col gap-2">
           <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${cfg.bar}`} />
           <h1 className="text-[16px] font-semibold text-[#f0f0f0] pr-9 leading-snug break-words">
             {item.task_name}
           </h1>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] uppercase tracking-[0.08em] text-[rgba(255,185,0,0.55)]">Ưu tiên: {item.priority}</span>
+            <span className="text-[11px] uppercase tracking-[0.08em] text-primary/55">Ưu tiên: {item.priority}</span>
             <span className={`inline-flex items-center gap-[5px] px-[10px] py-[3px] rounded-full text-[10px] font-medium tracking-[0.1em] uppercase ${cfg.badge}`}>
               <span className="w-[5px] h-[5px] rounded-full bg-current opacity-70" /> {cfg.label}
             </span>
           </div>
-          <button onClick={() => navigate(-1)} className="absolute top-[14px] right-4 w-7 h-7 rounded-full border border-[rgba(255,185,0,0.2)] bg-[rgba(255,185,0,0.06)] text-[#ffb900] flex items-center justify-center text-[13px] opacity-80 hover:opacity-100 transition-opacity">
+          <button onClick={() => navigate(-1)} className="absolute top-[14px] right-4 w-7 h-7 rounded-full border border-primary/20 bg-primary/6 text-primary flex items-center justify-center text-[13px] opacity-80 hover:opacity-100 transition-opacity">
             <CloseOutlined />
           </button>
         </div>
@@ -124,20 +124,20 @@ const FullViewsTask = () => {
         <div className="p-5 space-y-4 overflow-y-auto flex-1">
           {/* Info grid (Giữ nguyên) */}
           <div className="grid grid-cols-2 gap-[10px]">
-            <InfoCard label="Người tạo"><span className="flex items-center gap-1.5"><UserOutlined className="text-[rgba(255,185,0,0.5)] text-[12px]" />{item.creator.username}</span></InfoCard>
+            <InfoCard label="Người tạo"><span className="flex items-center gap-1.5"><UserOutlined className="text-primary/50 text-[12px]" />{item.creator.username}</span></InfoCard>
             <InfoCard label="Người nhận"><span className="flex items-center gap-1.5"><UserOutlined className="text-green-500/60 text-[12px]" />{item.implementer?.username ?? "Chưa có"}</span></InfoCard>
-            <InfoCard label="Deadline"><span className="flex items-center gap-1.5 text-[#ffb900]"><ClockCircleOutlined className="text-[12px]" />{deadline}</span></InfoCard>
+            <InfoCard label="Deadline"><span className="flex items-center gap-1.5 text-primary"><ClockCircleOutlined className="text-[12px]" />{deadline}</span></InfoCard>
             <InfoCard label="Trạng thái"><span className={`inline-flex items-center gap-[5px] px-[10px] py-[3px] rounded-full text-[10px] font-medium tracking-[0.1em] uppercase ${cfg.badge}`}><span className="w-[5px] h-[5px] rounded-full bg-current opacity-70" />{cfg.label}</span></InfoCard>
            <InfoCard label="Người kiểm duyệt"><span className="flex items-center gap-1.5"><UserOutlined className="text-green-500/60 text-[12px]" />{item.confirmer?.username ?? "Chưa có"}</span></InfoCard>
           </div>
 
           {/* Mô tả & Link (Giữ nguyên) */}
           <div>
-            <p className="text-[10px] uppercase tracking-[0.12em] text-[rgba(255,185,0,0.55)] mb-2">Mô tả</p>
+            <p className="text-[10px] uppercase tracking-[0.12em] text-primary/55 mb-2">Mô tả</p>
             <div className="bg-[#1a1a1a] border border-white/5 rounded-[10px] p-3 text-[13px] text-[#bbb] leading-relaxed max-h-[100px] overflow-y-auto">{item.description || "Không có"}</div>
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-[0.12em] text-[rgba(255,185,0,0.55)] mb-2">Link file</p>
+            <p className="text-[10px] uppercase tracking-[0.12em] text-primary/55 mb-2">Link file</p>
             <div className="bg-[#1a1a1a] border border-white/5 rounded-[10px] px-3 py-[10px] flex items-center gap-2 text-[12px]">
               <LinkOutlined className="text-blue-400 text-[12px]" />
               {item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 underline break-all">Bấm vào đây</a> : <span className="text-white/25">Không có</span>}
@@ -146,7 +146,7 @@ const FullViewsTask = () => {
 
           {/* Bình luận */}
           <div>
-            <p className="text-[10px] uppercase tracking-[0.12em] text-[rgba(255,185,0,0.55)] mb-2 flex items-center gap-1.5">
+            <p className="text-[10px] uppercase tracking-[0.12em] text-primary/55 mb-2 flex items-center gap-1.5">
               <MessageOutlined className="text-[11px]" /> Bình luận
             </p>
 
@@ -158,7 +158,7 @@ const FullViewsTask = () => {
                   <div key={cmt._id} className="flex flex-col gap-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[11px] font-medium text-[rgba(255,185,0,0.75)]">{cmt.user.username}</span>
+                        <span className="text-[11px] font-medium text-primary/75">{cmt.user.username}</span>
                         {cmt.alert && <span className="text-[9px] font-bold text-red-400 bg-[rgba(239,68,68,0.12)] border border-[rgba(239,68,68,0.2)] px-[6px] py-[1px] rounded-full">NEW</span>}
                       </div>
                       <span className="text-[10px] text-white/25">{new Date(cmt.createdAt).toLocaleString("vi-VN")}</span>
@@ -177,7 +177,7 @@ const FullViewsTask = () => {
               className="flex flex-col gap-1 mt-2"
             >
               <div className={`flex items-center gap-2 bg-[#1a1a1a] border rounded-[10px] px-[10px] py-[6px] transition-colors
-                ${errors.commentMsg ? "border-red-500/50" : "border-[rgba(255,185,0,0.15)] focus-within:border-[rgba(255,185,0,0.4)]"}`}>
+                ${errors.commentMsg ? "border-red-500/50" : "border-primary/15 focus-within:border-primary/40"}`}>
 
                 <input
                   type="text"
@@ -197,7 +197,7 @@ const FullViewsTask = () => {
                   disabled={!isValid}
                   className={`w-7 h-7 rounded-[7px] flex items-center justify-center transition-all
                     ${isValid
-                      ? "bg-[rgba(255,185,0,0.12)] border border-[rgba(255,185,0,0.2)] text-[#ffb900] cursor-pointer hover:bg-[rgba(255,185,0,0.2)]"
+                      ? "bg-primary/12 border border-primary/20 text-primary cursor-pointer hover:bg-primary/20"
                       : "bg-white/5 text-white/20 cursor-not-allowed"}`}
                 >
                   <SendOutlined style={{ fontSize: 12 }} />

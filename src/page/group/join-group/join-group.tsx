@@ -48,11 +48,11 @@ const JoinGroup = () => {
         initial={{ opacity: 0, y: 24, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.35, ease: [0.22, 0.68, 0, 1.1] }}
-        className="relative w-full max-w-sm bg-[#131b29] border border-[rgba(255,185,0,0.12)] rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden"
+        className="relative w-full max-w-sm bg-app border border-primary/12 rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden"
       >
         {/* Accent bar */}
         <div className={`absolute top-0 left-0 right-0 h-[2px] ${
-          status === "loading" ? "bg-gradient-to-r from-[#b37d00] to-[#ffb900]" :
+          status === "loading" ? "bg-gradient-to-r from-primary-dark to-primary" :
           status === "success" ? "bg-gradient-to-r from-[#15803d] to-[#4ade80]" :
           "bg-gradient-to-r from-red-700 to-red-400"
         }`} />
@@ -61,11 +61,11 @@ const JoinGroup = () => {
           {/* Loading */}
           {status === "loading" && (
             <>
-              <div className="w-14 h-14 rounded-full border border-[rgba(255,185,0,0.15)] bg-[rgba(255,185,0,0.06)] flex items-center justify-center">
+              <div className="w-14 h-14 rounded-full border border-primary/15 bg-primary/6 flex items-center justify-center">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="w-6 h-6 rounded-full border-2 border-[rgba(255,185,0,0.15)] border-t-[#ffb900]"
+                  className="w-6 h-6 rounded-full border-2 border-primary/15 border-t-primary"
                 />
               </div>
               <div>
@@ -99,9 +99,9 @@ const JoinGroup = () => {
                     whileTap={{ scale: 0.97 }}
                     onClick={() => navigate(`/group/${groupId}`)}
                     className="w-full flex items-center justify-center gap-2 py-[10px] rounded-[10px]
-                      bg-[rgba(255,185,0,0.12)] border border-[rgba(255,185,0,0.25)]
-                      text-[#ffb900] text-[13px] font-medium
-                      hover:bg-[rgba(255,185,0,0.2)] transition-colors cursor-pointer"
+                      bg-primary/12 border border-primary/25
+                      text-primary text-[13px] font-medium
+                      hover:bg-primary/20 transition-colors cursor-pointer"
                   >
                     <Users size={14} />
                     Đến trang nhóm

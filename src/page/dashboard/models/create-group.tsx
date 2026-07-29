@@ -61,19 +61,19 @@ const Form = () => {
   return (
     <motion.form
       onSubmit={handleSubmit(onSubmit)}
-      className="relative bg-[#131b29] border border-[rgba(255,185,0,0.12)] w-full max-w-2xl rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden"
+      className="relative bg-app border border-primary/12 w-full max-w-2xl rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden"
       initial={{ opacity: 0, y: 40, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.35, ease: [0.22, 0.68, 0, 1.1] }}
     >
       {/* Top accent bar */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#b37d00] to-[#ffb900]" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary-dark to-primary" />
 
       {/* Header */}
-      <div className="px-6 pt-6 pb-4 border-b border-[rgba(255,185,0,0.08)] flex items-center justify-between">
+      <div className="px-6 pt-6 pb-4 border-b border-primary/8 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-[8px] bg-[rgba(255,185,0,0.1)] border border-[rgba(255,185,0,0.2)] flex items-center justify-center">
-            <FolderPlus size={15} className="text-[#ffb900]" />
+          <div className="w-8 h-8 rounded-[8px] bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <FolderPlus size={15} className="text-primary" />
           </div>
           <div>
             <h2 className="text-[15px] font-semibold text-[#f0f0f0] leading-tight">
@@ -87,7 +87,7 @@ const Form = () => {
           onClick={() => navigate("/dashboard")}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          className="w-7 h-7 rounded-full border border-[rgba(255,185,0,0.2)] bg-[rgba(255,185,0,0.06)] text-[#ffb900] flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity"
+          className="w-7 h-7 rounded-full border border-primary/20 bg-primary/6 text-primary flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity"
         >
           <X size={14} />
         </motion.button>
@@ -99,7 +99,7 @@ const Form = () => {
         <div className="md:col-span-2 space-y-5">
           {/* Project name */}
           <div>
-            <label className="block text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)] mb-2">
+            <label className="block text-[11px] uppercase tracking-[0.1em] text-primary/55 mb-2">
               Tên dự án
             </label>
             <input
@@ -119,7 +119,7 @@ const Form = () => {
               disabled={isSubmitting}
               className="w-full bg-[#1c2840] border border-[rgba(255,255,255,0.07)] rounded-[10px]
                 px-4 py-[10px] text-[13px] text-[#e0e0e0] placeholder:text-white/20
-                outline-none focus:border-[rgba(255,185,0,0.35)] focus:bg-[#1e2d47]
+                outline-none focus:border-primary/35 focus:bg-[#1e2d47]
                 transition-colors duration-200"
             />
             {errors.projectName && (
@@ -129,7 +129,7 @@ const Form = () => {
 
           {/* End date */}
           <div>
-            <label className="block text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)] mb-2 flex items-center gap-1.5">
+            <label className="block text-[11px] uppercase tracking-[0.1em] text-primary/55 mb-2 flex items-center gap-1.5">
               <CalendarDays size={11} />
               Ngày kết thúc
             </label>
@@ -139,7 +139,7 @@ const Form = () => {
               disabled={isSubmitting}
               className="w-full bg-[#1c2840] border border-[rgba(255,255,255,0.07)] rounded-[10px]
                 px-4 py-[10px] text-[13px] text-[#e0e0e0]
-                outline-none focus:border-[rgba(255,185,0,0.35)] focus:bg-[#1e2d47]
+                outline-none focus:border-primary/35 focus:bg-[#1e2d47]
                 transition-colors duration-200
                 [color-scheme:dark]"
             />
@@ -151,10 +151,10 @@ const Form = () => {
 
         {/* RIGHT — image upload */}
         <div className="flex flex-col gap-2">
-          <label className="block text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)]">
+          <label className="block text-[11px] uppercase tracking-[0.1em] text-primary/55">
             Ảnh đại diện
           </label>
-          <div className="relative flex-1 min-h-[140px] bg-[#1c2840] border-2 border-dashed border-[rgba(255,185,0,0.15)] rounded-[12px] overflow-hidden flex items-center justify-center hover:border-[rgba(255,185,0,0.3)] transition-colors group">
+          <div className="relative flex-1 min-h-[140px] bg-[#1c2840] border-2 border-dashed border-primary/15 rounded-[12px] overflow-hidden flex items-center justify-center hover:border-primary/30 transition-colors group">
             {preview ? (
               <>
                 <motion.img
@@ -177,7 +177,7 @@ const Form = () => {
               </>
             ) : (
               <div className="flex flex-col items-center gap-2 pointer-events-none">
-                <ImagePlus size={22} className="text-[rgba(255,185,0,0.3)] group-hover:text-[rgba(255,185,0,0.5)] transition-colors" />
+                <ImagePlus size={22} className="text-primary/30 group-hover:text-primary/50 transition-colors" />
                 <span className="text-[11px] text-white/25 group-hover:text-white/40 transition-colors">
                   Chọn ảnh
                 </span>
@@ -208,8 +208,8 @@ const Form = () => {
           whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
           className={`w-full py-[11px] rounded-[10px] text-[13px] font-semibold transition-all
             ${isSubmitting
-              ? "bg-[rgba(255,185,0,0.06)] text-[#ffb900]/40 border border-[rgba(255,185,0,0.1)] cursor-not-allowed"
-              : "bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.25)] hover:bg-[rgba(255,185,0,0.2)] cursor-pointer"
+              ? "bg-primary/6 text-primary/40 border border-primary/10 cursor-not-allowed"
+              : "bg-primary/12 text-primary border border-primary/25 hover:bg-primary/20 cursor-pointer"
             }`}
         >
           {isSubmitting ? "Đang tạo..." : "Tạo Dự Án"}

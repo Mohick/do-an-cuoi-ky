@@ -59,7 +59,7 @@ const Items: React.FC<ItemsProps> = ({
     <motion.div
       key={_id}
       className={`item-${_id}w-full rounded-2xl overflow-hidden cursor-pointer relative
-        bg-[#111111] border border-[#ffb900]/10
+        bg-[#111111] border border-primary/10
         shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,185,0,0.06)]`}
       variants={cardVariants}
       initial="initial"
@@ -93,12 +93,12 @@ const Items: React.FC<ItemsProps> = ({
           initial={{ opacity: 0, x: 80 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.45, delay: 0.18 * indexItems, ease: "easeOut" }}
-          className="col-span-8 flex flex-col justify-center p-4 relative border-r border-[#ffb900]/8"
+          className="col-span-8 flex flex-col justify-center p-4 relative border-r border-primary/8"
         >
           {/* Accent bar */}
-          <div className="absolute left-0 top-3 bottom-3 w-[3px] rounded-r-sm bg-gradient-to-b from-[#ffb900] to-[#ffb900]/10" />
+          <div className="absolute left-0 top-3 bottom-3 w-[3px] rounded-r-sm bg-gradient-to-b from-primary to-primary/10" />
 
-          <span className="text-[9px] font-semibold tracking-[0.18em] uppercase text-[#ffb900]/70 mb-1 pl-2">
+          <span className="text-[9px] font-semibold tracking-[0.18em] uppercase text-primary/70 mb-1 pl-2">
             Project
           </span>
 
@@ -107,10 +107,10 @@ const Items: React.FC<ItemsProps> = ({
           </h3>
 
           <div className="flex items-center gap-1.5 mt-2 pl-2">
-            <CalendarDays size={11} className="text-[#ffb900]/50 flex-shrink-0" />
+            <CalendarDays size={11} className="text-primary/50 flex-shrink-0" />
             <p className="text-[10.5px] text-white/35">
               Deadline:{" "}
-              <span className="text-[#ffb900]/70 font-medium">{end}</span>
+              <span className="text-primary/70 font-medium">{end}</span>
             </p>
           </div>
         </motion.div>
@@ -129,7 +129,7 @@ const Items: React.FC<ItemsProps> = ({
           />
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#111111]/85 via-transparent to-transparent pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#ffb900]/5 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
       </Link>
     </motion.div>

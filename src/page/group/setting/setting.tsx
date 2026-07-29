@@ -13,13 +13,13 @@ interface GroupHeaderProps {
 const GroupHeader: React.FC<GroupHeaderProps> = ({ groupName }) => {
   return (
     <Link to="edit-group" className="block">
-      <div className="relative bg-[#141414] border border-[rgba(255,185,0,0.12)] rounded-[14px] px-4 py-3 flex items-center justify-between overflow-hidden hover:border-[rgba(255,185,0,0.25)] transition-colors group">
+      <div className="relative bg-[#141414] border border-primary/12 rounded-[14px] px-4 py-3 flex items-center justify-between overflow-hidden hover:border-primary/25 transition-colors group">
         {/* Accent bar */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[14px] bg-gradient-to-r from-[#b37d00] to-[#ffb900]" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[14px] bg-gradient-to-r from-primary-dark to-primary" />
 
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-[8px] bg-[rgba(255,185,0,0.08)] border border-[rgba(255,185,0,0.15)] flex items-center justify-center">
-            <Settings size={14} className="text-[#ffb900]" />
+          <div className="w-8 h-8 rounded-[8px] bg-primary/8 border border-primary/15 flex items-center justify-center">
+            <Settings size={14} className="text-primary" />
           </div>
           <h2 className="text-[14px] font-semibold text-[#f0f0f0]">{groupName}</h2>
         </div>
@@ -27,7 +27,7 @@ const GroupHeader: React.FC<GroupHeaderProps> = ({ groupName }) => {
         <motion.div
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-1.5 bg-[rgba(255,185,0,0.1)] border border-[rgba(255,185,0,0.2)] text-[#ffb900] text-[12px] font-medium px-3 py-[6px] rounded-[8px] transition-colors group-hover:bg-[rgba(255,185,0,0.16)]"
+          className="flex items-center gap-1.5 bg-primary/10 border border-primary/20 text-primary text-[12px] font-medium px-3 py-[6px] rounded-[8px] transition-colors group-hover:bg-primary/16"
         >
           <Edit2 size={12} />
           Chỉnh sửa
@@ -44,7 +44,7 @@ const Setting = () => {
   const isLeader = userRole === "leader";
 
   return (
-    <div className="min-h-screen bg-[#131b29]">
+    <div className="min-h-screen bg-app">
       <HeaderDashboard title="Cài đặt" />
 
       <div className="p-5 space-y-4">

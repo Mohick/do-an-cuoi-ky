@@ -55,18 +55,18 @@ const AwaitingTask = () => {
   }, [id_group, addAlert]);
 
   return (
-    <div className="min-h-screen bg-[#131b29]">
+    <div className="min-h-screen bg-app">
       <HeaderDashboard title="Nhiệm Vụ">
         <div className="flex items-center gap-3 flex-wrap">
           {/* Filter */}
           <div className="flex items-center gap-2">
-            <span className="text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)]">
+            <span className="text-[11px] uppercase tracking-[0.1em] text-primary/55">
               Ưu tiên
             </span>
             <div className="relative">
               <select
                 onChange={(e) => setFilterOptions({ ...filterOptions, priority: e.target.value })}
-                className="appearance-none bg-[#1a1a1a] border border-[rgba(255,185,0,0.18)] rounded-[8px] text-[#e0e0e0] text-[12px] px-[10px] pr-7 py-[5px] outline-none cursor-pointer"
+                className="appearance-none bg-[#1a1a1a] border border-primary/18 rounded-[8px] text-[#e0e0e0] text-[12px] px-[10px] pr-7 py-[5px] outline-none cursor-pointer"
               >
                 <option>Tất cả</option>
                 <option>Thấp</option>
@@ -89,9 +89,9 @@ const AwaitingTask = () => {
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
                 className="flex items-center gap-[6px] px-[14px] py-[7px] rounded-[10px]
-                  bg-[rgba(255,185,0,0.12)] border border-[rgba(255,185,0,0.25)]
-                  text-[#ffb900] text-[12px] font-medium cursor-pointer
-                  hover:bg-[rgba(255,185,0,0.18)] transition-colors"
+                  bg-primary/12 border border-primary/25
+                  text-primary text-[12px] font-medium cursor-pointer
+                  hover:bg-primary/18 transition-colors"
               >
                 <PlusCircleOutlined style={{ fontSize: 14 }} />
                 Tạo Nhiệm Vụ
@@ -136,10 +136,10 @@ export const TaskSection = ({
       {/* Section header */}
       <div className="flex items-center gap-3 mb-4">
         <h3 className="text-[13px] font-medium text-[#f0f0f0] whitespace-nowrap">{title}</h3>
-        <span className="text-[11px] bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.2)] rounded-full px-[9px] py-[2px]">
+        <span className="text-[11px] bg-primary/12 text-primary border border-primary/20 rounded-full px-[9px] py-[2px]">
           {filtered.length}
         </span>
-        <div className="flex-1 h-px bg-[rgba(255,185,0,0.08)]" />
+        <div className="flex-1 h-px bg-primary/8" />
       </div>
 
       {/* Grid */}

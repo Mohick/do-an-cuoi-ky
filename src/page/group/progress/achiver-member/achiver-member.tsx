@@ -13,7 +13,7 @@ interface TopMember {
 }
 
 const roleConfig: Record<string, { label: string; badge: string; icon: string }> = {
-  leader: { label: "Leader", badge: "bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.25)]", icon: "text-[#ffb900]" },
+  leader: { label: "Leader", badge: "bg-primary/12 text-primary border border-primary/25", icon: "text-primary" },
   confirmer: { label: "Xác nhận", badge: "bg-[rgba(139,92,246,0.12)] text-purple-400 border border-[rgba(139,92,246,0.2)]", icon: "text-purple-400" },
   member: { label: "Thành viên", badge: "bg-[rgba(59,130,246,0.12)] text-blue-400 border border-[rgba(59,130,246,0.2)]", icon: "text-blue-400" },
 };
@@ -21,8 +21,8 @@ const roleConfig: Record<string, { label: string; badge: string; icon: string }>
 const RankBadge = ({ rank }: { rank: number }) => {
   if (rank === 1)
     return (
-      <div className="w-6 h-6 rounded-full bg-[rgba(255,185,0,0.15)] border border-[rgba(255,185,0,0.3)] flex items-center justify-center">
-        <Crown size={12} className="text-[#ffb900]" />
+      <div className="w-6 h-6 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center">
+        <Crown size={12} className="text-primary" />
       </div>
     );
   if (rank === 2)
@@ -79,10 +79,10 @@ export default function MemberTable() {
 
   if (isLoading)
     return (
-      <div className="w-full max-w-lg mx-auto bg-[#141414] border border-[rgba(255,185,0,0.1)] rounded-[16px] p-8 flex flex-col items-center justify-center gap-3 h-40">
+      <div className="w-full max-w-lg mx-auto bg-[#141414] border border-primary/10 rounded-[16px] p-8 flex flex-col items-center justify-center gap-3 h-40">
         <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-7 h-7 rounded-full border-2 border-[rgba(255,185,0,0.15)] border-t-[#ffb900]" />
-        <p className="text-[12px] text-[rgba(255,185,0,0.4)] uppercase tracking-[0.12em]">Đang tải...</p>
+          className="w-7 h-7 rounded-full border-2 border-primary/15 border-t-primary" />
+        <p className="text-[12px] text-primary/40 uppercase tracking-[0.12em]">Đang tải...</p>
       </div>
     );
 
@@ -104,16 +104,16 @@ export default function MemberTable() {
     <div className="w-full max-w-lg mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-7 h-7 rounded-[8px] bg-[rgba(255,185,0,0.1)] border border-[rgba(255,185,0,0.2)] flex items-center justify-center">
-          <Crown size={13} className="text-[#ffb900]" />
+        <div className="w-7 h-7 rounded-[8px] bg-primary/10 border border-primary/20 flex items-center justify-center">
+          <Crown size={13} className="text-primary" />
         </div>
         <span className="text-[13px] font-medium text-[#f0f0f0]">
           Bảng xếp hạng
         </span>
-        <span className="text-[11px] bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.2)] rounded-full px-[9px] py-[2px]">
+        <span className="text-[11px] bg-primary/12 text-primary border border-primary/20 rounded-full px-[9px] py-[2px]">
           Top {topMembers.length}
         </span>
-        <div className="flex-1 h-px bg-[rgba(255,185,0,0.08)]" />
+        <div className="flex-1 h-px bg-primary/8" />
       </div>
 
       {/* List */}
@@ -137,14 +137,14 @@ export default function MemberTable() {
                 relative bg-[#141414] rounded-[12px] px-4 py-3 overflow-hidden
                 border transition-all duration-200 cursor-default
                 ${isFirst
-                  ? "border-[rgba(255,185,0,0.25)] shadow-[0_4px_20px_rgba(255,185,0,0.08)]"
+                  ? "border-primary/25 shadow-[0_4px_20px_rgba(255,185,0,0.08)]"
                   : "border-[rgba(255,255,255,0.05)] hover:border-[rgba(255,255,255,0.1)]"
                 }
               `}
             >
               {/* Top accent for #1 */}
               {isFirst && (
-                <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[12px] bg-gradient-to-r from-[#b37d00] to-[#ffb900]" />
+                <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[12px] bg-gradient-to-r from-primary-dark to-primary" />
               )}
 
               <div className="flex items-center justify-between gap-3">
@@ -157,11 +157,11 @@ export default function MemberTable() {
                   <div className={`
                     w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0
                     ${isFirst
-                      ? "bg-[rgba(255,185,0,0.1)] border border-[rgba(255,185,0,0.2)]"
+                      ? "bg-primary/10 border border-primary/20"
                       : "bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.06)]"
                     }
                   `}>
-                    <User size={15} className={isFirst ? "text-[#ffb900]" : "text-white/30"} />
+                    <User size={15} className={isFirst ? "text-primary" : "text-white/30"} />
                   </div>
 
                   {/* Info */}

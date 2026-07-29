@@ -89,7 +89,7 @@ const LayoutGroup = () => {
     }, [id_group])
 
     return (
-        <div className={`grid grid-cols-12 min-h-screen max-h-screen h-screen overflow-hidden gap-2 bg-[#131b29] text-white p-5 `}>
+        <div className={`grid grid-cols-12 min-h-screen max-h-screen h-screen overflow-hidden gap-2 bg-app text-white p-5 `}>
             <div className="grid col-span-12 lg:col-span-2">
                 <SideBarLayout listSideBar={listSideBar} name="Group" />
             </div>

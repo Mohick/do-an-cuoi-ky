@@ -11,7 +11,7 @@ import { useState } from "react"
 const inputClass = `
   w-full bg-[#1c2840] border border-[rgba(255,255,255,0.07)] rounded-[10px]
   px-4 py-[10px] text-[13px] text-[#e0e0e0] placeholder:text-white/20
-  outline-none focus:border-[rgba(255,185,0,0.35)] focus:bg-[#1e2d47]
+  outline-none focus:border-primary/35 focus:bg-[#1e2d47]
   transition-colors duration-200
 `
 
@@ -44,21 +44,21 @@ const CreateTask = () => {
         initial={{ opacity: 0, y: 32, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 32, scale: 0.97 }}
-        className="relative w-full max-w-xl bg-[#131b29] border border-[rgba(255,185,0,0.12)] rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden"
+        className="relative w-full max-w-xl bg-app border border-primary/12 rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden"
       >
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#b37d00] to-[#ffb900]" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary-dark to-primary" />
 
-        <div className="px-5 pt-5 pb-4 border-b border-[rgba(255,185,0,0.08)] flex items-center justify-between">
+        <div className="px-5 pt-5 pb-4 border-b border-primary/8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-[8px] bg-[rgba(255,185,0,0.1)] border border-[rgba(255,185,0,0.2)] flex items-center justify-center">
-              <FilePlus size={14} className="text-[#ffb900]" />
+            <div className="w-8 h-8 rounded-[8px] bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <FilePlus size={14} className="text-primary" />
             </div>
             <div>
               <h2 className="text-[14px] font-semibold text-[#f0f0f0]">Tạo nhiệm vụ</h2>
               <p className="text-[10px] text-white/25 mt-0.5">Điền thông tin chi tiết bên dưới</p>
             </div>
           </div>
-          <button type="button" onClick={() => navigate(-1)} className="w-7 h-7 rounded-full border border-[rgba(255,185,0,0.2)] bg-[rgba(255,185,0,0.06)] text-[#ffb900] flex items-center justify-center hover:bg-[rgba(255,185,0,0.1)] transition-colors">
+          <button type="button" onClick={() => navigate(-1)} className="w-7 h-7 rounded-full border border-primary/20 bg-primary/6 text-primary flex items-center justify-center hover:bg-primary/10 transition-colors">
             <X size={13} />
           </button>
         </div>
@@ -68,7 +68,7 @@ const CreateTask = () => {
 
             {/* Tên task */}
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)] mb-2">
+              <label className="block text-[11px] uppercase tracking-[0.1em] text-primary/55 mb-2">
                 Tên Task <span className="text-red-400/60">*</span>
               </label>
               <input
@@ -88,7 +88,7 @@ const CreateTask = () => {
 
             {/* Ưu tiên */}
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)] mb-2 flex items-center gap-1.5">
+              <label className="block text-[11px] uppercase tracking-[0.1em] text-primary/55 mb-2 flex items-center gap-1.5">
                 <Flag size={10} /> Ưu tiên
               </label>
               <div className="relative">
@@ -101,7 +101,7 @@ const CreateTask = () => {
                   <option value="cao">Cao</option>
                 </select>
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none border-l border-white/10 pl-2">
-                  <X size={10} className="text-[#ffb900] rotate-45" />
+                  <X size={10} className="text-primary rotate-45" />
                 </div>
               </div>
               {errors.priority && <p className="text-red-400/70 text-[10px] mt-1.5">{errors.priority.message}</p>}
@@ -109,7 +109,7 @@ const CreateTask = () => {
 
             {/* URL */}
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)] mb-2 flex items-center gap-1.5">
+              <label className="block text-[11px] uppercase tracking-[0.1em] text-primary/55 mb-2 flex items-center gap-1.5">
                 <Link2 size={10} /> Đường dẫn (URL)
               </label>
               <input
@@ -127,7 +127,7 @@ const CreateTask = () => {
 
             {/* Deadline */}
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)] mb-2 flex items-center gap-1.5">
+              <label className="block text-[11px] uppercase tracking-[0.1em] text-primary/55 mb-2 flex items-center gap-1.5">
                 <CalendarDays size={10} /> Deadline <span className="text-red-400/60">*</span>
               </label>
               <input
@@ -153,7 +153,7 @@ const CreateTask = () => {
 
           {/* Mô tả */}
           <div>
-            <label className="block text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)] mb-2 flex items-center gap-1.5">
+            <label className="block text-[11px] uppercase tracking-[0.1em] text-primary/55 mb-2 flex items-center gap-1.5">
               <AlignLeft size={10} /> Mô tả nhiệm vụ
             </label>
             <textarea
@@ -182,7 +182,7 @@ const CreateTask = () => {
             className={`w-full py-3 rounded-[10px] text-[13px] font-bold transition-all mt-2
               ${isSubmitting
                 ? "bg-white/5 text-white/20 cursor-not-allowed"
-                : "bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.3)] hover:bg-[rgba(255,185,0,0.2)] hover:border-[#ffb900]/50"
+                : "bg-primary/12 text-primary border border-primary/30 hover:bg-primary/20 hover:border-primary/50"
               }`}
           >
             {isSubmitting ? "ĐANG XỬ LÝ..." : "XÁC NHẬN TẠO TASK"}

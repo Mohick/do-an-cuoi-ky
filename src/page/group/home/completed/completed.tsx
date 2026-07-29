@@ -42,16 +42,16 @@ const CompletedTask = () => {
   }, [id_group]);
 
   return (
-    <div className="min-h-screen bg-[#131b29]">
+    <div className="min-h-screen bg-app">
       <HeaderDashboard title="Nhiệm Vụ">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)]">
+          <span className="text-[11px] uppercase tracking-[0.1em] text-primary/55">
             Ưu tiên
           </span>
           <div className="relative">
             <select
               onChange={(e) => setFilterOptions({ ...filterOptions, priority: e.target.value })}
-              className="appearance-none bg-[#1c2840] border border-[rgba(255,185,0,0.18)] rounded-[8px]
+              className="appearance-none bg-[#1c2840] border border-primary/18 rounded-[8px]
                 text-[#e0e0e0] text-[12px] px-[10px] pr-7 py-[5px] outline-none cursor-pointer"
             >
               <option>Tất cả</option>

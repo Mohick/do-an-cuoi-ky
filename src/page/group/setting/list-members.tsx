@@ -22,7 +22,7 @@ interface Member {
 }
 
 const roleConfig: Record<string, { label: string; badge: string; icon: JSX.Element }> = {
-  leader: { label: "Trưởng nhóm", badge: "bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.22)]", icon: <Crown size={11} className="text-[#ffb900]" /> },
+  leader: { label: "Trưởng nhóm", badge: "bg-primary/12 text-primary border border-primary/22", icon: <Crown size={11} className="text-primary" /> },
   confirmer: { label: "Kiểm duyệt", badge: "bg-[rgba(34,197,94,0.10)] text-green-400 border border-[rgba(34,197,94,0.2)]", icon: <ShieldCheck size={11} className="text-green-400" /> },
   member: { label: "Thành viên", badge: "bg-[rgba(255,255,255,0.06)] text-white/40 border border-[rgba(255,255,255,0.08)]", icon: <User size={11} className="text-white/30" /> },
 };
@@ -63,15 +63,15 @@ const ListMemberInGroups = () => {
       <motion.div
         key={item._id}
         variants={itemVariants}
-        className="flex p-1 items-center justify-between bg-[#1a1a1a] border border-[rgba(255,255,255,0.05)] px-3 py-[10px] rounded-[10px] hover:border-[rgba(255,185,0,0.12)] transition-colors duration-200"
+        className="flex p-1 items-center justify-between bg-[#1a1a1a] border border-[rgba(255,255,255,0.05)] px-3 py-[10px] rounded-[10px] hover:border-primary/12 transition-colors duration-200"
       >
         {/* Left */}
         <div className="flex items-center gap-3 min-w-0">
           {/* Avatar */}
           <div className="relative flex-shrink-0">
             {effectiveRole === "leader" && (
-              <div className=" -top-1 -right-1 w-4 h-4 rounded-full bg-[rgba(255,185,0,0.15)] border border-[rgba(255,185,0,0.3)] flex items-center justify-center">
-                <Crown size={8} className="text-[#ffb900]" />
+              <div className=" -top-1 -right-1 w-4 h-4 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center">
+                <Crown size={8} className="text-primary" />
               </div>
             )}
           </div>
@@ -89,7 +89,7 @@ const ListMemberInGroups = () => {
         </div>
         {userRole === "leader" && item.role !== "leader" && (
           <div className="relative group flex-shrink-0 ml-2">
-            <div className="w-7 h-7 rounded-[7px] border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.03)] flex items-center justify-center cursor-pointer hover:border-[rgba(255,185,0,0.2)] hover:bg-[rgba(255,185,0,0.05)] transition-colors">
+            <div className="w-7 h-7 rounded-[7px] border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.03)] flex items-center justify-center cursor-pointer hover:border-primary/20 hover:bg-primary/5 transition-colors">
               <MoreVertical size={14} className="text-white/30" />
             </div>
             <AnimatePresence>
@@ -104,9 +104,9 @@ const ListMemberInGroups = () => {
               >
                 <li
                   onClick={() => { updateChangeRoleLeaderAPI({ id_group: id_group as string, userID: item._id }); setOverrideRole((p) => ({ ...p, [item._id]: "leader" })); }}
-                  className="flex items-center gap-2 px-3 py-[7px] rounded-[8px] text-[12px] text-[#ffb900]/80 hover:bg-[rgba(255,185,0,0.08)] cursor-pointer transition-colors"
+                  className="flex items-center gap-2 px-3 py-[7px] rounded-[8px] text-[12px] text-primary/80 hover:bg-primary/8 cursor-pointer transition-colors"
                 >
-                  <Crown size={13} className="text-[#ffb900]" /> Nhượng quyền leader
+                  <Crown size={13} className="text-primary" /> Nhượng quyền leader
                 </li>
                 <li
                   onClick={() => { updateChangeRoleConfirmerAPI({ id_group: id_group as string, userID: item._id }); setOverrideRole((p) => ({ ...p, [item._id]: "confirmer" })); }}
@@ -148,7 +148,7 @@ const ListMemberInGroups = () => {
       className="bg-[#141414] border border-[rgba(255,255,255,0.05)] rounded-[14px] overflow-hidden"
     >
       {/* Accent bar */}
-      <div className={`h-[2px] w-full ${isPending ? "bg-gradient-to-r from-[#7c3aed] to-[#a78bfa]" : "bg-gradient-to-r from-[#b37d00] to-[#ffb900]"}`} />
+      <div className={`h-[2px] w-full ${isPending ? "bg-gradient-to-r from-[#7c3aed] to-[#a78bfa]" : "bg-gradient-to-r from-primary-dark to-primary"}`} />
 
       <div className="p-4">
         {/* Header */}
@@ -156,13 +156,13 @@ const ListMemberInGroups = () => {
           <div className="flex items-center gap-2">
             {isPending
               ? <Clock size={13} className="text-purple-400/60" />
-              : <User size={13} className="text-[rgba(255,185,0,0.5)]" />
+              : <User size={13} className="text-primary/50" />
             }
             <h3 className="text-[13px] font-medium text-[#f0f0f0]">{title}</h3>
             <span className={`text-[10px] px-[8px] py-[2px] rounded-full border
               ${isPending
                 ? "bg-[rgba(139,92,246,0.1)] text-purple-400 border-[rgba(139,92,246,0.2)]"
-                : "bg-[rgba(255,185,0,0.1)] text-[#ffb900] border-[rgba(255,185,0,0.2)]"
+                : "bg-primary/10 text-primary border-primary/20"
               }`}>
               {list.length}
             </span>
@@ -173,7 +173,7 @@ const ListMemberInGroups = () => {
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-1.5 bg-[rgba(255,185,0,0.1)] border border-[rgba(255,185,0,0.2)] text-[#ffb900] text-[11px] font-medium px-3 py-[5px] rounded-[8px] hover:bg-[rgba(255,185,0,0.16)] transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 bg-primary/10 border border-primary/20 text-primary text-[11px] font-medium px-3 py-[5px] rounded-[8px] hover:bg-primary/16 transition-colors cursor-pointer"
               >
                 <UserPlus size={12} /> Thêm thành viên
               </motion.button>
@@ -191,7 +191,7 @@ const ListMemberInGroups = () => {
           className="space-y-[6px] max-h-80 overflow-y-auto p-1
             [&::-webkit-scrollbar]:w-[3px]
             [&::-webkit-scrollbar-track]:bg-transparent
-            [&::-webkit-scrollbar-thumb]:bg-[rgba(255,185,0,0.15)]
+            [&::-webkit-scrollbar-thumb]:bg-primary/15
             [&::-webkit-scrollbar-thumb]:rounded-full"
         >
           {list.length

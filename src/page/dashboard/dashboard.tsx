@@ -38,7 +38,7 @@ export default function LayoutDashboard() {
     }, [])
 
     return (
-        <div className={`grid grid-cols-12  min-h-screen overflow-hidden max-h-screen gap-2 bg-[#131b29] text-white p-5 `}>
+        <div className={`grid grid-cols-12  min-h-screen overflow-hidden max-h-screen gap-2 bg-app text-white p-5 `}>
             <div className="grid  col-span-12 lg:col-span-2">
                 <SideBarLayout listSideBar={listSideBar} name="Dashboard" />
             </div>

@@ -50,10 +50,10 @@ const { data } = useAccount();
         initial={{ opacity: 0, y: 24, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.35, ease: [0.22, 0.68, 0, 1.1] }}
-        className="relative w-full max-w-sm bg-[#131b29] border border-[rgba(255,185,0,0.12)] rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden"
+        className="relative w-full max-w-sm bg-app border border-primary/12 rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden"
       >
         {/* Accent bar */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#b37d00] to-[#ffb900]" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary-dark to-primary" />
 
         <div className="p-8 flex flex-col items-center gap-5 text-center">
           {/* Icon */}
@@ -63,21 +63,21 @@ const { data } = useAccount();
             transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
             className="relative"
           >
-            <div className="w-14 h-14 rounded-full bg-[rgba(255,185,0,0.08)] border border-[rgba(255,185,0,0.2)] flex items-center justify-center">
-              <Mail size={24} className="text-[#ffb900]" />
+            <div className="w-14 h-14 rounded-full bg-primary/8 border border-primary/20 flex items-center justify-center">
+              <Mail size={24} className="text-primary" />
             </div>
             {/* Pulse ring */}
             <motion.div
               animate={{ scale: [1, 1.35, 1], opacity: [0.3, 0, 0.3] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 rounded-full border border-[rgba(255,185,0,0.3)]"
+              className="absolute inset-0 rounded-full border border-primary/30"
             />
           </motion.div>
 
           {/* Text */}
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-2 mb-1">
-              <span className="text-[10px] uppercase tracking-[0.12em] text-[rgba(255,185,0,0.5)]">
+              <span className="text-[10px] uppercase tracking-[0.12em] text-primary/50">
                 Xác thực tài khoản
               </span>
             </div>
@@ -90,12 +90,12 @@ const { data } = useAccount();
           </div>
 
           {/* Hint box */}
-          <div className="w-full bg-[rgba(255,185,0,0.04)] border border-[rgba(255,185,0,0.1)] rounded-[10px] px-4 py-3 flex items-start gap-2">
-            <InboxIcon size={13} className="text-[rgba(255,185,0,0.4)] flex-shrink-0 mt-0.5" />
+          <div className="w-full bg-primary/4 border border-primary/10 rounded-[10px] px-4 py-3 flex items-start gap-2">
+            <InboxIcon size={13} className="text-primary/40 flex-shrink-0 mt-0.5" />
             <p className="text-[11px] text-white/30 text-left leading-relaxed">
               Không thấy email? Kiểm tra mục{" "}
-              <span className="text-[rgba(255,185,0,0.5)]">Spam</span>{" "}
-              hoặc <span className="text-[rgba(255,185,0,0.5)]">Thư rác</span> và chờ vài phút.
+              <span className="text-primary/50">Spam</span>{" "}
+              hoặc <span className="text-primary/50">Thư rác</span> và chờ vài phút.
             </p>
           </div>
 
@@ -110,8 +110,8 @@ const { data } = useAccount();
               ${resent
                 ? "bg-[rgba(34,197,94,0.08)] border border-[rgba(34,197,94,0.2)] text-green-400/70 cursor-default"
                 : countdown > 0
-                  ? "bg-[rgba(255,185,0,0.04)] border border-[rgba(255,185,0,0.1)] text-[#ffb900]/30 cursor-not-allowed"
-                  : "bg-[rgba(255,185,0,0.08)] border border-[rgba(255,185,0,0.18)] text-[#ffb900]/70 hover:bg-[rgba(255,185,0,0.14)] cursor-pointer"
+                  ? "bg-primary/4 border border-primary/10 text-primary/30 cursor-not-allowed"
+                  : "bg-primary/8 border border-primary/18 text-primary/70 hover:bg-primary/14 cursor-pointer"
               } ${resending ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {resending ? (
@@ -119,7 +119,7 @@ const { data } = useAccount();
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="w-3.5 h-3.5 rounded-full border-2 border-[rgba(255,185,0,0.15)] border-t-[#ffb900]"
+                  className="w-3.5 h-3.5 rounded-full border-2 border-primary/15 border-t-primary"
                 />
                 Đang gửi lại...
               </>
@@ -132,7 +132,7 @@ const { data } = useAccount();
                   initial={{ opacity: 0.5 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.25 }}
-                  className="text-[11px] font-bold text-[#ffb900]/50 tabular-nums"
+                  className="text-[11px] font-bold text-primary/50 tabular-nums"
                 >
                   {String(Math.floor(countdown / 60)).padStart(2, '0')}:{String(countdown % 60).padStart(2, '0')}
                 </motion.span>

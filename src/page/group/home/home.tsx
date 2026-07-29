@@ -26,10 +26,10 @@ const listItems = [
     title: "Đang Làm",
     sub: "Nhiệm vụ đang xử lý",
     icon: <ClockCircleOutlined />,
-    bar: "from-[#b37d00] to-[#ffb900]",
-    badge: "bg-[rgba(255,185,0,0.12)] text-[#ffb900] border-[rgba(255,185,0,0.22)]",
+    bar: "from-primary-dark to-primary",
+    badge: "bg-primary/12 text-primary border-primary/22",
     glow: "hover:shadow-[0_12px_32px_rgba(255,185,0,0.15)]",
-    iconColor: "text-[#ffb900]",
+    iconColor: "text-primary",
   },
   {
     link: "/group/:id_group/pending",
@@ -69,16 +69,16 @@ const HomeTask = () => {
   }, [id_group]);
 
   return (
-    <div className="min-h-screen bg-[#131b29]">
+    <div className="min-h-screen bg-app">
       <HeaderDashboard title="Trang Chủ Nhóm" />
 
       <div className="w-full mx-auto px-5 py-8">
         {/* Section label */}
         <div className="flex items-center gap-3 mb-6">
-          <span className="text-[11px] uppercase tracking-[0.15em] text-[rgba(255,185,0,0.5)]">
+          <span className="text-[11px] uppercase tracking-[0.15em] text-primary/50">
             Quản lý nhiệm vụ
           </span>
-          <div className="flex-1 h-px bg-[rgba(255,185,0,0.08)]" />
+          <div className="flex-1 h-px bg-primary/8" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

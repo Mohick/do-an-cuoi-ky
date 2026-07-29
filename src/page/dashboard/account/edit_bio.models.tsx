@@ -37,15 +37,15 @@ const EditBio = () => {
       transition={{ duration: 0.28, ease: [0.22, 0.68, 0, 1.1] }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
     >
-      <div className="relative w-full max-w-md bg-[#131b29] border border-[rgba(255,185,0,0.12)] rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden">
+      <div className="relative w-full max-w-md bg-app border border-primary/12 rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden">
         {/* Accent bar */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#b37d00] to-[#ffb900]" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary-dark to-primary" />
 
         {/* Header */}
-        <div className="px-5 pt-5 pb-4 border-b border-[rgba(255,185,0,0.08)] flex items-center justify-between">
+        <div className="px-5 pt-5 pb-4 border-b border-primary/8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-[8px] bg-[rgba(255,185,0,0.1)] border border-[rgba(255,185,0,0.2)] flex items-center justify-center">
-              <FileEdit size={14} className="text-[#ffb900]" />
+            <div className="w-8 h-8 rounded-[8px] bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <FileEdit size={14} className="text-primary" />
             </div>
             <div>
               <h2 className="text-[14px] font-semibold text-[#f0f0f0]">Chỉnh sửa Bio</h2>
@@ -53,7 +53,7 @@ const EditBio = () => {
             </div>
           </div>
           <Link to="/dashboard/account">
-            <button className="w-7 h-7 rounded-full border border-[rgba(255,185,0,0.2)] bg-[rgba(255,185,0,0.06)] text-[#ffb900] flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity cursor-pointer">
+            <button className="w-7 h-7 rounded-full border border-primary/20 bg-primary/6 text-primary flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity cursor-pointer">
               <X size={13} />
             </button>
           </Link>
@@ -62,7 +62,7 @@ const EditBio = () => {
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="p-5 space-y-3">
-            <label className="block text-[11px] uppercase tracking-[0.1em] text-[rgba(255,185,0,0.55)]">
+            <label className="block text-[11px] uppercase tracking-[0.1em] text-primary/55">
               Giới thiệu bản thân
             </label>
 
@@ -76,12 +76,12 @@ const EditBio = () => {
                 placeholder="Viết gì đó về bản thân bạn..."
                 className="w-full bg-[#1c2840] border border-[rgba(255,255,255,0.07)] rounded-[10px]
                   px-4 py-3 text-[13px] text-[#e0e0e0] placeholder:text-white/20
-                  outline-none focus:border-[rgba(255,185,0,0.35)] focus:bg-[#1e2d47]
+                  outline-none focus:border-primary/35 focus:bg-[#1e2d47]
                   transition-colors duration-200 resize-none leading-relaxed"
               />
               {/* Char counter */}
               <div className={`absolute bottom-3 right-3 text-[10px] tabular-nums
-                ${charCount >= MAX ? "text-red-400/70" : charCount >= MAX * 0.8 ? "text-[rgba(255,185,0,0.5)]" : "text-white/20"}`}>
+                ${charCount >= MAX ? "text-red-400/70" : charCount >= MAX * 0.8 ? "text-primary/50" : "text-white/20"}`}>
                 {charCount}/{MAX}
               </div>
             </div>
@@ -110,8 +110,8 @@ const EditBio = () => {
               whileTap={{ scale: saving ? 1 : 0.97 }}
               className={`px-5 py-[7px] rounded-[9px] text-[12px] font-semibold transition-all
                 ${saving
-                  ? "bg-[rgba(255,185,0,0.06)] text-[#ffb900]/40 border border-[rgba(255,185,0,0.1)] cursor-not-allowed"
-                  : "bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.25)] hover:bg-[rgba(255,185,0,0.2)] cursor-pointer"
+                  ? "bg-primary/6 text-primary/40 border border-primary/10 cursor-not-allowed"
+                  : "bg-primary/12 text-primary border border-primary/25 hover:bg-primary/20 cursor-pointer"
                 }`}
             >
               {saving ? "Đang lưu..." : "Lưu"}

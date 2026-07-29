@@ -3,7 +3,7 @@ import { Loader2, LayoutDashboard } from "lucide-react";
 
 const LoadingApp = () => {
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 bg-[#131b29] z-50">
+    <div className="fixed top-0 left-0 right-0 bottom-0 bg-app z-50">
       <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
         
         {/* Container cho Icon */}

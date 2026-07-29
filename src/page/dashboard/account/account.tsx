@@ -36,12 +36,12 @@ const AccountUser = () => {
             </AnimatePresence>
 
             {/* HEADER SECTION */}
-            <div className='flex gap-6 justify-between items-center bg-white/5 p-6 rounded-2xl backdrop-blur-sm border border-white/10'>
-                <div className='flex gap-6 items-center'>
+            <div className='flex flex-col xl:flex-row gap-6 justify-between items-center bg-white/5 p-6 rounded-2xl backdrop-blur-sm border border-white/10'>
+                <div className='flex flex-col sm:flex-row gap-6 items-center w-full xl:w-auto text-center sm:text-left'>
                     <motion.div
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
-                        className='relative group'
+                        className='relative group flex-shrink-0'
                     >
                         <img
                             src={userData.avatar.url}
@@ -55,8 +55,8 @@ const AccountUser = () => {
                         </div>
                     </motion.div>
 
-                    <div className='flex flex-col justify-center'>
-                        <h2 className="text-4xl flex font-black tracking-tighter italic">
+                    <div className='flex flex-col justify-center overflow-hidden w-full'>
+                        <h2 className="text-3xl sm:text-4xl flex justify-center sm:justify-start font-black tracking-tighter italic break-all">
                             {userData.username.split("").map((char, index) => (
                                 <motion.span
                                     key={index}
@@ -70,10 +70,10 @@ const AccountUser = () => {
                             ))}
                         </h2>
 
-                        <div className="relative mt-2 inline-block">
-                            <p className="text-gray-400 flex items-center gap-2 text-sm">
-                                <MailOutlined className='text-amber-400' />
-                                <span>Email: {userData.email}</span>
+                        <div className="relative mt-2 inline-block max-w-full">
+                            <p className="text-gray-400 flex justify-center sm:justify-start items-center gap-2 text-sm truncate">
+                                <MailOutlined className='text-amber-400 shrink-0' />
+                                <span className="truncate">Email: {userData.email}</span>
                             </p>
                             <motion.div
                                 initial={{ scaleX: 1 }}
@@ -85,7 +85,7 @@ const AccountUser = () => {
                     </div>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex gap-4 justify-center mt-4 xl:mt-0 w-full xl:w-auto">
                     <Link to={'edit-account'}>
                         <motion.div
                             whileHover={{ scale: 1.1, rotate: 15 }}

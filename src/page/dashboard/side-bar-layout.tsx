@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 
 export const TitleDashboard = ({ text }: { text: string }) => {
   return (
-    <h1 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-[rgba(255,185,0,0.5)] px-2 mb-3">
+    <h1 className="text-[11px] uppercase tracking-[0.18em] font-semibold text-primary/50 px-2 mb-3">
       {text}
     </h1>
   );
@@ -37,18 +37,18 @@ const SideBarLayout = ({
               group flex items-center gap-3 px-3 py-[9px] rounded-[10px]
               text-[13px] font-medium transition-all duration-200 relative overflow-hidden
               ${isActive
-                  ? "bg-[rgba(255,185,0,0.1)] text-[#ffb900] border border-[rgba(255,185,0,0.18)]"
+                  ? "bg-primary/10 text-primary border border-primary/18"
                   : "text-white/40 border border-transparent hover:bg-[rgba(255,255,255,0.04)] hover:text-white/70"
                 }
             `}
             >
               {/* Active accent bar */}
               {isActive && (
-                <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-gradient-to-b from-[#ffb900] to-[rgba(255,185,0,0.3)]" />
+                <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-gradient-to-b from-primary to-primary/30" />
               )}
 
               {/* Icon */}
-              <span className={`flex-shrink-0 text-[15px] transition-colors duration-200 ${isActive ? "text-[#ffb900]" : "text-white/30 group-hover:text-white/50"}`}>
+              <span className={`flex-shrink-0 text-[15px] transition-colors duration-200 ${isActive ? "text-primary" : "text-white/30 group-hover:text-white/50"}`}>
                 {item.icon}
               </span>
 
@@ -103,13 +103,13 @@ const Models = ({ listSideBar, location, onClose }: Props) => {
         animate={{ x: 0 }}      // Trượt vào vị trí cũ
         exit={{ x: "100%" }}    // Trượt ngược lại khi đóng
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="fixed right-0 top-0 bottom-0 w-[80%] max-w-[320px] bg-[#131b29] z-[70] shadow-2xl flex flex-col p-6"
+        className="fixed right-0 top-0 bottom-0 w-[80%] max-w-[320px] bg-app z-[70] shadow-2xl flex flex-col p-6"
       >
         {/* Nút Close */}
         <div className="flex justify-end mb-8">
           <button
             onClick={onClose}
-            className="text-white/40 hover:text-[#ffb900] transition-colors"
+            className="text-white/40 hover:text-primary transition-colors"
           >
             <CloseCircleOutlined style={{ fontSize: '28px' }} />
           </button>
@@ -129,12 +129,12 @@ const Models = ({ listSideBar, location, onClose }: Props) => {
                   group flex items-center gap-4 px-4 py-4 rounded-xl
                   text-[15px] font-medium transition-all duration-200
                   ${isActive
-                    ? "bg-[rgba(255,185,0,0.1)] text-[#ffb900] border border-[rgba(255,185,0,0.18)]"
+                    ? "bg-primary/10 text-primary border border-primary/18"
                     : "text-white/40 hover:bg-white/5 hover:text-white"
                   }
                 `}
               >
-                <span className={`text-xl ${isActive ? "text-[#ffb900]" : "text-white/20"}`}>
+                <span className={`text-xl ${isActive ? "text-primary" : "text-white/20"}`}>
                   {item.icon}
                 </span>
                 <span className="truncate">{item.name}</span>

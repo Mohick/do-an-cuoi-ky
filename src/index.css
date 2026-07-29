@@ -1,27 +1,57 @@
 @import "tailwindcss";
 
-.scrollbar-hidden {
-  -ms-overflow-style: none;
-  /* IE/Edge */
-  scrollbar-width: none;
-  /* Firefox */
-}
+@theme {
+  /* =========================================
+     🎨 PRISTINE LIGHT MODE (Apple/Stripe Style)
+     ========================================= */
 
-.scrollbar-hidden::-webkit-scrollbar {
-  display: none;
-  /* Chrome/Safari */
-}
+  /* 1. Màu chủ đạo (Primary) - Violet mượt mà */
+  --color-primary: #7c3aed;
+  --color-primary-hover: #6d28d9;
+  --color-primary-dark: #5b21b6;
 
-* {
-  scrollbar-width: thin ;
-  scrollbar-color: transparent transparent;
+  /* 2. Màu nền (Background) - Trắng & Xám nhạt */
+  --color-app: #ffffff;
+  --color-surface: #f8fafc;
+  --color-surface-hover: #f1f5f9;
+  --color-border: #e2e8f0;
+
+  /* 3. Màu chữ (Text) - Đen xám tương phản cao */
+  --color-content: #0f172a;
+  --color-content-muted: #64748b;
+
+  /* 4. Trạng thái (Status) */
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+
+  /* 5. Custom colors */
+  --color-bg-button: #0e7490;
+  --color-text-color: white;
+  --color-brand: #ff5722;
+
+  /* 6. Quy định padding / margin / width / height (Spacing) */
+  --spacing-btn: 24px;
+  --spacing-super-large: 100px;
+  --spacing-50: 12.5rem;
+
+  /* 7. Quy định kích thước chữ (Font Size) */
+  --text-tiny: 10px;
+  --text-giant: 5rem;
+
+  /* 8. Quy định độ dày viền (Border Width) */
+  --border-width-3: 3px;
+  --border-width-thick: 10px;
+
+  /* 9. Quy định độ bo góc (Border Radius) */
+  --radius-btn: 5px;
+  --radius-super: 40px;
 }
 
 #layout-app {
   max-width: 90%;
   margin: 0 auto;
   width: 100%;
-
 }
 
 .bg-app {

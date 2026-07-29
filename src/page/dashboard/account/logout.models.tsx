@@ -17,15 +17,15 @@ const Logout = () => {
       transition={{ duration: 0.28, ease: [0.22, 0.68, 0, 1.1] }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
     >
-      <div className="relative w-full max-w-sm bg-[#131b29] border border-[rgba(255,185,0,0.12)] rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden">
+      <div className="relative w-full max-w-sm bg-app border border-primary/12 rounded-[18px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] overflow-hidden">
         {/* Accent bar */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#b37d00] to-[#ffb900]" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary-dark to-primary" />
 
         {/* Header */}
-        <div className="px-5 pt-5 pb-4 border-b border-[rgba(255,185,0,0.08)] flex items-center justify-between">
+        <div className="px-5 pt-5 pb-4 border-b border-primary/8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-[8px] bg-[rgba(255,185,0,0.1)] border border-[rgba(255,185,0,0.2)] flex items-center justify-center">
-              <LogOut size={14} className="text-[#ffb900]" />
+            <div className="w-8 h-8 rounded-[8px] bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <LogOut size={14} className="text-primary" />
             </div>
             <div>
               <h2 className="text-[14px] font-semibold text-[#f0f0f0]">Đăng xuất</h2>
@@ -33,7 +33,7 @@ const Logout = () => {
             </div>
           </div>
           <Link to="/dashboard/account">
-            <button className="w-7 h-7 rounded-full border border-[rgba(255,185,0,0.2)] bg-[rgba(255,185,0,0.06)] text-[#ffb900] flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity cursor-pointer">
+            <button className="w-7 h-7 rounded-full border border-primary/20 bg-primary/6 text-primary flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity cursor-pointer">
               <X size={13} />
             </button>
           </Link>
@@ -67,7 +67,7 @@ const Logout = () => {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className="px-5 py-[7px] rounded-[9px] text-[12px] font-semibold transition-all
-              bg-[rgba(255,185,0,0.12)] text-[#ffb900] border border-[rgba(255,185,0,0.25)] hover:bg-[rgba(255,185,0,0.2)] cursor-pointer"
+              bg-primary/12 text-primary border border-primary/25 hover:bg-primary/20 cursor-pointer"
           >
             Đăng xuất
           </motion.button>
