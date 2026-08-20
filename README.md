@@ -1,69 +1,63 @@
-# React + TypeScript + Vite
+# 🎓 Graduation Project - Front-End
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to the Front-End repository for the Graduation Project! This is a modern, responsive, and highly interactive Task & Group Management web application built with the latest front-end technologies.
 
-Currently, two official plugins are available:
+## 🚀 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Framework**: [React 19](https://react.dev/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) & [React Query](https://tanstack.com/query/latest)
+- **Routing**: [React Router DOM](https://reactrouter.com/)
+- **Real-time Communication**: [Socket.io-client](https://socket.io/)
+- **Animations**: [GSAP](https://gsap.com/) & [Framer Motion](https://www.framer.com/motion/)
+- **Data Visualization**: [Chart.js](https://www.chartjs.org/)
+- **HTTP Client**: [Axios](https://axios-http.com/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
 
-## Expanding the ESLint configuration
+## 📂 Project Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- `/src/components`: Reusable UI components.
+- `/src/page`: Application pages and routing views (Auth, Dashboard, Group Management).
+- `/src/hooks`: Custom React hooks (e.g., account management).
+- `/src/socket`: Real-time WebSocket connection setup.
+- `/src/ultils`: Utility functions and helpers.
+- `router.tsx`: Application routing configuration.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🛠️ Setup & Installation
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### Prerequisites
+- Node.js (v18+)
+- npm / yarn / pnpm / bun
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Installation Steps
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+1. Navigate to the project directory:
+   ```bash
+   cd do-an-cuoi-ky-front-end
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+3. Configure Environment Variables:
+   Create a `.env` file in the root directory based on your backend setup.
+
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+5. Build for production:
+   ```bash
+   npm run build
+   ```
+
+## ✨ Features
+- **User Authentication**: Login, Sign-up, and Email Verification.
+- **Dashboard**: Overview of projects and account management.
+- **Group Management**: Create, join, leave, and manage member roles within groups.
+- **Task Management**: Kanban-style task tracking (Waiting, Handling, Pending, Completed).
+- **Real-time Updates**: Live synchronization using WebSockets.
